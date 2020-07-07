@@ -1,0 +1,62 @@
+{
+  "channel": "stage",
+  "pipelines": {
+    "start": {
+      "event-handlers": {
+        "some-event": {
+          "notify": {
+            "message": "{{ basicMacro('some-event fired') }}\n"
+          }
+        },
+        "init": {
+          "notify": {
+            "message": "{{ helloWorld('start is successful') }}\n"
+          }
+        }
+      }
+    }
+  },
+  "appPipelinesConfig": {
+    "bases": [
+      "base1.yaml"
+    ],
+    "jinja2-macros": {
+      "helloWorld": "{%- macro helloWorld(msg) -%}\n  Hello world msg = {{msg}}\n{%- endmacro -%}\n"
+    },
+    "variables": {
+      "myVar1": "test"
+    },
+    "cicd-contexts": {
+      "stage": {
+        "channel": "stage",
+        "pipelines": {
+          "start": {
+            "event-handlers": {
+              "init": {
+                "notify": {
+                  "message": "{{ helloWorld('start is successful') }}\n"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "jinja2Macros": {
+    "byName": {
+      "basicMacro": "{%- macro basicMacro(msg) -%}\n  This is basicMacro! msg = {{msg}}\n{%- endmacro -%}\n",
+      "helloWorld": "{%- macro helloWorld(msg) -%}\n  Hello world msg = {{msg}}\n{%- endmacro -%}\n"
+    },
+    "all": "{%- macro basicMacro(msg) -%}\n  This is basicMacro! msg = {{msg}}\n{%- endmacro -%}{%- macro helloWorld(msg) -%}\n  Hello world msg = {{msg}}\n{%- endmacro -%}"
+  },
+  "state": {
+    "cicdContextDataId": "contextData1",
+    "cicdContextName": "stage",
+    "key1": "value1"
+  },
+  "variables": {
+    "baseVar1": "baseVarVal1",
+    "myVar1": "test"
+  }
+}

@@ -1,0 +1,27 @@
+
+jinja2-macros: 
+
+  basicMacro: |
+    {%- macro basicMacro(msg) -%}
+      This is basicMacro! msg = {{msg}}
+    {%- endmacro -%}
+
+variables:
+  baseVar1: "baseVarVal1"
+
+cicd-contexts:
+
+  stage:
+    channel: stage
+
+    pipelines:
+      start:
+        event-handlers:
+          some-event:
+            notify:
+              message: |
+                {{ basicMacro('some-event fired') }}
+    
+
+
+

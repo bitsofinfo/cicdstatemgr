@@ -1,0 +1,28 @@
+bases:
+  - base1.yaml
+
+jinja2-macros: 
+
+  helloWorld: |
+    {%- macro helloWorld(msg) -%}
+      Hello world msg = {{msg}}
+    {%- endmacro -%}
+
+variables:
+  myVar1: "test"
+
+cicd-contexts:
+
+  stage:
+    channel: stage
+
+    pipelines:
+      start:
+        event-handlers:
+          init:
+            notify:
+              message: |
+                {{ helloWorld('start is successful') }}
+
+
+

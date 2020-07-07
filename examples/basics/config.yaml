@@ -1,0 +1,68 @@
+#-----------------------------------
+# The start of the cicdstatemgr 
+# configuration file. 
+#-----------------------------------
+cicdstatemgr:
+
+  #
+  # Datasources: required
+  #
+  # Here you can list one or more datasource
+  # of any of the available types as supported
+  # under the datasources sub-package.
+  # 
+  # ONE of the datasources should be flagged
+  # as isPrimary=true to indicate it is authoritative
+  #
+  datasources:
+
+    #
+    # The redis datasource
+    #
+    # you can configure the AUTH username/password
+    # in a separate "secrets.yaml", with the same structure
+    redis:
+      host: localhost
+      port: 6379
+      isPrimary: true
+
+
+    #
+    # YAML file output
+    #
+    # path: if relative will be assumed relative from where
+    #       the cicdstatemgr cmd's working directory when run
+    #       Can also just be absolute
+    yamlfile:
+      path: examples/basics/localdata/cicdContextData.yaml
+
+    #
+    # JSON file output
+    #
+    # path: if relative will be assumed relative from where
+    #       the cicdstatemgr cmd's working directory when run
+    #       Can also just be absolute
+    jsonfile:
+      path: examples/basics/localdata/cicdContextData.json
+
+    #
+    # SHELL file output - a file that can be sourced to 
+    #                     expose all data as ENV vars
+    #
+    # path: if relative will be assumed relative from where
+    #       the cicdstatemgr cmd's working directory when run
+    #       Can also just be absolute
+    shellfile:
+      path: examples/basics/localdata/cicdContextData.sh
+
+    #
+    # ID file output = only contains the cicdContextData ID
+    #
+    # path: if relative will be assumed relative from where
+    #       the cicdstatemgr cmd's working directory when run
+    #       Can also just be absolute
+    idfile:
+      path: examples/basics/localdata/cicdContextData.id
+
+
+
