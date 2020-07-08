@@ -11,8 +11,8 @@ env:
 
 before_deploy:
   - echo TRAVIS_TAG=$TRAVIS_TAG
-  - TAG=$(git describe --abbrev=0 --tags)
-  - sed -i "s/VERSION_HERE/${TRAVIS_TAG}/g" setup.py
+  - sed -i "s/TRAVISTAGHERE/${TRAVIS_TAG}/g" setup.py
+  - cat setup.py
 
 deploy:
   provider: pypi
