@@ -52,15 +52,20 @@ class DataSourceMgr():
     def __init__(self, dsConfigs:dict):
         for dsName in dsConfigs:
             logging.debug("DataSourceMgr() Initializing datasource: {}".format(dsName))
-            module = importlib.import_module('.{}'.format(dsName), package=__name__)
-            ds = module.DataSource(dsConfigs[dsName])
-            self.dataSources[dsName] = ds
-            if ds.is_primary():
-                if self.primaryDataSource:
-                    logging.error("DataSourceMgr() you cannot have more than one isPrimary data source defined: {} , current primary = {}".format(dsName,self.primaryDataSource.get_name()))
-                else:
-                    logging.error("DataSourceMgr() primary ds = {}".format(dsName))
-                    self.primaryDataSource = ds
+
+            try:
+                module = importlib.import_module('.{}'.format(dsName), package=__name__)
+                ds = module.DataSource(dsConfigs[dsName])
+                self.dataSources[dsName] = ds
+                if ds.is_primary():
+                    if self.primaryDataSource:
+                        logging.error("DataSourceMgr() you cannot have more than one isPrimary data source defined: {} , current primary = {}".format(dsName,self.primaryDataSource.get_name()))
+                    else:
+                        logging.error("DataSourceMgr() primary ds = {}".format(dsName))
+                        self.primaryDataSource = ds
+
+            except ModuleNotFoundError as e:
+                logging.error("No datasource module found by name: {} .. ignoring".format(dsName))
 
         if not self.primaryDataSource:
             raise Exception("DataSourceMgr() you have no isPrimary=True datasource configured! Invalid")
