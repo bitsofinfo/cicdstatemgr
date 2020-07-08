@@ -301,8 +301,6 @@ class CicdStateMgr():
 
     def get_cicd_context_data(self, cicdContextDataId):
         
-        filePath = self.configData[CONFIG_DATA_KEY]['paths']['cicdContextYamlFile']
-
         # try from local non-primary first
         cicdContextData = self.dataSourceMgr.load(cicdContextDataId,fromPrimary=False, fromLocal=True)
 
