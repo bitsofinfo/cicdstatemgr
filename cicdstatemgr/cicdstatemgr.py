@@ -153,7 +153,8 @@ class CicdStateMgr():
 
         # create all data sources
         dsConfigs = copy.deepcopy(self.configData[CONFIG_DATA_KEY]["datasources"])
-        dsConfigs = dict_merge(dsConfigs,copy.deepcopy(self.secretData[SECRET_DATA_KEY]["datasources"]))
+        if 'datasources' in self.secretData[SECRET_DATA_KEY]:
+            dsConfigs = dict_merge(dsConfigs,copy.deepcopy(self.secretData[SECRET_DATA_KEY]["datasources"]))
         self.dataSourceMgr = DataSourceMgr(dsConfigs)
 
 
