@@ -16,6 +16,8 @@ install:
   - pip3 install -r requirements.txt
   - pip3 install .
 
+script: pytest
+
 before_deploy:
   - echo TRAVIS_TAG=$TRAVIS_TAG
   - sed -i "s/TRAVISTAGHERE/${TRAVIS_TAG}/g" setup.py
