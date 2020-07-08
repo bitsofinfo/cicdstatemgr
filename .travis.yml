@@ -1,4 +1,10 @@
+dist: "trusty" 
 language: generic
+addons:
+  apt:
+    packages:
+      - "python3"
+      - "python3-pip"
 
 services:
   - docker
@@ -24,6 +30,7 @@ deploy:
     tags: true
 
 after_deploy:
+  - sleep 10
   - docker build --build-arg GIT_TAG=$TRAVIS_TAG -t bitsofinfo/cicdstatemgr:$TRAVIS_TAG .
   - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
   - docker push bitsofinfo/cicdstatemgr:$TRAVIS_TAG
