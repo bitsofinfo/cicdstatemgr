@@ -85,7 +85,7 @@ class DataSourceMgr():
     def load(self, cicdContextDataId:str, fromPrimary=True, fromLocal=False):
         logging.debug("DataSourceMgr.load() fromPrimary={} fromLocal={} cicdContextDataId={}".format(fromPrimary,fromLocal,cicdContextDataId))
 
-        if fromPrimary and self.primaryDataSource:
+        if fromPrimary and self.primaryDataSource.is_primary():
 
             if fromLocal and not self.primaryDataSource.is_local():
                 raise Exception("DataSourceMgr.load() cannot pass " + \
