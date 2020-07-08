@@ -4,7 +4,7 @@ ARG GIT_TAG=master
 
 RUN echo GIT_TAG=${GIT_TAG}
 
-RUN python3 -m pip install cicdstatemgr==${GIT_TAG}
+RUN rm -rf ~/.pip && python3 -m pip install cicdstatemgr==${GIT_TAG}
 
 RUN pip show cicdstatemgr
 
