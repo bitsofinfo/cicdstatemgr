@@ -1,10 +1,5 @@
 dist: "trusty" 
 language: generic
-addons:
-  apt:
-    packages:
-      - "python3"
-      - "python3-pip"
 
 services:
   - docker
