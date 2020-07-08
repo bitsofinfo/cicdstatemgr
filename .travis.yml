@@ -2,8 +2,7 @@ dist: "trusty"
 language: python
 python:
   - "3.8"
-  - "pypy3"
-  
+
 services:
   - docker
 
@@ -12,6 +11,10 @@ env:
     secure: ncyM5gbArjxGcczo/DKdv8xLyqRJx44fNYeOyUSJeVxoTCNGBcA79Jv9hPu3tHXdUGd2lHisjCEsSE6nZ0YmSZ2IipxtnDNu+HddZdNRPCL6HOE1EgreBJAK4+4TwOk6SOUnw+mF+fz796pIMpLq+xSciUQoxkVTXLaWT/orcoEnTgnEEWJkwWvPkDLnliC5OKnm6F1i8Rny+jKIO6gHBHanJeczspohURMzyXde9+PfAPsk8lFkSCVXDb+4kQlPaWod2djIyB1Ar6XewcxLA2fe/qyI/BTkBdTJu8sqFFUpc2dicQAAYx9prW3xdzCoaCtC/lVCmmrQlGqcpO7YJoCWPQClYdM1muDXMN0vVbmbUd95uapgKbQNqG8YDOq+7oRxCia7UFmhZAUPb2kK1Vt2yJYyEMOULVFKIapAb5DTUGONy8l8AQXnEWbq4XQCeUmbqJEnILJEAwPQTIwoVJXnIhJ6OP0uJi8oyQ1T3+oGKVWSUN0GzCCKlUeN5QL7UZIItpKkijfJ9WyP1bLMpvjCZBZjYF9RCTIiVXtg4reuVekSZ7PeTBBbK3Uwpl9GPvlTTq41QB1Tmb/qL0OmxL4x4CrXDTwIZCQ9BvKPg2Lr/QbIb7xyREZIlQcHjSuB/TJA/OsrJi538x+fBcdFtHU43Ed2wZ+ShF+nIfxYmMs=
   DOCKERHUB_TOKEN:
     secure: p7yQ6sWvT9Ui7ltNDmuEOmw6clJaWCL0QuPMLO5RUwpXllOIogoxAK/2sA6mcv4B+OdLfsHugrPfxPPSfCP2o41Tp1tKqwJniQCWu4KfMZtK47hEAg4f0fKVfv/TRRidfSjpeLpUFXEK+yk7ESz5rBNkwxGNeYCu02sFK/ZP5v1Qi1sXLvcXi7N6YRaJF1ST0LzSHjceDqnkgUkqf6aPctVA7/RKu1sfvG2TpH+T7i1i75C/rnKDst1QwL98H58HeDVIb+28HR7+1LatDDt2fV0z0ybNdmHXu+KN7rUZkEIPCwKJImYhQfltMl6CJb5uJejd9i+K8YrguRaEKje48bxUUSs+7SNnjV0Fe66FKM3ueelz2pxC35uQ1+TkOfXZf8NMcJcfAOPtkxJYXSbs0V+V2MUsmflJlyhnOppiP4VI+4JZAUkPNE4EXql/R5qA6paL/JTEkGw/j0ERF5ElsDe8Zs3BvYK6XJlWlQyOaeNwYKoFIgIi4/KbIA/DFoRg/dhow9kSfkKDw8olvuN0HaCqgmgsrRvIlcV68/QZHypYj3GzJv+q2hB5JMvUyCEcCv5yZyb3osiJqkHWUOJ0Bxd06N8V9J+pq5RF5Zl20bo/0CbILOE0qG884rWvchIq0PPcsNVDA9nU4sxZmtRXrr2krw2EjqdTAn6wEghyxFQ=
+
+install:
+  - pip3 install -r requirements.txt
+  - pip3 install .
 
 before_deploy:
   - echo TRAVIS_TAG=$TRAVIS_TAG
