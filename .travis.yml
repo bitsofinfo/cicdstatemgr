@@ -33,7 +33,7 @@ deploy:
     tags: true
 
 after_deploy:
-  - sleep 30
+  - sleep 60
   - docker build --build-arg GIT_TAG=$TRAVIS_TAG -t bitsofinfo/cicdstatemgr:$TRAVIS_TAG .
   - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
   - docker push bitsofinfo/cicdstatemgr:$TRAVIS_TAG
