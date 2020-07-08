@@ -91,7 +91,8 @@ class DataSourceMgr():
                 raise Exception("DataSourceMgr.load() cannot pass " + \
                     "fromPrimary={} and fromLocal={} as the primaryDataSource[{}] is_local()=false".format(fromPrimary,fromLocal,self.primaryDataSource.get_name()))
 
-            data = self.primaryDataSource.load(cicdContextDataId)
+            return self.primaryDataSource.load(cicdContextDataId)
+            
         else:
             for dsName in self.dataSources:
                 ds = self.dataSources[dsName]
@@ -101,5 +102,5 @@ class DataSourceMgr():
                         return ds.load(cicdContextDataId)
 
         raise Exception("DataSourceMgr.load() cannot pass " + \
-            "fromPrimary={} and fromLocal={}, no datasources meet this critiria".format(fromPrimary,fromLocal))
+            "fromPrimary={} and fromLocal={}, no datasources meet this criteria".format(fromPrimary,fromLocal))
 
