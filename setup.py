@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cicdstatemgr",
-    version="1.0.0",
+    version="VERSION_HERE",
     author="bitsofinfo",
     author_email="bitsofinfo.g@gmail.com",
     description="State management utility for CICD systems",
