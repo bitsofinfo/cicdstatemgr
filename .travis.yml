@@ -1,6 +1,8 @@
 dist: "trusty" 
-language: generic
-
+language: python
+python:
+  - "3.8"
+  
 services:
   - docker
 
