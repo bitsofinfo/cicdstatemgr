@@ -15,6 +15,7 @@ before_deploy:
   - cat setup.py
 
 deploy:
+  skip_cleanup: true
   provider: pypi
   username: __token__
   password:
