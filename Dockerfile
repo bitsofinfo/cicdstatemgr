@@ -1,6 +1,10 @@
 FROM bitsofinfo/cicd-toolbox:3.0.4
 
-RUN python3 -m pip install --index-url https://test.pypi.org/simple/  cicdstatemgr
+ARG GIT_TAG=master
+
+RUN echo GIT_TAG=${GIT_TAG}
+
+RUN python3 -m pip install cicdstatemgr==${GIT_TAG}
 
 RUN pip show cicdstatemgr
 

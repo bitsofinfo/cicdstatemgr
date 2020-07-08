@@ -1,0 +1,10 @@
+#!/bin/bash
+# https://github.com/docker/hub-feedback/issues/508#issuecomment-222520720
+
+GIT_TAG=$DOCKER_TAG
+
+if [ "$GIT_TAG" = "latest" ]; then
+  GIT_TAG=master
+fi
+
+docker build --build-arg GIT_TAG=$GIT_TAG -t $IMAGE_NAME .
