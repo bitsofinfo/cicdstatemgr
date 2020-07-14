@@ -17,12 +17,12 @@ cicd-contexts:
     channel: stage
 
     pipelines:
-      start:
+      build:
         event-handlers:
           init:
             notify:
               message: |
-                {{ helloWorld('start is successful') }}
+                {{ helloWorld('build is successful') }}
 
 
 
