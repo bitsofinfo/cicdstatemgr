@@ -61,7 +61,7 @@ class DataSourceMgr():
                     if self.primaryDataSource:
                         logging.error("DataSourceMgr() you cannot have more than one isPrimary data source defined: {} , current primary = {}".format(dsName,self.primaryDataSource.get_name()))
                     else:
-                        logging.error("DataSourceMgr() primary ds = {}".format(dsName))
+                        logging.info("DataSourceMgr() primary ds = {}".format(dsName))
                         self.primaryDataSource = ds
 
             except ModuleNotFoundError as e:
