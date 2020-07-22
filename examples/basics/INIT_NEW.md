@@ -8,39 +8,40 @@ Run the following command from within the root of this project. This command wil
 
 ```
 cicdstatemgr \
-    --config examples/basics/config.yaml  \
-    --secrets examples/basics/secrets.yaml \
+    --config config.yaml  \
+    --secrets secrets.yaml \
         \
-    --init-new "contextData1" \
-    --init-bases-dir examples/basics/bases \
-    --init-app-config-file examples/basics/app.yaml \
+    --init-new "context-data-id-1" \
+    --init-bases-dir bases \
+    --init-app-config-file app.yaml \
     --init-cicd-context-name stage \
     \
     --set "state.key1=value1"
 
-2020-07-07 20:44:52,257 - root - DEBUG - DataSourceMgr() Initializing datasource: redis
-2020-07-07 20:44:52,261 - root - DEBUG - redis -> localhost isPrimary:True isLocal:False
-2020-07-07 20:44:52,262 - root - ERROR - DataSourceMgr() primary ds = redis
-2020-07-07 20:44:52,262 - root - DEBUG - DataSourceMgr() Initializing datasource: yamlfile
-2020-07-07 20:44:52,264 - root - DEBUG - yamlfile -> /bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.yaml isPrimary:False isLocal:True
-2020-07-07 20:44:52,264 - root - DEBUG - DataSourceMgr() Initializing datasource: jsonfile
-2020-07-07 20:44:52,268 - root - DEBUG - jsonfile -> /bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.json isPrimary:False isLocal:True
-2020-07-07 20:44:52,268 - root - DEBUG - DataSourceMgr() Initializing datasource: shellfile
-2020-07-07 20:44:52,272 - root - DEBUG - shellfile -> /bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.sh isPrimary:False isLocal:True
-2020-07-07 20:44:52,273 - root - DEBUG - DataSourceMgr() Initializing datasource: idfile
-2020-07-07 20:44:52,277 - root - DEBUG - idfile -> /bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.id isPrimary:False isLocal:True
-2020-07-07 20:44:52,277 - root - DEBUG - initialize() id=contextData1 cicdContextName=stage pathToAppCicdConfigYamlFile=examples/basics/app.yaml basesDir=examples/basics/bases eventPipelineName=None eventNameToFire=None tmplCtxVars=None
-2020-07-07 20:44:52,277 - root - DEBUG - initialize() loading app pipeline template: /bitsofinfo/cicdstatemgr/examples/basics/app.yaml
-2020-07-07 20:44:52,282 - root - DEBUG - initialize() applying base pipeline template: examples/basics/bases/base1.yaml
-2020-07-07 20:44:52,285 - root - DEBUG - recursive_set() setting state.key1 to value1 within parent of: None
-2020-07-07 20:44:52,285 - root - DEBUG - recursive_set() setting key1 to value1 within parent of: state
-2020-07-07 20:44:52,290 - root - DEBUG - persist() skipPrimary=False cicdContextDataId=contextData1
-2020-07-07 20:44:52,290 - root - DEBUG - DataSourceMgr.persist() skipPrimary=False cicdContextDataId=contextData1
-2020-07-07 20:44:52,290 - root - DEBUG - DataSourceMgr.persist() persisting in: redis
-2020-07-07 20:44:52,306 - root - DEBUG - DataSourceMgr.persist() persisting in: yamlfile
-2020-07-07 20:44:52,312 - root - DEBUG - DataSourceMgr.persist() persisting in: jsonfile
-2020-07-07 20:44:52,313 - root - DEBUG - DataSourceMgr.persist() persisting in: shellfile
-2020-07-07 20:44:52,314 - root - DEBUG - DataSourceMgr.persist() persisting in: idfile
+2020-07-14 17:39:42,440 - root - DEBUG - DataSourceMgr() Initializing datasource: redis
+2020-07-14 17:39:42,442 - root - DEBUG - redis -> localhost isPrimary:True isLocal:False
+2020-07-14 17:39:42,442 - root - INFO - DataSourceMgr() primary ds = redis
+2020-07-14 17:39:42,442 - root - DEBUG - DataSourceMgr() Initializing datasource: yamlfile
+2020-07-14 17:39:42,443 - root - DEBUG - yamlfile -> examples/basics/examples/basics/localdata/cicdContextData.yaml isPrimary:False isLocal:True
+2020-07-14 17:39:42,443 - root - DEBUG - DataSourceMgr() Initializing datasource: jsonfile
+2020-07-14 17:39:42,444 - root - DEBUG - jsonfile -> examples/basics/examples/basics/localdata/cicdContextData.json isPrimary:False isLocal:True
+2020-07-14 17:39:42,444 - root - DEBUG - DataSourceMgr() Initializing datasource: shellfile
+2020-07-14 17:39:42,445 - root - DEBUG - shellfile -> examples/basics/examples/basics/localdata/cicdContextData.sh isPrimary:False isLocal:True
+2020-07-14 17:39:42,445 - root - DEBUG - DataSourceMgr() Initializing datasource: idfile
+2020-07-14 17:39:42,445 - root - DEBUG - idfile -> examples/basics/examples/basics/localdata/cicdContextData.id isPrimary:False isLocal:True
+2020-07-14 17:39:42,446 - root - DEBUG - initialize() id=context-data-id-1 cicdContextName=stage pathToAppCicdConfigYamlFile=app.yaml basesDir=bases eventPipelineName=None eventNameToFire=None tmplCtxVars=None
+2020-07-14 17:39:42,446 - root - DEBUG - initialize() loading app pipeline template: examples/basics/app.yaml
+2020-07-14 17:39:42,450 - root - DEBUG - initialize() applying base pipeline template: bases/base1.yaml
+2020-07-14 17:39:42,452 - root - DEBUG - recursive_set() setting state.key1 to value1 within parent of: None
+2020-07-14 17:39:42,452 - root - DEBUG - recursive_set() setting key1 to value1 within parent of: state
+2020-07-14 17:39:42,457 - root - DEBUG - persist() skipPrimary=False cicdContextDataId=context-data-id-1
+2020-07-14 17:39:42,457 - root - DEBUG - DataSourceMgr.persist() skipPrimary=False cicdContextDataId=context-data-id-1
+2020-07-14 17:39:42,457 - root - DEBUG - DataSourceMgr.persist() persisting in: redis
+2020-07-14 17:39:42,470 - root - DEBUG - DataSourceMgr.persist() persisting in: yamlfile
+2020-07-14 17:39:42,475 - root - DEBUG - DataSourceMgr.persist() persisting in: jsonfile
+2020-07-14 17:39:42,476 - root - DEBUG - DataSourceMgr.persist() persisting in: shellfile
+2020-07-14 17:39:42,476 - root - DEBUG - DataSourceMgr.persist() persisting in: idfile
+context-data-id-1
 ```
 
 ## So what did this do?
@@ -55,52 +56,52 @@ cicdstatemgr \
 
 ## Take a look at the data
 
-The data is available in redis:
+The data is available in redis: (its stored in YAML)
 ```
-$ redis-cli 
-127.0.0.1:6379> auth cicdstatemgr 123$aBcZ
-OK
+redis-cli --user cicdstatemgr --pass '123$aBcZ' mget contextData1
 
-127.0.0.1:6379> mget contextData1
-1) "channel: stage\npipelines:\n  start:\n    event-handlers:\n      some-event:\n        notify:\n          message: '{{ basicMacro(''some-event fired'') }}\n\n            '\n      init:\n        notify:\n          message: '{{ helloWorld(''start is successful'') }}\n\n            '\nappPipelinesConfig:\n  bases:\n  - base1.yaml\n  jinja2-macros:\n    helloWorld: \"{%- macro helloWorld(msg) -%}\\n  Hello world msg = {{msg}}\\n{%- endmacro\\\n      \\ -%}\\n\"\n  variables:\n    myVar1: test\n  cicd-contexts:\n    stage:\n      channel: stage\n      pipelines:\n        start:\n          event-handlers:\n            init:\n              notify:\n                message: '{{ helloWorld(''start is successful'') }}\n\n                  '\njinja2Macros:\n  byName:\n    basicMacro: \"{%- macro basicMacro(msg) -%}\\n  This is basicMacro! msg = {{msg}}\\n\\\n      {%- endmacro -%}\\n\"\n    helloWorld: \"{%- macro helloWorld(msg) -%}\\n  Hello world msg = {{msg}}\\n{%- endmacro\\\n      \\ -%}\\n\"\n  all: \"{%- macro basicMacro(msg) -%}\\n  This is basicMacro! msg = {{msg}}\\n{%- endmacro\\\n    \\ -%}{%- macro helloWorld(msg) -%}\\n  Hello world msg = {{msg}}\\n{%- endmacro\\\n    \\ -%}\"\nstate:\n  cicdContextDataId: contextData1\n  cicdContextName: stage\n  key1: value1\nvariables:\n  baseVar1: baseVarVal1\n  myVar1: test\n"
+1) "channel: stage\npipelines:\n  start:\n    event-handlers:\n      some-event:\n        notify:\n          message: '{{ basicMacro(''some-event fired'') }}\n\n            '\n  build:\n    event-handlers:\n      init:\n        notify:\n          message: '{{ helloWorld(''build is successful'') }}\n\n            '\nappPipelinesConfig:\n  bases:\n  - base1.yaml\n  jinja2-macros:\n    helloWorld: \"{%- macro helloWorld(msg) -%}\\n  Hello world msg = {{msg}}\\n{%- endmacro\\\n      \\ -%}\\n\"\n  variables:\n    myVar1: test\n  cicd-contexts:\n    stage:\n      channel: stage\n      pipelines:\n        build:\n          event-handlers:\n            init:\n              notify:\n                message: '{{ helloWorld(''build is successful'') }}\n\n                  '\njinja2Macros:\n  byName:\n    basicMacro: \"{%- macro basicMacro(msg) -%}\\n  This is basicMacro! msg = {{msg}}\\n\\\n      {%- endmacro -%}\\n\"\n    helloWorld: \"{%- macro helloWorld(msg) -%}\\n  Hello world msg = {{msg}}\\n{%- endmacro\\\n      \\ -%}\\n\"\n  all: \"{%- macro basicMacro(msg) -%}\\n  This is basicMacro! msg = {{msg}}\\n{%- endmacro\\\n    \\ -%}{%- macro helloWorld(msg) -%}\\n  Hello world msg = {{msg}}\\n{%- endmacro\\\n    \\ -%}\"\nstate:\n  cicdContextDataId: contextData1\n  cicdContextName: stage\n  key1: value1\nvariables:\n  baseVar1: baseVarVal1\n  myVar1: test\n"
 ```
 
 The data is available on the filesystem:
 
 ID file:
 ```
-cat examples/basics/localdata/cicdContextData.id
+cat localdata/cicdContextData.id
 
-contextData1
+context-data-id-1
 ```
 
 as JSON:
 ```
-cat examples/basics/localdata/cicdContextData.json | jq .'state'
+cat localdata/cicdContextData.json | jq .'state'
 
 {
-  "cicdContextDataId": "contextData1",
+  "cicdContextDataId": "context-data-id-1",
   "cicdContextName": "stage",
-  "key1": "value1"
-}
+  "key1
 ```
 
 as YAML:
 ```
-cat examples/basics/localdata/cicdContextData.yaml | yq r - 'state'
+cat localdata/cicdContextData.yaml | yq r - 'state'
 
-cicdContextDataId: contextData1
+cicdContextDataId: context-data-id-1
 cicdContextName: stage
 key1: value1
 ```
 
 as a sourceable shell script:
 ```
-source examples/basics/localdata/cicdContextData.sh
+source localdata/cicdContextData.sh
 
 $ echo $CICD_state__key1
 value1
 
-$ echo $CICD_pipelines__start__event_handlers__init__notify__message
+$ echo $CICD_pipelines__build__event_handlers__init__notify__message
 {{ helloWorld('start is successful') }}
+
+$ echo $CICD_state__cicdContextDataId
+context-data-id-1
 ```
+

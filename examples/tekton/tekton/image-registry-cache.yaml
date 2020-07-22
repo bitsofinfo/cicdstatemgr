@@ -1,0 +1,29 @@
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cicd-cache-registry
+  labels:
+    app: cicd-cache-registry
+spec:
+  containers:
+    - image: registry:2.7.1 
+      name: cicd-cache-registry
+      env:
+        - name: "REGISTRY_HTTP_ADDR"
+          value: "0.0.0.0:80"
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cicd-cache-registry
+spec:
+  type: ClusterIP
+  selector:
+    app: cicd-cache-registry
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

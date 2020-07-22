@@ -1,0 +1,137 @@
+
+---
+
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: start-v1
+spec:
+  params:
+    - name: cicdContextName
+
+    - name: pipelineRunUid
+
+    - name: invokerUid
+
+    - name: gitAppName
+
+    - name: appTag
+
+    - name: commitId
+
+    - name: triggeredBySystem
+
+    - name: triggeredByDescription
+
+    - name: relatedCicdContextDataId
+      default: "none"
+
+    - name: relatedPipelineRunUid
+      default: "none"
+
+    - name: relatedPipelineName
+      default: "none"
+
+    - name: originalRequestBody
+
+    - name: uniqueString
+
+
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: start-v1-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
+      spec:
+        serviceAccountName: cicd-tekton
+
+        pipelineRef:
+          name: start-v1
+
+        params:
+          - name: cicdContextName
+            value: $(tt.params.cicdContextName)
+
+          - name: pipelineRunUid
+            value: start-v1-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
+
+          - name: relatedCicdContextDataId 
+            value: $(tt.params.relatedCicdContextDataId)
+
+          - name: relatedPipelineRunUid 
+            value: $(tt.params.relatedPipelineRunUid)
+
+          - name: relatedPipelineName 
+            value: $(tt.params.relatedPipelineName)
+
+          - name: invokerUid # the invoking user uid
+            value: $(tt.params.invokerUid)
+
+          - name: gitAppName
+            value: $(tt.params.gitAppName)
+
+          - name: appTag
+            value: $(tt.params.appTag)
+
+          - name: commitId
+            value: $(tt.params.commitId)
+
+          - name: triggeredBySystem
+            value: $(tt.params.triggeredBySystem)
+
+          - name: triggeredByDescription
+            value: $(tt.params.triggeredByDescription)
+
+          - name: originalRequestBody
+            value: $(tt.params.originalRequestBody) 
+
+          - name: uniqueString
+            value: $(tt.params.uniqueString)
+
+
+        workspaces:
+
+          - name: cicdstatemgr-secrets
+            secret:
+              secretName: cicdstatemgr
+              items:
+                - key: cicdstatemgr-secrets.yaml
+                  path: cicdstatemgr-secrets.yaml
+
+          - name: cicdstatemgr-configs
+            configmap:
+              name: cicdstatemgr
+
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: start-via-git-v1
+spec:
+  params:
+    - name: cicdContextName
+      value: $(body.intercepted.cicdContextName)
+
+    - name: invokerUid 
+      value: $(body.intercepted.invokerUid)
+
+    - name: gitAppName
+      value: $(body.intercepted.gitAppName)
+
+    - name: appTag
+      value: $(body.intercepted.appTag)
+
+    - name: commitId
+      value: $(body.intercepted.commitId)
+
+    - name: triggeredBySystem
+      value: "github"
+
+    - name: triggeredByDescription
+      value: "Github push of git tag $(body.intercepted.gitAppName):$(body.intercepted.appTag)"
+
+    - name: originalRequestBody
+      value: $(body)
+
+    - name: uniqueString
+      value: $(body.intercepted.commitId)

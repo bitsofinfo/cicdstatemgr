@@ -7,9 +7,11 @@ pipelines:
           message: '{{ basicMacro(''some-event fired'') }}
 
             '
+  build:
+    event-handlers:
       init:
         notify:
-          message: '{{ helloWorld(''start is successful'') }}
+          message: '{{ helloWorld(''build is successful'') }}
 
             '
 appPipelinesConfig:
@@ -24,11 +26,11 @@ appPipelinesConfig:
     stage:
       channel: stage
       pipelines:
-        start:
+        build:
           event-handlers:
             init:
               notify:
-                message: '{{ helloWorld(''start is successful'') }}
+                message: '{{ helloWorld(''build is successful'') }}
 
                   '
 jinja2Macros:
@@ -41,7 +43,7 @@ jinja2Macros:
     \ -%}{%- macro helloWorld(msg) -%}\n  Hello world msg = {{msg}}\n{%- endmacro\
     \ -%}"
 state:
-  cicdContextDataId: contextData1
+  cicdContextDataId: context-data-id-1
   cicdContextName: stage
   key1: value1
 variables:

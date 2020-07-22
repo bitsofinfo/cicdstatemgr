@@ -1,0 +1,50 @@
+
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-v1
+spec:
+  serviceAccountName: tekton-triggers-admin
+  triggers:
+
+    # --------------------------------------------------
+    # Handle Github webhook call from tag push
+    # --------------------------------------------------
+    - name: start-v1-interceptor
+      interceptors:
+        - cel:
+            filter: >-
+              has(body.ref) && 
+              body.ref.indexOf('tags') != -1 
+
+        - cel:
+            overlays:
+
+              - key: intercepted.cicdContextName
+                expression: "stage"
+
+              - key: intercepted.invokerUid
+                expression: "body.pusher.email"
+                
+              - key: intercepted.gitAppName
+                expression: "body.repository.name"
+
+              - key: intercepted.appTag
+                expression: "body.ref.split('/')[2]" # refs/tags/9.9.9-1--1-3 | develop etc
+
+              - key: intercepted.commitMsg
+                expression: "body.head_commit.message" 
+
+              - key: intercepted.commitId
+                expression: "body.head_commit.id"
+
+
+      bindings:
+        - ref: start-via-git-v1
+          name: start-via-git-v1
+      template:
+        name: start-v1
+
+---
+
