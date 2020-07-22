@@ -34,7 +34,7 @@ cicdstatemgr:
     #       the cicdstatemgr cmd's working directory when run
     #       Can also just be absolute
     yamlfile:
-      path: examples/basics/localdata/cicdContextData.yaml
+      path: localdata/cicdContextData.yaml
 
     #
     # JSON file output
@@ -43,7 +43,7 @@ cicdstatemgr:
     #       the cicdstatemgr cmd's working directory when run
     #       Can also just be absolute
     jsonfile:
-      path: examples/basics/localdata/cicdContextData.json
+      path: localdata/cicdContextData.json
 
     #
     # SHELL file output - a file that can be sourced to 
@@ -53,7 +53,7 @@ cicdstatemgr:
     #       the cicdstatemgr cmd's working directory when run
     #       Can also just be absolute
     shellfile:
-      path: examples/basics/localdata/cicdContextData.sh
+      path: localdata/cicdContextData.sh
 
     #
     # ID file output = only contains the cicdContextData ID
@@ -62,7 +62,7 @@ cicdstatemgr:
     #       the cicdstatemgr cmd's working directory when run
     #       Can also just be absolute
     idfile:
-      path: examples/basics/localdata/cicdContextData.id
+      path: localdata/cicdContextData.id
 
 
 

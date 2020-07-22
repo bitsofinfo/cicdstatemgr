@@ -7,10 +7,14 @@
           "notify": {
             "message": "{{ basicMacro('some-event fired') }}\n"
           }
-        },
+        }
+      }
+    },
+    "build": {
+      "event-handlers": {
         "init": {
           "notify": {
-            "message": "{{ helloWorld('start is successful') }}\n"
+            "message": "{{ helloWorld('build is successful') }}\n"
           }
         }
       }
@@ -30,11 +34,11 @@
       "stage": {
         "channel": "stage",
         "pipelines": {
-          "start": {
+          "build": {
             "event-handlers": {
               "init": {
                 "notify": {
-                  "message": "{{ helloWorld('start is successful') }}\n"
+                  "message": "{{ helloWorld('build is successful') }}\n"
                 }
               }
             }
@@ -51,7 +55,7 @@
     "all": "{%- macro basicMacro(msg) -%}\n  This is basicMacro! msg = {{msg}}\n{%- endmacro -%}{%- macro helloWorld(msg) -%}\n  Hello world msg = {{msg}}\n{%- endmacro -%}"
   },
   "state": {
-    "cicdContextDataId": "contextData1",
+    "cicdContextDataId": "context-data-id-1",
     "cicdContextName": "stage",
     "key1": "value1"
   },

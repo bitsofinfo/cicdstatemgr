@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slack-payload-handler
+  namespace: tekton-pipelines
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slack-payload-handler
+  template:
+    metadata:
+      labels:
+        app: slack-payload-handler
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: slack-payload-handler
+          image: bitsofinfo/slack-payload-handler:1.1.0
+          command: 
+            - "slack-payload-handler"
+          args:
+            - "--debug-request"
+            - "false"
+            - "--debug-response"
+            - "false"
+            - "--listen-port"
+            - "8080"
+            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slack-payload-handler
+  namespace: tekton-pipelines
+spec:
+  type: NodePort
+  selector:
+    app: slack-payload-handler
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 32333
