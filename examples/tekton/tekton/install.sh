@@ -34,12 +34,12 @@ kubectl apply -f catalog/task/git-clone/0.1/git-clone.yaml -n tekton-pipelines
 kubectl apply -f tekton-triggers-rbac.yaml
 
 # Custom Tekton trigger interceptor that converts Slack's payload=[urlencodeddata]
-# into plain JSON before handing off to our EventListener see: versions/[vN]/event-listener.yaml
+# into plain JSON before handing off to our EventListener 
 # https://github.com/bitsofinfo/slack-payload-handler
 kubectl apply -f slack-payload-handler.yaml
 
 # These are the k8s serviceaccounts that the various PipelineRuns execute as
-# when triggered by triggers in versions/[vN]/pipelines/[name]/trigger.yaml
+# when triggered by triggers 
 kubectl apply -f tekton-service-accounts.yaml
 
 # The redis instance that is used as the primary datastore for cicdstatemgr
