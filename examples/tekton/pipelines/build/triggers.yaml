@@ -1,0 +1,116 @@
+
+---
+
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: build-v1
+spec:
+  params:
+    - name: cicdContextName
+
+    - name: pipelineRunUid
+
+    - name: invokedByPrincipalId
+
+    - name: gitAppName
+
+    - name: appTag
+
+    - name: commitId
+
+    - name: originalRequestBody
+
+    - name: cloneUrl
+
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: build-v1-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
+      spec:
+        serviceAccountName: cicd-tekton
+
+        pipelineRef:
+          name: build-v1
+
+        params:
+          - name: cicdContextName
+            value: $(tt.params.cicdContextName)
+
+          - name: pipelineRunUid
+            value: build-v1-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
+
+
+          - name: invokedByPrincipalId 
+            value: $(tt.params.invokedByPrincipalId)
+
+          - name: gitAppName
+            value: $(tt.params.gitAppName)
+
+          - name: appTag
+            value: $(tt.params.appTag)
+
+          - name: commitId
+            value: $(tt.params.commitId)
+
+        
+          - name: originalRequestBody
+            value: $(tt.params.originalRequestBody) 
+
+          - name: cloneUrl
+            value: $(tt.params.cloneUrl)
+
+        workspaces:
+
+          - name: cicdstatemgr-secrets
+            secret:
+              secretName: cicdstatemgr-secrets
+              items:
+                - key: cicdstatemgr-secrets.yaml
+                  path: cicdstatemgr-secrets.yaml
+
+          - name: cicdstatemgr-configs
+            configmap:
+              name: cicdstatemgr-configs
+
+          - name: scratch
+            volumeClaimTemplate:
+              metadata:
+                name: scratch
+              spec:
+                storageClassName: standard
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 50Mi
+
+
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: build-via-git-v1
+spec:
+  params:
+    - name: cicdContextName
+      value: stage
+
+    - name: invokedByPrincipalId 
+      value: $(body.intercepted.invokedByPrincipalId)
+
+    - name: gitAppName
+      value: $(body.intercepted.gitAppName)
+
+    - name: appTag
+      value: $(body.intercepted.appTag)
+
+    - name: commitId
+      value: $(body.intercepted.commitId)
+
+    - name: originalRequestBody
+      value: $(body)
+
+    - name: cloneUrl
+      value: $(body.intercepted.cloneUrl)

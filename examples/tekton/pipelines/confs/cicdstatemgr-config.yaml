@@ -1,0 +1,213 @@
+
+#
+# Config for:
+# https://github.com/bitsofinfo/cicdstatemgr
+#
+cicdstatemgr:
+
+  datasources:
+
+    #
+    # The redis datasource
+    #
+    # you can configure the AUTH username/password
+    # in a separate "secrets.yaml", with the same structure
+    redis:
+      host: cicd-redis-server.tekton-pipelines
+      port: 6379
+      isPrimary: true
+
+    #
+    # YAML file output
+    #
+    # path: if relative will be assumed relative from where
+    #       the cicdstatemgr cmd's working directory when run
+    #       Can also just be absolute
+    yamlfile:
+      path: /tekton/results/cicdContextDataYaml
+
+    #
+    # JSON file output
+    #
+    # path: if relative will be assumed relative from where
+    #       the cicdstatemgr cmd's working directory when run
+    #       Can also just be absolute
+    jsonfile:
+      path: /tekton/results/cicdContextDataJson
+
+    #
+    # SHELL file output - a file that can be sourced to 
+    #                     expose all data as ENV vars
+    #
+    # path: if relative will be assumed relative from where
+    #       the cicdstatemgr cmd's working directory when run
+    #       Can also just be absolute
+    shellfile:
+      path: /tekton/results/cicdContextDataShell
+
+    #
+    # ID file output = only contains the cicdContextData ID
+    #
+    # path: if relative will be assumed relative from where
+    #       the cicdstatemgr cmd's working directory when run
+    #       Can also just be absolute
+    idfile:
+      path: /tekton/results/cicdContextDataId
+
+  #
+  # This is the configuration for the 'trigger-pipeline' event handler. 
+  #
+  trigger:
+
+    # The URL all POSTs will be sent to
+    url: http://fc09d24b04e5.ngrok.io
+
+    # Headers that will be automatically applied
+    # jinja2 references are valid here
+    headers:
+      - name: "x-cicd-version"
+        value: "{{state.cicdVersion}}"
+      - name: "x-cicdstatemgr-token"
+        value: "{{secretData.trigger.token}}"
+      - name: "x-trigger-pipeline-name"
+        value: "{{triggerPipeline.name}}"
+
+    # these argument are always sent in the payload that
+    # a 'trigger-pipeline' event handler sends in
+    # addition to ones that you can optionally configure
+    # in each individual event handler config in a pipeline
+    # config yaml file
+    auto-args:
+      cicdContextDataId: "{{state.cicdContextDataId}}"
+      appName: "{{state.appName}}"
+      appTag: "{{state.appTag}}"
+      gitAppName: "{{state.gitAppName}}"
+      cicdContextName: "{{state.cicdContextName}}"
+      triggeredBySystem: "trigger-pipeline"
+      triggeredByDescription: "Auto triggered by {{event.data.security.authenticatedUid}}"
+      invokerUid: "{{event.data.security.authenticatedUid}}"
+      relatedPipelineName: "{{event.data.params.pipelineName}}"
+      relatedPipelineRunUid: "{{event.data.params.pipelineRunUid}}"
+      relatedCicdContextDataId: "{{event.data.params.cicdContextDataId}}"
+      
+  #
+  # This is the configuration for the 'notify' event handler. 
+  #
+  notify:
+
+    # 
+    # After a notify POST is sent to the endpoint the response
+    # body (unmarshalled from JSON) can be parsed via the 
+    # 'auto-capture-response-data' config below based on one or 
+    # more items below.
+    #
+    # Each array element below defines a individual instruction
+    # set for data to capture from the 'body'. 
+    #
+    #   from: jinja2 template that when parsed yields a string value
+    #     to: sets the value yielded via the 'from:' to this target in the cicdContextData
+    #
+    auto-capture-response-data:
+      # the slack thread ID, only set if not previously set
+      - from: |
+          {%- if not state.slack or not state.slack.thread_ts -%}
+            {{ body.ts }}
+          {%- endif -%}  
+        to: state.slack.thread_ts
+
+      # the slack channel
+      - from: "{{body.channel}}"
+        to: state.slack.channel
+
+      # the last message posted, its thread_ts identifier (i.e. id within the thread)
+      - from: "{{body.message.thread_ts}}"
+        to: state.slack.lastResponse.message.thread_ts
+
+      # the last message posted, web link
+      - from: "{{configData.slack.orgUrl}}/archives/{{body.channel}}/p{{body.ts|replace('.','')}}{% if 'thread_ts' in body.message %}?thread_ts={{body.message.thread_ts}}&cid={{body.channel}}{% endif %}"
+        to: state.slack.lastMessagePermalink
+
+
+  # 
+  # Configuration for the slack http client within cicdstatmgr
+  # used for the notify/manual-choice handlers
+  # 
+  slack:
+    url: https://slack.com/api/chat.postMessage
+    orgUrl: https://bitsofinfo.slack.com/
+
+  # 
+  # Configuration for the Tekton dashboard
+  #
+  dashboard:
+    pipelineRunUrl: http://127.0.0.1:51401/#/namespaces/tekton-pipelines/pipelineruns
+
+  #
+  # Base templates used by the manual-choice and notify event handlers
+  #
+  templates:
+
+    # The notify handler constructs a context containing each handler invocations
+    # rendered message, target channel and the cicdContextData in the jinja2 context
+    # this will render the body to be POSTED to the notification endpoint
+    notify: >
+      {
+      "channel": "{{channel}}",
+      {% if state.slack and state.slack.thread_ts and state.slack.thread_ts != 'None' %}
+        "thread_ts": "{{state.slack.thread_ts}}",
+      {% endif %}
+      "text": "{{notify.message}}"
+      }
+
+    # The manual-choice handler constructs a context containing each handler invocations
+    # rendered manualChoice objects, target channel and the cicdContextData in the jinja2 context
+    # this will render the body to be POSTED to the notification endpoint
+    manual-choice: >
+      {
+        "channel": "{{channel}}",
+        {% if state.slack and state.slack.thread_ts and state.slack.thread_ts != 'None' %}
+          "thread_ts": "{{state.slack.thread_ts}}",
+        {% endif %}
+        "text": "{{manualChoice.title}}",
+        "attachments": [
+            {% for choiceName,choice in manualChoice.choices.items() %}
+                {
+                  "blocks": [
+                      {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "{{choice.header}}"
+                        }
+                      },
+                      {
+                        "type": "actions",
+                        "elements": [
+                          {% for option in choice.options %}
+                            {
+                              "type": "button",
+                              "style": "{{option.style}}",
+                              "value": "{{option.value}}",
+                              "text": {
+                                  "type": "plain_text",
+                                  "emoji": true,
+                                  "text": "{{option.text}}"
+                              }
+                            } {{ "," if not loop.last }}
+                          {% endfor %}
+                        ]
+                      }
+                  ]
+                } {{ "," if not loop.last }}
+            {% endfor %}
+        ]
+      }
+
+    # The respond handler constructs a context containing each handler invocations
+    # rendered message object, target channel and the cicdContextData in the jinja2 context
+    # this will render the body to be POSTED to the notification endpoint
+    respond: >
+        {
+          "replace_original": "true",
+          "text": "{{respond.message}}"
+        }

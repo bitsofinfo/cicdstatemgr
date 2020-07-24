@@ -6,6 +6,7 @@ metadata:
   name: event-listener-v1
 spec:
   serviceAccountName: tekton-triggers-admin
+  serviceType: NodePort
   triggers:
 
     # --------------------------------------------------
@@ -13,18 +14,17 @@ spec:
     # --------------------------------------------------
     - name: start-v1-interceptor
       interceptors:
-        - cel:
-            filter: >-
-              has(body.ref) && 
-              body.ref.indexOf('tags') != -1 
+        - github:
+            secretRef:
+              secretName: github-secret
+              secretKey: secretToken
+            eventTypes:
+              - push
 
         - cel:
             overlays:
 
-              - key: intercepted.cicdContextName
-                expression: "stage"
-
-              - key: intercepted.invokerUid
+              - key: intercepted.invokedByPrincipalId
                 expression: "body.pusher.email"
                 
               - key: intercepted.gitAppName
@@ -39,12 +39,15 @@ spec:
               - key: intercepted.commitId
                 expression: "body.head_commit.id"
 
+              - key: intercepted.cloneUrl
+                expression: "body.repository.clone_url"
+
 
       bindings:
-        - ref: start-via-git-v1
-          name: start-via-git-v1
+        - ref: build-via-git-v1
+          name: build-via-git-v1
       template:
-        name: start-v1
+        name: build-v1
 
 ---
 

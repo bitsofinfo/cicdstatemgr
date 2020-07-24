@@ -1,0 +1,71 @@
+############################################################
+#
+# The common/shared jinj2 macros that can be referred to 
+# throughout pipeline config files
+#
+############################################################
+jinja2-macros: 
+
+ 
+  #-------------------------------------------------------------
+  # 
+  # Renders a simple status link to the PipelineRun 
+  # within the cicd/tekton dashboard
+  # 
+  #-------------------------------------------------------------
+  statusLink: |
+    {%- macro statusLink(pipelineRunUid=event.data.params.pipelineRunUid) -%}
+      <{{configData.dashboard.pipelineRunUrl}}/{{pipelineRunUid}}|View status here>
+    {%- endmacro -%}
+
+
+######################
+#
+# CICD Contexts
+#
+######################
+cicd-contexts:
+
+  #############################################################################
+  #
+  # STAGE CICD Context
+  #
+  ##############################################################################
+  stage:
+
+    # The slack channel this context integrates with
+    channel: cicdstatemgr-example
+
+    # all of the pipelines in this context
+    pipelines:
+
+      #---------------------------------------------------
+      #
+      # BUILD pipeline
+      #
+      #---------------------------------------------------
+      build:
+
+        event-handlers:
+
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          # BUILD event -> init
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          init:
+
+            set-values: 
+
+              # set state values from an Github webhook body
+              gitValues:
+                if: "{{ event.data.params.request.body.head_commit }}"
+                set:
+                  - from: "{{ event.data.params.request.body.pusher.email }}"
+                    to: "state.githubInfo.pusher.email"
+                  - from: "{{ event.data.params.request.body.pusher.name }}"
+                    to: "state.githubInfo.pusher.name"
+
+            notify:
+              message: |
+                :information_source: Github: *{{state.gitAppName}}* new tag pushed: *{{state.appTag}}* 
+                triggered by *{{state.githubInfo.pusher.name}}*, Starting image build/push. 
+                {{statusLink()}}
