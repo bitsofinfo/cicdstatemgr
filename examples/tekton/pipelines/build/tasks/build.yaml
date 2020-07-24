@@ -1,0 +1,215 @@
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-v1
+spec:
+
+  workspaces:
+
+    - name: git-source
+      description: The workspace where the app source code resides
+      mountPath: /workspace/git-source
+      readOnly: false
+
+    - name: cicdstatemgr-configs
+      description: The workspace where cicdstatemgr configs reside
+      mountPath: /workspace/cicdstatemgr-configs
+      readOnly: true
+
+    - name: cicdstatemgr-secrets
+      description: The workspace where cicdstatemgr secrets reside
+      mountPath: /workspace/cicdstatemgr-secrets
+      readOnly: true
+
+  results:
+    - name: last-exit-code
+      description: The last exit code of this task
+
+    - name: cicdContextDataId
+      description: The CICD context data id
+
+  params:
+
+    - name: cicdContextName
+      type: string
+
+    - name: pipelineRunUid
+      type: string
+      description:
+        the pipelineRun uid
+      default: NONE
+
+    - name: invokedByPrincipalId
+      type: string
+      description:
+        The invokedByPrincipalId triggering this
+      default: tekton-deploy-task
+
+    - name: gitAppName
+      type: string
+      description:
+        The git app name a pipeline is being started for
+
+    - name: appTag
+      type: string
+      description:
+        The application tag 
+
+    - name: commitId
+      type: string
+      description:
+        The application commitId 
+
+    - name: originalRequestBody
+      type: string
+
+  steps:
+
+    #----------------------------------
+    # --init-new cicdContextData 
+    # and fire an init events
+    #----------------------------------
+    - name: init-cicd-context-data
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+
+        echo -n '$(inputs.params.originalRequestBody)' > /tekton/results/originalRequestBody
+
+        CICD_CONTEXT_DATA_ID="$(inputs.params.gitAppName)-$(inputs.params.appTag)-$(inputs.params.cicdContextName)-$(inputs.params.commitId)"    
+
+        INITIALIZED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+        cicdstatemgr \
+            --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+            --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+                \
+            --init-new "$CICD_CONTEXT_DATA_ID" \
+            --init-bases-dir /workspace/cicdstatemgr-configs/ \
+            --init-app-config-file /workspace/git-source/app-pipeline-config.yaml \
+            --init-cicd-context-name $(inputs.params.cicdContextName) \
+            \
+            --set "state.appName=$(inputs.params.gitAppName)" \
+            --set "state.appTag=$(inputs.params.appTag)" \
+            --set "state.gitAppName=$(inputs.params.gitAppName)" \
+            --set "state.commitId=$(inputs.params.commitId)" \
+              \
+            --set "state.build.$(inputs.params.pipelineRunUid).initializedAt=$INITIALIZED_AT" \
+            --set 'state.build.$(inputs.params.pipelineRunUid).params.request.body=file:///tekton/results/originalRequestBody' \
+            --set "state.build.$(inputs.params.pipelineRunUid).params.pipelineRunUid=$(inputs.params.pipelineRunUid)" \
+            --set "state.build.$(inputs.params.pipelineRunUid).params.pipelineName=build" \
+            --set "state.build.$(inputs.params.pipelineRunUid).params.cicdContextName=$(inputs.params.cicdContextName)" \
+            --set "state.build.$(inputs.params.pipelineRunUid).params.cicdContextDataId=$CICD_CONTEXT_DATA_ID" \
+            --set "state.build.$(inputs.params.pipelineRunUid).params.invokedByPrincipalId=$(inputs.params.invokedByPrincipalId)" \
+              \
+            --handle-event build=init \
+            --tmpl-ctx-var "event.data=state.build.$(inputs.params.pipelineRunUid)" 
+
+
+          echo
+          echo "------ /tekton/results/cicdContextDataJson ------"
+          cat /tekton/results/cicdContextDataJson
+          echo
+          echo
+
+          echo
+          echo "------ /tekton/results/cicdContextDataYaml ------"
+          cat /tekton/results/cicdContextDataYaml
+          echo
+          echo
+
+          echo
+          echo "------ /tekton/results/cicdContextDataShell ------"
+          cat /tekton/results/cicdContextDataShell
+          echo
+          echo
+
+          echo
+          echo "------ /tekton/results/cicdContextDataId ------"
+          cat /tekton/results/cicdContextDataId
+          echo
+          echo
+
+
+    - name: build-and-push
+      image: gcr.io/kaniko-project/executor:debug-v0.24.0
+      command:
+        - /busybox/sh
+      args:
+      - -c
+      - |
+        source /tekton/results/cicdContextDataShell
+
+        IMAGE_TAG_TO_PUSH="registry.kube-system.svc.cluster.local/apps/$CICD_state__gitAppName:$CICD_state__appTag"
+
+        echo "Attempting to build and push $IMAGE_TAG_TO_PUSH via Kaniko"
+        echo
+
+        ls -al /workspace/git-source
+
+        echo
+        echo "----- /workspace/git-source/index.html.tmpl -----"
+        cat /workspace/git-source/Dockerfile
+        echo
+
+        /kaniko/executor \
+          --insecure-registry cicd-cache-registry.tekton-pipelines:80 \
+          --skip-tls-verify-registry cicd-cache-registry.tekton-pipelines:80 \
+          --insecure \
+          --cache=true \
+          --cache-repo=cicd-cache-registry.tekton-pipelines:80/kaniko-cache \
+          --dockerfile=Dockerfile \
+          --destination=$IMAGE_TAG_TO_PUSH \
+          --context=/workspace/git-source \
+          --build-arg=IMAGE_VERSION=$CICD_state__appTag
+
+        LAST_EXIT_CODE=$?
+        echo
+        if [ "$LAST_EXIT_CODE" = "1" ]; then echo "KANIKO BUILD FAILED"; else echo "KANIKO BUILD SUCCEEDED" ; fi
+        echo -n $LAST_EXIT_CODE > /tekton/results/last-exit-code
+
+
+
+    - name: deploy
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+
+        source /tekton/results/cicdContextDataShell
+
+        DEPLOYMENT_NAME=$(echo "nginx-hello-world-$CICD_state__appTag" | sed 's/\./-/g')
+        TARGET_NAMESPACE=apps-dev
+        IMAGE_NAME="bitsofinfo.registry.local/apps/nginx-hello-world:$CICD_state__appTag"
+
+        echo $DEPLOYMENT_NAME
+        echo $TARGET_NAMESPACE
+        echo $IMAGE_NAME
+        echo 
+
+        sed -i "s/@DEPLOYMENT_NAME@/${DEPLOYMENT_NAME}/g" /workspace/git-source/deployment.yaml 
+        echo
+
+        sed -i "s/@TARGET_NAMESPACE@/${TARGET_NAMESPACE}/g" /workspace/git-source/deployment.yaml
+        echo
+
+        sed -i "s|@IMAGE_NAME@|${IMAGE_NAME}|g" /workspace/git-source/deployment.yaml 
+        echo
+
+        echo
+        echo "------ /workspace/git-source/deployment.yaml ------"
+        cat /workspace/git-source/deployment.yaml
+        echo
+
+
+        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+
+        chmod +x ./kubectl
+
+        ./kubectl apply -f /workspace/git-source/deployment.yaml -n $TARGET_NAMESPACE

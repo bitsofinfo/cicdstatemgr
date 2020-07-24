@@ -1,0 +1,100 @@
+
+---
+
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-v1
+
+spec:
+  params:
+    - name: cicdContextName
+      type: string
+
+    - name: pipelineRunUid
+      type: string
+
+    - name: invokedByPrincipalId
+      type: string
+
+    - name: gitAppName
+      type: string
+
+    - name: appTag
+      type: string
+
+    - name: commitId
+      type: string
+
+
+    - name: originalRequestBody
+      type: string
+
+
+    - name: cloneUrl
+      type: string
+
+  workspaces:
+    - name: cicdstatemgr-secrets
+      description: cicdstatemgr secrets workspace
+    - name: cicdstatemgr-configs
+      description: cicdstatemgr configs workspace
+    - name: scratch
+      description: git clone scratch
+
+
+  #---------------------
+  # T A S K S
+  #---------------------
+  tasks:
+
+
+      #---------------------
+      # git clone app
+      #---------------------
+    - name: git-clone-app-source
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: scratch
+      params:
+        - name: url
+          value: $(params.cloneUrl)
+        - name: revision
+          value: $(params.appTag)
+
+      #---------------------
+      # Build
+      #---------------------
+    - name: build
+      taskRef:
+        name: build-v1
+
+      runAfter: 
+        - git-clone-app-source
+
+      workspaces:
+        - name: cicdstatemgr-configs
+          workspace: cicdstatemgr-configs
+        - name: cicdstatemgr-secrets
+          workspace: cicdstatemgr-secrets
+        - name: git-source
+          workspace: scratch
+
+      params:
+        - name: cicdContextName
+          value: $(params.cicdContextName)
+        - name: pipelineRunUid
+          value: $(params.pipelineRunUid)
+        - name: invokedByPrincipalId
+          value: $(params.invokedByPrincipalId)
+        - name: gitAppName
+          value: $(params.gitAppName)
+        - name: appTag
+          value: $(params.appTag)
+        - name: commitId
+          value: $(params.commitId)
+
+        - name: originalRequestBody
+          value: $(params.originalRequestBody) 
