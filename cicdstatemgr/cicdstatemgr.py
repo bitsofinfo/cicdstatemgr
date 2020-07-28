@@ -527,7 +527,8 @@ class CicdStateMgr():
         parsed = jsonpath_ng.parse(getValueExpression)
         match = parsed.find(findInData)
 
-        valueToReturn = None
+        # return expression literal by default
+        valueToReturn = getValueExpression
 
         # parsed.find returns an array
         if match and len(match) > 1:
@@ -536,8 +537,10 @@ class CicdStateMgr():
                 toReturn.append(v.value)
 
             valueToReturn = toReturn
-        else:
+        elif match and len(match) == 1:
             valueToReturn = match[0].value
+        else:
+            logging.debug("get_via_jsonng_expression() expression {} yielded nothing, returning literal: {}".format(getValueExpression,getValueExpression))
 
         return valueToReturn
 

@@ -1,5 +1,14 @@
 catalog
 ngrok
 minikube-helpers
+*.tmp
+
+**/secrets/*
+
+.ngrok.pid
+
+
+
+.DS_Store
 
 !build

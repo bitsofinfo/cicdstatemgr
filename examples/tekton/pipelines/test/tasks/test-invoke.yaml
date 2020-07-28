@@ -1,0 +1,79 @@
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: test-invoke
+spec:
+
+  workspaces:
+    - name: cicdstatemgr-configs
+      description: The workspace where cicdstatemgr configs reside
+      mountPath: /workspace/cicdstatemgr-configs
+      readOnly: true
+
+    - name: cicdstatemgr-secrets
+      description: The workspace where cicdstatemgr secrets reside
+      mountPath: /workspace/cicdstatemgr-secrets
+      readOnly: true
+
+  params:
+
+    - name: pipelineRunUid
+      type: string
+      description: the pipelineRun uid
+      default: NONE
+
+    - name: cicdContextDataId
+      type: string
+
+  results:
+    - name: last-exit-code
+      description: The last exit code of this task
+            
+  steps:
+
+    #----------------------------------
+    # STEP load CICD context data
+    #----------------------------------
+    - name: load-cicd-context-data
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+        cicdstatemgr \
+              --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+              --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+              --id $(inputs.params.cicdContextDataId) \
+              --load 
+        echo
+
+        cat /tekton/results/cicdContextDataId
+        echo 
+        echo
+
+        cat /tekton/results/cicdContextDataJson
+        echo 
+        echo
+        
+    #----------------------------------
+    #
+    # STEP Invoke - TODO
+    #
+    #----------------------------------
+
+    - name: test-invoke
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+        echo "YOU COULD FILL IN IMAGE TEST STEPS/TASKS HERE"
+
+        LAST_EXIT_CODE=$?
+        echo -n $LAST_EXIT_CODE > /tekton/results/last-exit-code
+        echo
+
+
