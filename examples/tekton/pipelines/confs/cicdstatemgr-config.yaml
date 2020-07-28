@@ -60,16 +60,14 @@ cicdstatemgr:
   trigger:
 
     # The URL all POSTs will be sent to
-    url: http://fc09d24b04e5.ngrok.io
+    url: @NGROK_URL@
 
     # Headers that will be automatically applied
     # jinja2 references are valid here
     headers:
-      - name: "x-cicd-version"
-        value: "{{state.cicdVersion}}"
-      - name: "x-cicdstatemgr-token"
+      - name: "x-cicdstatemgr-autotrigger-key"
         value: "{{secretData.trigger.token}}"
-      - name: "x-trigger-pipeline-name"
+      - name: "x-cicdstatemgr-pipeline-name"
         value: "{{triggerPipeline.name}}"
 
     # these argument are always sent in the payload that
@@ -84,8 +82,8 @@ cicdstatemgr:
       gitAppName: "{{state.gitAppName}}"
       cicdContextName: "{{state.cicdContextName}}"
       triggeredBySystem: "trigger-pipeline"
-      triggeredByDescription: "Auto triggered by {{event.data.security.authenticatedUid}}"
-      invokerUid: "{{event.data.security.authenticatedUid}}"
+      triggeredByDescription: "Auto triggered by {{event.data.security.invokerUid}}"
+      invokerUid: "{{event.data.security.invokerUid}}"
       relatedPipelineName: "{{event.data.params.pipelineName}}"
       relatedPipelineRunUid: "{{event.data.params.pipelineRunUid}}"
       relatedCicdContextDataId: "{{event.data.params.cicdContextDataId}}"
@@ -128,19 +126,20 @@ cicdstatemgr:
         to: state.slack.lastMessagePermalink
 
 
+
   # 
   # Configuration for the slack http client within cicdstatmgr
   # used for the notify/manual-choice handlers
   # 
   slack:
     url: https://slack.com/api/chat.postMessage
-    orgUrl: https://bitsofinfo.slack.com/
+    orgUrl: @SLACK_ORG_URL@
 
   # 
   # Configuration for the Tekton dashboard
   #
   dashboard:
-    pipelineRunUrl: http://127.0.0.1:51401/#/namespaces/tekton-pipelines/pipelineruns
+    pipelineRunUrl: @TEKTON_DASHBOARD_URL@/#/namespaces/tekton-pipelines/pipelineruns
 
   #
   # Base templates used by the manual-choice and notify event handlers
@@ -156,7 +155,16 @@ cicdstatemgr:
       {% if state.slack and state.slack.thread_ts and state.slack.thread_ts != 'None' %}
         "thread_ts": "{{state.slack.thread_ts}}",
       {% endif %}
-      "text": "{{notify.message}}"
+      "blocks": [
+          {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "{{notify.message}}"
+            }
+          }
+      ]
+
       }
 
     # The manual-choice handler constructs a context containing each handler invocations

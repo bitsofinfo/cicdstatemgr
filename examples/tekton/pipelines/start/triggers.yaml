@@ -1,0 +1,192 @@
+
+---
+
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: start
+spec:
+  params:
+    - name: cicdContextName
+
+    - name: pipelineRunUid
+
+    - name: invokerUid
+
+    - name: gitAppName
+
+    - name: appTag
+
+    - name: commitId
+
+    - name: triggeredBySystem
+
+    - name: triggeredByDescription
+
+    - name: relatedCicdContextDataId
+      default: "none"
+
+    - name: relatedPipelineRunUid
+      default: "none"
+
+    - name: relatedPipelineName
+      default: "none"
+
+    - name: originalRequestBody
+
+    - name: uniqueString
+
+    - name: gitCloneUrl
+
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: start-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
+      spec:
+        serviceAccountName: cicd-tekton
+
+        pipelineRef:
+          name: start
+
+        params:
+          - name: cicdContextName
+            value: $(tt.params.cicdContextName)
+
+          - name: pipelineRunUid
+            value: start-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
+
+          - name: relatedCicdContextDataId 
+            value: $(tt.params.relatedCicdContextDataId)
+
+          - name: relatedPipelineRunUid 
+            value: $(tt.params.relatedPipelineRunUid)
+
+          - name: relatedPipelineName 
+            value: $(tt.params.relatedPipelineName)
+
+          - name: invokerUid # the invoking user uid
+            value: $(tt.params.invokerUid)
+
+          - name: gitAppName
+            value: $(tt.params.gitAppName)
+
+          - name: appTag
+            value: $(tt.params.appTag)
+
+          - name: commitId
+            value: $(tt.params.commitId)
+
+          - name: triggeredBySystem
+            value: $(tt.params.triggeredBySystem)
+
+          - name: triggeredByDescription
+            value: $(tt.params.triggeredByDescription)
+
+          - name: originalRequestBody
+            value: $(tt.params.originalRequestBody) 
+
+          - name: uniqueString
+            value: $(tt.params.uniqueString)
+
+          - name: gitCloneUrl
+            value: $(tt.params.gitCloneUrl)
+
+        workspaces:
+
+          - name: cicdstatemgr-secrets
+            secret:
+              secretName: cicdstatemgr-secrets
+              items:
+                - key: cicdstatemgr-secrets.yaml
+                  path: cicdstatemgr-secrets.yaml
+
+          - name: cicdstatemgr-configs
+            configmap:
+              name: cicdstatemgr-configs
+
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: start-via-git
+spec:
+  params:
+    - name: cicdContextName
+      value: dev
+
+    - name: invokerUid # the invoking user uid!
+      value: $(body.intercepted.invokedByPrincipalId)
+
+    - name: gitAppName
+      value: $(body.intercepted.gitAppName)
+
+    - name: appTag
+      value: $(body.intercepted.appTag)
+
+    - name: commitId
+      value: $(body.intercepted.commitId)
+
+    - name: triggeredBySystem
+      value: "github"
+
+    - name: triggeredByDescription
+      value: "Github push of git tag $(body.intercepted.gitAppName):$(body.intercepted.appTag)"
+
+    - name: originalRequestBody
+      value: $(body)
+
+    - name: uniqueString
+      value: $(body.intercepted.commitId)
+
+    - name: gitCloneUrl
+      value: $(body.repository.clone_url)
+
+
+
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: start-via-change-context
+spec:
+  params:
+
+    - name: cicdContextName
+      value: $(body.intercepted.targetCicdContextName)
+
+    - name: invokerUid 
+      value: "<@$(body.intercepted.slackUserId)>"
+
+    - name: gitAppName
+      value: $(body.intercepted.gitAppName)
+
+    - name: appTag
+      value: $(body.intercepted.appTag)
+
+    - name: commitId
+      value: $(body.intercepted.commitId)
+
+    - name: gitCloneUrl
+      value: $(body.intercepted.gitCloneUrl)
+
+    - name: triggeredBySystem
+      value: "slack"
+
+    - name: triggeredByDescription
+      value: "Slack button press by <@$(body.intercepted.slackUserId)>"
+
+    - name: relatedCicdContextDataId
+      value: $(body.intercepted.relatedCicdContextDataId)
+
+    - name: relatedPipelineRunUid
+      value: $(body.intercepted.relatedPipelineRunUid)
+
+    - name: relatedPipelineName
+      value: $(body.intercepted.relatedPipelineName)
+
+    - name: originalRequestBody
+      value: $(body)
+
+    - name: uniqueString
+      value: $(body.intercepted.commitId)

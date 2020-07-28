@@ -9,7 +9,7 @@ metadata:
 data:
   # Add additonal hosts seperated by new-line
   registryAliases: >-
-    bitsofinfo.registry.local
+    registry.kube-system.svc.cluster.local
   # default registry address in minikube when enabled via minikube addons enable registry
   registrySvc: registry.kube-system.svc.cluster.local
 

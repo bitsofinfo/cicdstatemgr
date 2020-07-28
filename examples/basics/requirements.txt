@@ -1,0 +1,4 @@
+# for local dev 
+# source venv/bin/activate
+# pip install --requirement requirements.txt
+../../../cicdstatemgr
