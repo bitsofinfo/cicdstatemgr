@@ -57,7 +57,7 @@ spec:
     # STEP handle event
     #----------------------------------
     - name: handle-event
-      image: bitsofinfo/cicdstatemgr:1.0.17
+      image: bitsofinfo/cicdstatemgr:1.0.20
       command:
       - /bin/bash
       args:
