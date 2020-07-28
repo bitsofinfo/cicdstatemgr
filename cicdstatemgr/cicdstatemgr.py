@@ -524,7 +524,13 @@ class CicdStateMgr():
 
     def get_via_jsonng_expression(self, getValueExpression, findInData) -> object:
         logging.debug("get_via_jsonng_expression() looking for {}".format(getValueExpression))
-        parsed = jsonpath_ng.parse(getValueExpression)
+
+        try:
+            parsed = jsonpath_ng.parse(getValueExpression)
+        except Exception as e:
+            logging.error("get_via_jsonng_expression() error parsing expression? returning expression as literal value {}. error: {}".format(getValueExpression,str(sys.exc_info()[:2])))
+            return getValueExpression
+
         match = parsed.find(findInData)
 
         # return expression literal by default
@@ -543,6 +549,7 @@ class CicdStateMgr():
             logging.debug("get_via_jsonng_expression() expression {} yielded nothing, returning literal: {}".format(getValueExpression,getValueExpression))
 
         return valueToReturn
+
 
     def create_template_context(self, cicdContextData:dict, tmplCtxVars:list) -> dict:
         templateContext = copy.deepcopy(cicdContextData)

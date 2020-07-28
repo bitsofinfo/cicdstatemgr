@@ -1,3 +1,6 @@
+# 1.0.20
+* fix `--get` when `get_via_jsonng_expression()` has jsonpath parse error. return literal expression as the value
+  
 # 1.0.19
 * fix `--get` value parse handling where right hand side is not an expression, return literal value on no-match
 
