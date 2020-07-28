@@ -19,7 +19,7 @@ TBD
 
 The following needs to be installed on your local.
 
-* [minkube](https://kubernetes.io/docs/tasks/tools/install-minikube/) (assumes os-x w/ [hyperkit](https://minikube.sigs.k8s.io/docs/drivers/hyperkit/))
+* [minkube v1.12.1+](https://kubernetes.io/docs/tasks/tools/install-minikube/) (assumes os-x w/ [hyperkit](https://minikube.sigs.k8s.io/docs/drivers/hyperkit/))
 * [ngrok free](https://ngrok.com/)
 * `kubectl`: 1.16+
 
