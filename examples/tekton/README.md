@@ -1,4 +1,4 @@
-# tekton example
+# Tekton example
 
 This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages to provide user-interaction.
 
@@ -8,12 +8,14 @@ This assumes and prefers a clean minikube cluster environment on your machine. T
 
 Need help? [join bitsofinfo.slack.com](https://join.slack.com/t/bitsofinfo/shared_invite/zt-g25vqkt2-SrA1SfBXALoAL17J~03tfQ)
 
-## overview
+## Overview
 
 Don't want to run it locally? Watch here:
 
+TBD
 
-## pre-requisites
+
+## Pre-requisites
 
 The following needs to be installed on your local.
 
@@ -29,7 +31,9 @@ You also need to do the following before starting:
   
 * Have your own free [slack workspace](https://slack.com/help/articles/206845317-Create-a-Slack-workspace) and the proper permissions to install apps into it and manage it.
 
-## configure your slack app
+* Also this assumes you have cloned this project [cicdstatemgr](https://github.com/bitsofinfo/cicdstatemgr/) and have a terminal opened to `examples/tekton`
+
+## Configure your slack app
 
 You will need to create a new [slack app in your workspace](https://api.slack.com/apps) by doing the following:
 
@@ -51,7 +55,7 @@ You will need to create a new [slack app in your workspace](https://api.slack.co
 
 * **IMPORTANT**: Next, click on *"Basic Information"*, scroll down to *"App Credentials"* and copy the value of **Verification Token** and paste it into the file `cicdstatemgr/examples/tekton/core/secrets/slack-oauth-token` (with no new line)
 
-## setup minikube, tekton and example pipelines
+## Setup minikube, tekton and example pipelines
 
 Clone the project:
 ```
@@ -64,28 +68,33 @@ cd cicdstatemgr/examples/tekton
 ./install.sh
 ```
 
+When all done you can remove with:
+```
+./remove.sh
+```
+
 The install script assumes (and prefers) you have no prior minikube cluster, it starts `minikube` enables the `registry` addon, then proceeds to apply a base [Tekton](https://tekton.dev/) installation (complete with the 3 Tekton projects: `pipelines`, `triggers`, `dashboard`). On top of Tekton, it then proceeds to install a Tekton [CICD workflow of pipelines](pipelines/) which utilize `cicdstatemgr` to orchestrate all interactions.
 
 Once things are up and running, the script also creates a [ngrok tunnel](https://ngrok.com/) to the [Tekton webhook/eventlistener endpoint](pipelines/triggers.event-listener.yaml) which is emitted to STDOUT. 
 
 **IMPORTANT**: *Keep this terminal open or save the output from the script! We will use the configured NGROK urls below*
 
-## post setup steps
+## Post setup steps
 
 Now that your local minikube cluster is up and running, we need to do two things.
 
-**update your slack app**
+### Update your slack app**
 
 Update the [slack app's interactive component](https://api.slack.com/apps) you created earlier to point to your `ngrok` URI.
 
 * Go your your slack apps' *"Basic Information"* section, click on *"Features and functionality"* then *"Interactive Components"*
 * Next update the *"Request Url"* field with the `ngrok` event listener URI emitted by the [install.sh](install.sh) script above. It should look something like `https://xxyyzz.ngrok.io`
 
-**create the slack channels**
+### Create the slack channels**
 
 In your slack workspace, create two channels `#cicdstatemgr-dev` and `#cicdstatemgr-prod`, and be **sure to invite your slack app** to both channels! 
 
-**update your nginx-hello-world fork's webhooks setting**
+### Update your nginx-hello-world fork's webhooks setting
 
 Configure YOUR FORK of [nginx-hello-world](https://github.com/bitsofinfo/nginx-hello-world/) to send webhook events.
 
@@ -102,6 +111,13 @@ Configure YOUR FORK of [nginx-hello-world](https://github.com/bitsofinfo/nginx-h
 * For *"Events to send"* we ONLY NEED the `push` event.
 
 * Ensure its active and save
+
+
+## Cleanup
+
+```
+./remove.sh
+```
 
 
 ## notes
