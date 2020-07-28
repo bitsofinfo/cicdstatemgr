@@ -83,14 +83,14 @@ Once things are up and running, the script also creates a [ngrok tunnel](https:/
 
 Now that your local minikube cluster is up and running, we need to do two things.
 
-### Update your slack app**
+### Update your slack app
 
 Update the [slack app's interactive component](https://api.slack.com/apps) you created earlier to point to your `ngrok` URI.
 
 * Go your your slack apps' *"Basic Information"* section, click on *"Features and functionality"* then *"Interactive Components"*
 * Next update the *"Request Url"* field with the `ngrok` event listener URI emitted by the [install.sh](install.sh) script above. It should look something like `https://xxyyzz.ngrok.io`
 
-### Create the slack channels**
+### Create the slack channels
 
 In your slack workspace, create two channels `#cicdstatemgr-dev` and `#cicdstatemgr-prod`, and be **sure to invite your slack app** to both channels! 
 
