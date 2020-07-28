@@ -90,7 +90,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 ### Run via Docker
 
 ```
-docker run -it bitsofinfo/cicdstatemgr:1.0.17 cicdstatemgr -h
+docker run -it bitsofinfo/cicdstatemgr:1.0.20 cicdstatemgr -h
 ```
 
 
