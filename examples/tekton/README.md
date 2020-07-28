@@ -25,6 +25,8 @@ The following needs to be installed on your local.
 
 You also need to do the following before starting:
 
+* Clone this project: `git clone https://github.com/bitsofinfo/cicdstatemgr.git`
+
 * Create your own fork on github of [nginx-hello-world](https://github.com/bitsofinfo/nginx-hello-world/)
   
 * Ensure [ngrok is setup and functioning](https://dashboard.ngrok.com/get-started/setup) on your local machine
@@ -57,7 +59,7 @@ You will need to create a new [slack app in your workspace](https://api.slack.co
 
 ## Setup minikube, tekton and example pipelines
 
-Clone the project:
+Clone this project (if not already done)
 ```
 git clone https://github.com/bitsofinfo/cicdstatemgr.git
 ```
