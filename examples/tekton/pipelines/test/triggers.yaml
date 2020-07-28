@@ -4,15 +4,13 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: build
+  name: test
 spec:
   params:
     - name: cicdContextName
+    - name: appName
     - name: cicdContextDataId
-    - name: gitAppName
-    - name: appTag
     - name: originalRequestBody
-    - name: gitCloneUrl
 
     # for security checks
     - name: cicdContextName
@@ -27,31 +25,22 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: build-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
+        name: test-$(tt.params.cicdContextName)-$(tt.params.appName)-$(uid) # uid here is the tekton unique RUN id
       spec:
         serviceAccountName: cicd-tekton
 
         pipelineRef:
-          name: build
+          name: test
 
         params:
           - name: pipelineRunUid
-            value: build-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
-          
+            value: test-$(tt.params.cicdContextName)-$(tt.params.appName)-$(uid) # uid here is the tekton unique RUN id
+
           - name: cicdContextDataId
             value: $(tt.params.cicdContextDataId)
 
-          - name: gitAppName
-            value: $(tt.params.gitAppName)
-
-          - name: appTag
-            value: $(tt.params.appTag)
-
           - name: originalRequestBody
             value: $(tt.params.originalRequestBody)
-
-          - name: gitCloneUrl
-            value: $(tt.params.gitCloneUrl)
 
           # for security checks
           - name: cicdContextName
@@ -82,37 +71,24 @@ spec:
             configmap:
               name: cicdstatemgr-configs
 
-          - name: scratch
-            volumeClaimTemplate:
-              metadata:
-                name: scratch
-              spec:
-                storageClassName: standard
-                accessModes:
-                  - ReadWriteOnce
-                resources:
-                  requests:
-                    storage: 50Mi
-
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: build
+  name: test
 spec:
   params:
     - name: cicdContextName
       value: $(body.intercepted.cicdContextName)
+
+    - name: appName
+      value: $(body.intercepted.appName)
+
     - name: cicdContextDataId
       value: $(body.intercepted.cicdContextDataId)
-    - name: gitAppName
-      value: $(body.intercepted.gitAppName)
-    - name: appTag
-      value: $(body.intercepted.appTag)
+
     - name: originalRequestBody
       value: $(body)
-    - name: gitCloneUrl
-      value: $(body.gitCloneUrl)
 
     # for security checks
     - name: invokerUid
@@ -127,3 +103,43 @@ spec:
       value: $(body.intercepted.triggeredBySystem)
     - name: triggeredByDescription
       value: $(body.intercepted.triggeredByDescription)
+
+
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: test-via-slack
+spec:
+  params:
+
+    - name: cicdContextName
+      value: $(body.intercepted.cicdContextName)
+
+    - name: cicdContextDataId
+      value: $(body.intercepted.cicdContextDataId)
+
+    - name: appName
+      value: $(body.intercepted.targetAppName)
+
+    - name: originalRequestBody
+      value: $(body)
+
+    - name: gitCloneUrl
+      value: $(body.intercepted.gitCloneUrl)
+
+    # for security checks
+    - name: invokerUid
+      value: $(body.intercepted.slackUsername)
+    - name: relatedCicdContextDataId
+      value: $(body.intercepted.relatedCicdContextDataId)
+    - name: relatedPipelineRunUid
+      value: $(body.intercepted.relatedPipelineRunUid)
+    - name: relatedPipelineName
+      value: $(body.intercepted.relatedPipelineName)
+    - name: triggeredBySystem
+      value: 'slack'
+    - name: triggeredByDescription
+      value: 'slack button press by <@$(body.intercepted.slackUserId)>'
+
+---

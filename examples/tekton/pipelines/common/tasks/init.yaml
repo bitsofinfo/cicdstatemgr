@@ -1,0 +1,139 @@
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: init
+spec:
+
+  workspaces:
+
+    - name: cicdstatemgr-configs
+      description: The workspace where cicdstatemgr configs reside
+      mountPath: /workspace/cicdstatemgr-configs
+      readOnly: true
+
+    - name: cicdstatemgr-secrets
+      description: The workspace where cicdstatemgr secrets reside
+      mountPath: /workspace/cicdstatemgr-secrets
+      readOnly: true
+
+  results:
+    - name: last-exit-code
+      description: The last exit code of this task
+
+  params:
+
+    - name: pipelineRunUid
+      type: string
+      description: the pipelineRun uid
+      default: NONE
+
+    - name: cicdContextDataId
+      type: string
+
+    - name: pipelineName
+      type: string
+      description: the pipelineName
+      default: pipelineName-NULL
+
+    - name: setContextDataValues
+      type: string
+      description: PIPE (|) delimited list of k=v pairs
+      default: "state.loadAndInit=setContextDataValues.not.provided"
+
+    - name: originalRequestBody
+      type: string
+      default: "NO_ORIGINAL_REQUEST_BODY"
+
+    - name: triggeredBySystem
+      type: string
+
+    - name: triggeredByDescription
+      type: string
+
+    - name: cicdContextName
+      type: string
+
+    - name: invokerUid
+      type: string
+
+    - name: relatedPipelineName
+      type: string
+
+    - name: relatedPipelineRunUid
+      type: string
+
+    - name: relatedCicdContextDataId
+      type: string
+            
+  steps:
+
+    #----------------------------------
+    # STEP load CICD context data
+    # set vars + handle init event
+    #----------------------------------
+    - name: load-and-init
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+
+        # initialized at
+        INITIALIZED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+        # put the original request body into a file
+        echo -n '$(inputs.params.originalRequestBody)' > /tekton/results/originalRequestBody
+        cat /tekton/results/originalRequestBody | grep NO_ORIGINAL_REQUEST_BODY
+        ORIGINAL_REQUEST_BODY_EXISTS=$?
+
+        # load, set vars, fire init event
+        cicdstatemgr \
+              --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+              --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+                \
+              --load \
+              --id $(inputs.params.cicdContextDataId) \
+                \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).security.invokerUid=$(inputs.params.invokerUid)" \
+                  \
+              --set '$(inputs.params.setContextDataValues)' \
+              \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).initializedAt=$INITIALIZED_AT" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.cicdContextDataId=$(inputs.params.cicdContextDataId)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.cicdContextName=$(inputs.params.cicdContextName)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.invokerUid=$(inputs.params.invokerUid)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.pipelineName=$(inputs.params.pipelineName)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.pipelineRunUid=$(inputs.params.pipelineRunUid)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.triggeredBySystem=$(inputs.params.triggeredBySystem)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.triggeredByDescription=$(inputs.params.triggeredByDescription)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.relatedPipelineName=$(inputs.params.relatedPipelineName)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.relatedPipelineRunUid=$(inputs.params.relatedPipelineRunUid)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.relatedCicdContextDataId=$(inputs.params.relatedCicdContextDataId)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.request.body=file:///tekton/results/originalRequestBody" \
+              \
+              --handle-event $(inputs.params.pipelineName)=init \
+              --tmpl-ctx-var "event.data=state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid)" \
+        
+        INIT_EXIT_CODE=$?
+
+        echo
+
+        cat /tekton/results/cicdContextDataId
+        echo 
+        echo
+
+        cat /tekton/results/cicdContextDataJson
+        echo 
+
+        if [ "$INIT_EXIT_CODE" != "0" ]; then echo "INIT FAILED"; else echo "INIT SUCCEEDED" ; fi
+        echo
+
+        echo -n $INIT_EXIT_CODE > /tekton/results/last-exit-code
+
+        # exit fast 
+        if [ "$INIT_EXIT_CODE" != "0" ]; then
+          exit $INIT_EXIT_CODE
+        fi
+

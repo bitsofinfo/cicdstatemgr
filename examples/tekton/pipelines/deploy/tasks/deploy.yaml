@@ -1,0 +1,150 @@
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy
+spec:
+
+  params:
+
+    - name: pipelineRunUid
+      type: string
+      description: the pipelineRun uid
+      default: NONE
+
+    - name: cicdContextDataId
+      type: string
+
+    - name: classifier
+      type: string
+      default: "NO_CLASSIFIER"
+
+    - name: targetAppTag # app version
+      type: string
+
+  workspaces:
+    - name: git-source
+      description: The workspace where the app source code resides
+      mountPath: /workspace/git-source
+      readOnly: false
+
+    - name: cicdstatemgr-configs
+      description: The workspace where cicdstatemgr configs reside
+      mountPath: /workspace/cicdstatemgr-configs
+      readOnly: true
+
+    - name: cicdstatemgr-secrets
+      description: The workspace where cicdstatemgr secrets reside
+      mountPath: /workspace/cicdstatemgr-secrets
+      readOnly: true
+
+
+  results:
+    - name: last-exit-code
+      description: The last exit code of this task
+            
+  steps:
+
+    #----------------------------------
+    # STEP load CICD context data
+    #----------------------------------
+    - name: load-cicd-context-data
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+        cicdstatemgr \
+              --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+              --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+              --id $(inputs.params.cicdContextDataId) \
+              --load 
+        echo
+
+        cat /tekton/results/cicdContextDataId
+        echo 
+        echo
+
+        cat /tekton/results/cicdContextDataJson
+        echo 
+        echo
+
+    #----------------------------------
+    # STEP Generate deployment.yaml
+    #----------------------------------
+    - name: generate-deployment-yaml
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+        source /tekton/results/cicdContextDataShell
+
+        DEPLOYMENT_NAME=$(echo "nginx-hello-world-$CICD_state__appTag" | sed 's/\./-/g')
+        TARGET_NAMESPACE=$CICD_pipelines__deploy__deployTask__targetNamespace
+        IMAGE_NAME="registry.kube-system.svc.cluster.local/apps/nginx-hello-world:$CICD_state__appTag"
+
+
+        echo $DEPLOYMENT_NAME
+        echo $TARGET_NAMESPACE
+        echo $IMAGE_NAME
+        echo 
+
+        # create the actual deployment manifest using --get's rendering functionality
+        cicdstatemgr \
+          --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+          --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+          --id $(inputs.params.cicdContextDataId) \
+          --get pipelines.deploy.deployTask.deploymentYamlTemplate \
+          --tmpl-ctx-var tmplctx.deploymentName=$DEPLOYMENT_NAME \
+          --tmpl-ctx-var tmplctx.imageName=$IMAGE_NAME \
+          --tmpl-ctx-var tmplctx.targetNamespace=$TARGET_NAMESPACE \
+            > /tekton/results/generated-deployment.yaml
+
+        echo
+        echo "---------- GENERATED: pipelines.deploy.deployTask.deploymentYamlTemplate > /tekton/results/generated-deployment.yaml ---------"
+        cat /tekton/results/generated-deployment.yaml
+        echo
+
+
+
+    #----------------------------------
+    # STEP deploy
+    #----------------------------------
+    - name: deploy
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+
+        source /tekton/results/cicdContextDataShell
+
+        DEPLOYMENT_NAME=$(echo "nginx-hello-world-$CICD_state__appTag" | sed 's/\./-/g')
+        TARGET_NAMESPACE=$CICD_pipelines__deploy__deployTask__targetNamespace
+        IMAGE_NAME="registry.kube-system.svc.cluster.local/apps/nginx-hello-world:$CICD_state__appTag"
+
+        echo $DEPLOYMENT_NAME
+        echo $TARGET_NAMESPACE
+        echo $IMAGE_NAME
+        echo 
+
+        echo
+        echo "------ kubectly apply -f /tekton/results/generated-deployment.yaml -n $TARGET_NAMESPACE ------"
+        cat /tekton/results/generated-deployment.yaml
+        echo
+
+        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+
+        chmod +x ./kubectl
+
+        ./kubectl apply -f /tekton/results/generated-deployment.yaml -n $TARGET_NAMESPACE
+   
+        DEPLOY_EXIT_CODE=$?
+
+        echo -n $DEPLOY_EXIT_CODE > /tekton/results/last-exit-code
+        echo
+        if [ "$DEPLOY_EXIT_CODE" != "0" ]; then echo "DEPLOY FAILED exit-code=$DEPLOY_EXIT_CODE"; else echo "DEPLOY SUCCEEDED" ; fi

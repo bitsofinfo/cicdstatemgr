@@ -13,14 +13,14 @@ echo "Waiting for services to come up "
 READY=1
 while [ "$READY" != "0" ]; do
     sleep 1
-    CAPTURE=$(kubectl get pods | grep el-event-listener-v1 | grep Running)
+    CAPTURE=$(kubectl get pods | grep el-event-listener| grep Running)
     READY=$?
     echo -n "."
 done
 
 sleep 5
 
-EVENT_LISTENER_TUNNEL_URI=$(minikube service el-event-listener-v1 --url -n tekton-pipelines)
+EVENT_LISTENER_TUNNEL_URI=$(minikube service el-event-listener --url -n tekton-pipelines)
 DASHBOARD_TUNNEL_URI=$(minikube service tekton-dashboard --url -n tekton-pipelines)
 
 echo
@@ -28,15 +28,15 @@ echo
 
 #exit 0
 
+NGROK_URL=""
+
 if [ ! -z "$EVENT_LISTENER_TUNNEL_URI" ]; then
     EVENT_LISTENER_TUNNEL_URI_IP_PORT="${EVENT_LISTENER_TUNNEL_URI#http://}"
     NGROK_CMD="ngrok http $EVENT_LISTENER_TUNNEL_URI_IP_PORT &>/dev/null"
     echo "Starting ngrok: cmd: $NGROK_CMD ...."
-    echo "Starting ngrok: cmd: $NGROK_CMD ...."
-    echo "Starting ngrok: cmd: $NGROK_CMD ...."
-    echo "$NGROK_CMD"
     eval "($NGROK_CMD) &"
     NGROK_PID=$!
+    echo -n $NGROK_PID > .ngrok.pid
     sleep 5
     NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq .tunnels[0].public_url)
     NGROK_URL="${NGROK_URL%\"}"
@@ -68,11 +68,17 @@ else
     echo "  minikube service tekton-dashboard --url -n tekton-pipelines"
 fi
 
+
+# install the confs
+cd pipelines
+./install-confs.sh $NGROK_URL $DASHBOARD_TUNNEL_URI
+cd ..
+
 echo
 echo "Finally go to your fork of https://github.com/bitsofinfo/nginx-hello-world and go to Setting > Webhooks"
 echo "and add new new webhook with the following settings:"
 echo
-echo "  Payload URL = your ngrok URL"
+echo "  Payload URL = $NGROK_URL"
 echo "  Context type = application/json"
 echo "  Secret = 123"
 echo ""

@@ -27,6 +27,7 @@ CICD_jinja2Macros__all="{%- macro basicMacro(msg) -%}
 {%- endmacro -%}"
 CICD_state__cicdContextDataId="context-data-id-1"
 CICD_state__cicdContextName="stage"
-CICD_state__key1="value1"
+CICD_state__key1="yet a new value"
+CICD_state__templateTest="{{tmplctx.prop1}}"
 CICD_variables__baseVar1="baseVarVal1"
 CICD_variables__myVar1="test"

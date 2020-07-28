@@ -1,0 +1,208 @@
+
+######################
+#
+# CICD Contexts
+#
+######################
+cicd-contexts:
+
+  #############################################################################
+  #
+  # PROD CICD Context
+  #
+  ##############################################################################
+  prod:
+
+    # The slack channel this context integrates with
+    channel: cicdstatemgr-prod
+
+    # all of the pipelines in this context
+    pipelines:
+
+      #---------------------------------------------------
+      #
+      # START pipeline
+      #
+      #---------------------------------------------------
+      start:
+
+        event-handlers:
+
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          # START event -> init
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          init:
+
+            # we immediately respond, only if from Slack (via response URL) 
+            respond:
+              if: "{{ event.data.params.request.body.api_app_id }}"
+              url: "{{ event.data.params.request.body.response_url }}"
+              message: |
+                {{ responderMessage(event.data.params.request.body) }}
+
+            set-values: 
+              # set state values from an Github triggered start
+              gitValues:
+                if: "{{ event.data.params.request.body.head_commit }}"
+                set:
+                  - from: "{{ event.data.params.request.body.head_commit.message }}"
+                    to: "state.commitMsg"
+
+                  - from: "{{ event.data.params.request.body.after }}"  
+                    to: "state.commitId"
+
+                  - from: "{{ event.data.params.request.body.repository.clone_url }}"  
+                    to: "state.gitCloneUrl"
+
+              # set state values from an Slack triggered (button press) posted start
+              slackValues:
+                if: "{{ event.data.params.request.body.api_app_id }}"
+                set:
+                  - from: "SANITIZED"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.params.request.body.token"
+
+                  - from: "{{ event.data.params.request.body.user.id }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.user.id"
+
+                  - from: "{{ event.data.params.request.body.user.name }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.user.name"
+                    
+                  - from: "{{ event.data.params.request.body.user.username }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.user.username"
+
+                  - from: "{{ event.data.params.request.body.container.message_ts }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.message_ts"
+
+                  - from: "{{ event.data.params.request.body.container.thread_ts }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.thread_ts"
+
+                  - from: "{{ event.data.params.request.body.container.channel_id }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.channel_id"
+
+                  - from: "{{ configData.slack.orgUrl }}/archives/{{ event.data.params.request.body.container.channel_id }}/p{{ event.data.params.request.body.container.message_ts }}?{{ event.data.params.request.body.container.thread_ts }}&cid={{ event.data.params.request.body.container.channel_id }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.message_url"
+
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          # START event -> success
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          success:
+            notify:
+              message: |
+                {{newCicdContextSuccessMessage()}}
+
+            manual-choice:
+              title: |
+                {{ successManualChoicesTitle() }}
+              choices:
+
+                deploy:
+                  header: |
+                    {{ deployHeader(state.appTag) }}
+                  options:
+                    - style: primary
+                      value: "{{ deployButtonValue(state.appName, state.appTag) }}"
+                      text: "{{ deployButtonLabel() }}"
+
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          # START event -> failure
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          failure:
+            notify:
+              message: |
+                :x: START NEW CICD CONTEXT FAILED 
+                {{statusLink()}}
+
+
+      #---------------------------------------------------
+      #
+      # DEPLOY pipeline
+      #
+      #---------------------------------------------------
+      deploy:
+
+        deployTask:
+          targetNamespace: apps-prod
+
+        event-handlers:
+
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          # DEPLOY event -> init
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          init:
+
+            # we immediately respond, only if from Slack (via response URL) 
+            respond:
+              if: "{{ event.data.params.request.body.api_app_id }}"
+              url: "{{ event.data.params.request.body.response_url }}"
+              message: |
+                {{ responderMessage(event.data.params.request.body) }}
+
+            set-values: 
+
+              # set state values from an Slack triggered (button press) posted start
+              slackValues:
+                if: "{{ event.data.params.request.body.api_app_id }}"
+                set:
+                  - from: "SANITIZED"
+                    to: "state.deploy.{{event.data.params.pipelineRunUid}}.params.request.body.token"
+
+                  - from: "{{ event.data.params.request.body.user.id }}"
+                    to: "state.deploy.{{event.data.params.pipelineRunUid}}.slack.user.id"
+
+                  - from: "{{ event.data.params.request.body.user.name }}"
+                    to: "state.deploy.{{event.data.params.pipelineRunUid}}.slack.user.name"
+                    
+                  - from: "{{ event.data.params.request.body.user.username }}"
+                    to: "state.deploy.{{event.data.params.pipelineRunUid}}.slack.user.username"
+
+                  - from: "{{ event.data.params.request.body.container.message_ts }}"
+                    to: "state.deploy.{{event.data.params.pipelineRunUid}}.slack.message_ts"
+
+                  - from: "{{ event.data.params.request.body.container.thread_ts }}"
+                    to: "state.deploy.{{event.data.params.pipelineRunUid}}.slack.thread_ts"
+
+                  - from: "{{ event.data.params.request.body.container.channel_id }}"
+                    to: "state.deploy.{{event.data.params.pipelineRunUid}}.slack.channel_id"
+
+                  - from: "{{ configData.slack.orgUrl }}/archives/{{ event.data.params.request.body.container.channel_id }}/p{{ event.data.params.request.body.container.message_ts }}?{{ event.data.params.request.body.container.thread_ts }}&cid={{ event.data.params.request.body.container.channel_id }}"
+                    to: "state.deploy.{{event.data.params.pipelineRunUid}}.slack.message_url"
+
+
+            notify:
+              message: |
+                :information_source: STARTING DEPLOY: 
+                  
+                image: *{{state.gitAppName}}:{{event.data.params.targetAppTag}}*
+                target namespace: *{{pipelines.deploy.deployTask.targetNamespace}}*
+
+                {{statusLink()}}
+
+   
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          # DEPLOY event -> failure
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          failure:
+            notify:
+              message: |
+                {{ deploymentFailedMessage() }}
+            manual-choice:
+              title: |
+                {{ rollbackManualChoicesTitle() }}
+              choices:
+                rollback:
+                  header: |
+                    {{ rollbackHeader() }}
+                  options:
+                    - style: primary
+                      value: "{{ rollbackButtonValue() }}"
+                      text: "rollback"
+
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          # DEPLOY event -> success
+          #~~~~~~~~~~~~~~~~~~~~~~~
+          success:
+            notify:
+              message: |
+                {{ deploymentSuccessMessage() }}
+            
+

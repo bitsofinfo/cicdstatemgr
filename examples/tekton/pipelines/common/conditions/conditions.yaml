@@ -1,0 +1,120 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: exit-code-is-success
+spec:
+  check:
+    args:
+    - if [ "$(params.exit-code)" = "0" ]; then exit 0; else exit 1 ; fi
+    command:
+    - bash
+    - -c
+    image: bitsofinfo/cicd-toolbox:3.0.4
+  params:
+  - name: exit-code
+
+---
+
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: exit-code-is-failure
+spec:
+  check:
+    args:
+    - if [ "$(params.exit-code)" != "0" ]; then exit 0; else exit 1 ; fi
+    command:
+    - bash
+    - -c
+    image: bitsofinfo/cicd-toolbox:3.0.4
+  params:
+  - name: exit-code
+  
+---
+
+
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: comparison
+spec:
+  params:
+    - name: lhs
+    - name: operator
+    - name: rhs
+  check:
+    image: bitsofinfo/cicd-toolbox:3.0.4
+    command:
+      - /bin/bash
+    args:
+      - -c
+      - |
+        if [ "$(params.lhs)" $(params.operator) "$(params.rhs)" ]; then exit 0; else exit 1 ; fi
+---
+
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: or-comparison
+spec:
+  params:
+    - name: lhs1
+    - name: operator1
+    - name: rhs1
+    - name: lhs2
+    - name: operator2
+    - name: rhs2
+
+  check:
+    image: bitsofinfo/cicd-toolbox:3.0.4
+    command:
+      - /bin/bash
+    args:
+      - -c
+      - |
+        if [ "$(params.lhs1)" $(params.operator1) "$(params.rhs1)" ] || [ "$(params.lhs2)" $(params.operator2) "$(params.rhs2)" ]; then exit 0; else exit 1 ; fi
+
+---
+
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: and-comparison
+spec:
+  params:
+    - name: lhs1
+    - name: operator1
+    - name: rhs1
+    - name: lhs2
+    - name: operator2
+    - name: rhs2
+
+  check:
+    image: bitsofinfo/cicd-toolbox:3.0.4
+    command:
+      - /bin/bash
+    args:
+      - -c
+      - |
+        if [ "$(params.lhs1)" $(params.operator1) "$(params.rhs1)" ] && [ "$(params.lhs2)" $(params.operator2) "$(params.rhs2)" ]; then exit 0; else exit 1 ; fi
+
+---
+
+
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: python-eval
+spec:
+  params:
+    - name: code
+  check:
+    image: bitsofinfo/cicd-toolbox:3.0.4
+    command:
+    - /usr/local/bin/python
+    args:
+    - -c
+    - |
+      $(params.code)
+
+---
