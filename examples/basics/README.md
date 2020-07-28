@@ -51,8 +51,6 @@ Lets start by imagining a new pipeline starts in our CICD system, we have a task
 
 Lets start by using the [--init-new set of arguments](INIT_NEW.md)
 
-
-
 ## --get
 
 Next lets `--get` some values from the context data by using the [--get argument](GET.md)
