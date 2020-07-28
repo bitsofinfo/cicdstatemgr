@@ -2,6 +2,19 @@
 
 This assumes you've already run [INIT_NEW](INIT_NEW.md)
 
+This demonstrates the usage of `--get`
+
+Setup a key:
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+        \
+    --id "context-data-id-1" \
+    \
+    --set "state.key1=value1"
+```
+
 
 Lets create a little template in our `state`:
 ```
@@ -24,6 +37,8 @@ cicdstatemgr \
     \
     --get "state.templateTest" \
     --tmpl-ctx-var tmplctx.prop1=state.key1
+
+value1
 ```
 
 Ok, lets change the value referenced by the template:
@@ -47,6 +62,8 @@ cicdstatemgr \
     \
     --get "state.templateTest" \
     --tmpl-ctx-var tmplctx.prop1=state.key1
+
+yet a new value
 ```
 
 We can also `--get` it and render out a string literal:
@@ -59,4 +76,6 @@ cicdstatemgr \
     \
     --get "state.templateTest" \
     --tmpl-ctx-var tmplctx.prop1=just-a-literal-value
+
+just-a-literal-value
 ```
