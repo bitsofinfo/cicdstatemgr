@@ -1,0 +1,139 @@
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: trivy-scan
+spec:
+
+  workspaces:
+
+    - name: cicdstatemgr-configs
+      description: The workspace where cicdstatemgr configs reside
+      mountPath: /workspace/cicdstatemgr-configs
+      readOnly: true
+
+    - name: cicdstatemgr-secrets
+      description: The workspace where cicdstatemgr secrets reside
+      mountPath: /workspace/cicdstatemgr-secrets
+      readOnly: true
+
+  params:
+
+    - name: pipelineRunUid
+      type: string
+      description: the pipelineRun uid
+      default: NONE
+
+    - name: cicdContextDataId
+      type: string
+
+  results:
+    - name: last-exit-code
+      description: The last exit code of this task
+            
+  steps:
+
+    #----------------------------------
+    #
+    # STEP Run Trivy client
+    #
+    #----------------------------------
+
+    #----------------------------------
+    # STEP load CICD context data
+    #----------------------------------
+    - name: load-cicd-context-data
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+        cicdstatemgr \
+              --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+              --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+              --id $(inputs.params.cicdContextDataId) \
+              --load 
+        echo
+
+        cat /tekton/results/cicdContextDataId
+        echo 
+        echo
+
+        cat /tekton/results/cicdContextDataJson
+        echo 
+        echo
+        
+    - name: trivy-scan
+      image: docker.io/aquasec/trivy:0.9.2
+      command:
+        - /bin/ash
+      args:
+        - -c
+        - |
+
+          source /tekton/results/cicdContextDataShell
+
+          IMAGE_TO_SCAN="registry.kube-system.svc.cluster.local/apps/$CICD_state__gitAppName:$CICD_state__appTag"
+
+          echo "Evaluating $IMAGE_TO_SCAN"
+          echo
+
+          TRIVY_RESULTS=$(/usr/local/bin/trivy \
+                          client \
+                          --remote http://cicd-trivy-server.tekton-pipelines:80 \
+                          --exit-code 0 \
+                          --severity MEDIUM,HIGH,CRITICAL \
+                          $IMAGE_TO_SCAN)
+
+          LAST_EXIT_CODE=$?
+          echo -n $LAST_EXIT_CODE > /tekton/results/last-exit-code
+          echo
+          if [ "$LAST_EXIT_CODE" = "1" ]; then echo "TRIVY SCAN FAILED"; else echo "TRIVY SCAN SUCCESSFUL" ; fi
+
+          echo "$TRIVY_RESULTS" > /tekton/results/trivy-scan.results
+          echo
+          echo "$TRIVY_RESULTS" | head -n 4 > /tekton/results/trivy-scan.results.top
+          echo
+
+          cat /tekton/results/trivy-scan.results
+
+   #----------------------------------
+    # STEP update CICD context data 
+    # w/ scan results
+    #----------------------------------
+    - name: update-cicd-context-data
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+
+        source /tekton/results/cicdContextDataShell
+
+        TRIVY_EXIT_CODE=$(cat /tekton/results/last-exit-code)
+
+        if [ "$TRIVY_EXIT_CODE" == "0" ]; then
+
+            echo "Updating cicd-context-data with latest state.validate.$(inputs.params.pipelineRunUid).trivy.scanResults from /tekton/results/trivy-scan.results"
+            echo
+
+            cicdstatemgr \
+                --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+                --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+                --id $(inputs.params.cicdContextDataId) \
+                --pre-set-force-reload \
+                --set state.validate.$(inputs.params.pipelineRunUid).trivy.scanResults=file:///tekton/results/trivy-scan.results.top
+
+            cat /tekton/results/cicdContextDataId
+            echo 
+            echo
+
+            cat /tekton/results/cicdContextDataJson
+            echo 
+            echo
+          
+        else
+          echo "TRIVY_EXIT_CODE was $TRIVY_EXIT_CODE, skipping update-cicd-context-data"
+        fi

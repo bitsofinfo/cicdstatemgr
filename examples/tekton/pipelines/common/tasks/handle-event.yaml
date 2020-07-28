@@ -1,0 +1,102 @@
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: handle-event
+spec:
+
+  workspaces:
+
+    - name: cicdstatemgr-configs
+      description: The workspace where cicdstatemgr configs reside
+      mountPath: /workspace/cicdstatemgr-configs
+      readOnly: true
+
+    - name: cicdstatemgr-secrets
+      description: The workspace where cicdstatemgr secrets reside
+      mountPath: /workspace/cicdstatemgr-secrets
+      readOnly: true
+
+  results:
+    - name: last-exit-code
+      description: The last exit code of this task
+
+  params:
+    - name: cicdContextDataId
+      type: string
+
+    - name: pipelineRunUid
+      type: string
+      description: the pipelineRun uid
+      default: NONE
+
+    - name: pipelineName
+      type: string
+      description: the pipeline name
+      default: pipelineName-NULL
+
+    - name: eventName
+      type: string
+      description: the eventName name
+      default: eventName-NULL
+
+    - name: exitWithExitCode
+      type: string
+      description: the exit code to exit with
+      default: "1"
+
+    - name: setContextDataValues
+      type: string
+      description: PIPE (|) delimited list of k=v pairs
+      default: "state.loadAndHandleEvent=setContextDataValues.not.provided"
+
+
+  steps:
+
+    #----------------------------------
+    # STEP handle event
+    #----------------------------------
+    - name: handle-event
+      image: bitsofinfo/cicdstatemgr:1.0.17
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+
+        EVENT_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+        cicdstatemgr \
+              --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+              --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+              --id $(inputs.params.cicdContextDataId) \
+              --load \
+              --set '$(inputs.params.setContextDataValues)' \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).params.pipelineName=$(inputs.params.pipelineName)" \
+              --set "state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid).$(inputs.params.eventName)At=$EVENT_AT" \
+              --handle-event $(inputs.params.pipelineName)=$(inputs.params.eventName) \
+              --tmpl-ctx-var "event.data=state.$(inputs.params.pipelineName).$(inputs.params.pipelineRunUid)" 
+
+        HANDLE_EVENT_EXIT_CODE=$?
+
+        if [ "$HANDLE_EVENT_EXIT_CODE" != "0" ]; then
+        
+          echo "handle-event step failed with exit code: $HANDLE_EVENT_EXIT_CODE"
+          echo -n $HANDLE_EVENT_EXIT_CODE > /tekton/results/last-exit-code
+
+        else 
+          cat /tekton/results/cicdContextDataId
+          echo 
+          echo
+
+          cat /tekton/results/cicdContextDataJson
+          echo 
+          echo
+
+          exit $(inputs.params.exitWithExitCode)
+
+        fi
+
+
+
+

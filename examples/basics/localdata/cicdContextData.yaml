@@ -45,7 +45,8 @@ jinja2Macros:
 state:
   cicdContextDataId: context-data-id-1
   cicdContextName: stage
-  key1: value1
+  key1: yet a new value
+  templateTest: '{{tmplctx.prop1}}'
 variables:
   baseVar1: baseVarVal1
   myVar1: test

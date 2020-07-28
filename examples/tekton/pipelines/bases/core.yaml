@@ -1,0 +1,236 @@
+############################################################
+#
+# The common/shared jinj2 macros that can be referred to 
+# throughout pipeline config files
+#
+############################################################
+jinja2-macros: 
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "respond" event handler
+  #
+  # Takes an original Slack requestBody
+  # that contains an interactive message 
+  # action within it and crafts a response for 
+  # the action. The output of this REPLACES
+  # the text of the original source message
+  # where the interactive components were
+  # 
+  #-------------------------------------------------------------
+  responderMessage: |
+    {%- macro responderMessage(requestBody) -%}
+      {%- for attachment in requestBody.message.attachments -%}
+        {%- set actionLabel = attachment.blocks[0].text.text -%}
+        {%- set actionLabel = (actionLabel|replace('+',' ')) -%}
+        {%- if attachment.blocks[1].block_id == requestBody.actions[0].block_id -%}
+            {%- for blockButton in attachment.blocks[1].elements -%}
+                {%- if blockButton.action_id == requestBody.actions[0].action_id -%}
+                
+    :question: In response to action option:
+
+    *{{actionLabel}}*
+    
+    <@{{requestBody.user.id}}> clicked on: *{{blockButton.text.text}}*
+
+    {{ statusLink() }}
+                    {%- break -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # 
+  # Renders a simple status link to the PipelineRun 
+  # within the cicd/tekton dashboard
+  # 
+  #-------------------------------------------------------------
+  statusLink: |
+    {%- macro statusLink(pipelineRunUid=event.data.params.pipelineRunUid) -%}
+      <{{configData.dashboard.pipelineRunUrl}}/{{pipelineRunUid}}|View status here>
+    {%- endmacro -%}
+
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders a button that for changing the cicd context
+  # to the given 'targetCicdContextName'
+  # 
+  #-------------------------------------------------------------
+  changeContextButtonValue: |
+    {%- macro changeContextButtonValue(targetCicdContextName) -%}
+      changeContext-{{state.cicdVersion}}-{{state.appName}}|{{ {'trigger':'changeContext','gitCloneUrl':state.gitCloneUrl,'commitId':state.commitId,'targetCicdContextName':targetCicdContextName,'gitAppName':state.gitAppName,'appName':state.appName,'appTag':state.appTag,'cicdVersion':state.cicdVersion,'relatedPipelineName':event.data.params.pipelineName,'relatedCicdContextDataId':event.data.params.cicdContextDataId,'relatedPipelineRunUid':event.data.params.pipelineRunUid}|tojson|to_base64 }}
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders a deploy button for the given parameters
+  # 
+  #-------------------------------------------------------------
+  deployButtonValue: |
+    {%- macro deployButtonValue(targetAppName=state.gitAppName, targetAppTag=state.appTag) -%}
+      deploy-{{state.cicdVersion}}-{{state.appName}}|{{ {'trigger':'deploy','gitCloneUrl':state.gitCloneUrl,'cicdVersion':state.cicdVersion,'targetAppName':targetAppName,'targetAppTag':targetAppTag,'cicdContextDataId':state.cicdContextDataId,'cicdContextName':state.cicdContextName,'relatedPipelineName':event.data.params.pipelineName,'relatedCicdContextDataId':state.cicdContextDataId,'relatedPipelineRunUid':event.data.params.pipelineRunUid}|tojson|to_base64 }}
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders a deploy button label for the given parameters
+  # 
+  #-------------------------------------------------------------
+  deployButtonLabel: |
+    {%- macro deployButtonLabel(targetAppTag=state.appTag) -%}
+      Apply {{targetAppTag}} to: {{pipelines.deploy.deployTask.targetNamespace}}
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders the header for the deploy set of choice
+  # 
+  #-------------------------------------------------------------
+  deployHeader: |
+    {%- macro deployHeader(targetAppTag) -%}
+      Apply `Deployment` for *{{state.gitAppName}}:{{targetAppTag}}* in target k8s namespace: *{{pipelines.deploy.deployTask.targetNamespace}}*
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "notify" event handler
+  #
+  # Renders the content when notifying of a successful deployment
+  # 
+  #-------------------------------------------------------------
+  deploymentSuccessMessage: |
+    {%- macro deploymentSuccessMessage(appName=state.appName,msgPostfix='') -%}
+      :white_check_mark: SUCCESSFULLY DEPLOYED {{msgPostfix}}: 
+
+      image: *{{state.gitAppName}}:{{event.data.params.targetAppTag}}*
+      target namespace: *{{pipelines.deploy.deployTask.targetNamespace}}*
+
+      {{statusLink()}}
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "notify" event handler
+  #
+  # Renders the content when notifying of a failed deployment
+  # 
+  #-------------------------------------------------------------
+  deploymentFailedMessage: |
+    {%- macro deploymentFailedMessage(appName=state.appName,msgPostfix='') -%}
+      :x:  one or more DEPLOYMENTS FAILED {{msgPostfix}}
+      {{statusLink()}}
+    {%- endmacro -%}
+
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders a test button for the given parameters
+  # 
+  #-------------------------------------------------------------
+  testButtonValue: |
+    {%- macro testButtonValue(targetAppName=state.gitAppName, targetAppTag=state.appTag) -%}
+      test-{{state.cicdVersion}}-{{state.appName}}|{{ {'trigger':'test','gitCloneUrl':state.gitCloneUrl,'cicdVersion':state.cicdVersion,'targetAppName':targetAppName,'targetAppTag':targetAppTag,'cicdContextDataId':state.cicdContextDataId,'cicdContextName':state.cicdContextName,'relatedPipelineName':event.data.params.pipelineName,'relatedCicdContextDataId':state.cicdContextDataId,'relatedPipelineRunUid':event.data.params.pipelineRunUid}|tojson|to_base64 }}
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders the header for the test set of choice
+  # 
+  #-------------------------------------------------------------
+  testHeader: |
+    {%- macro testHeader() -%}
+      Test image: *{{state.gitAppName}}:{{state.appTag}}*
+    {%- endmacro -%}
+
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders a validate button for the given parameters
+  # 
+  #-------------------------------------------------------------
+  validateButtonValue: |
+    {%- macro validateButtonValue(targetAppName=state.gitAppName, targetAppTag=state.appTag) -%}
+      validate-{{state.cicdVersion}}-{{state.appName}}|{{ {'trigger':'validate','gitCloneUrl':state.gitCloneUrl,'cicdVersion':state.cicdVersion,'targetAppName':targetAppName,'targetAppTag':targetAppTag,'cicdContextDataId':state.cicdContextDataId,'cicdContextName':state.cicdContextName,'relatedPipelineName':event.data.params.pipelineName,'relatedCicdContextDataId':state.cicdContextDataId,'relatedPipelineRunUid':event.data.params.pipelineRunUid}|tojson|to_base64 }}
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders the header for the validate set of choice
+  # 
+  #-------------------------------------------------------------
+  validateHeader: |
+    {%- macro validateHeader() -%}
+      Validate image: *{{state.gitAppName}}:{{state.appTag}}*
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "manual_choice" event handler
+  #
+  # Renders the title for a set of manual choices after success
+  # 
+  #-------------------------------------------------------------
+  successManualChoicesTitle: |
+    {%- macro successManualChoicesTitle() -%}
+      :question:  What would you like to do next?
+    {%- endmacro -%}
+
+  #-------------------------------------------------------------
+  # Used w/ cicdstatemgr's "notify" event handler
+  #
+  # Renders the message posted when new CICD context is started
+  # 
+  #-------------------------------------------------------------
+  newCicdContextSuccessMessage: |
+    {%- macro newCicdContextSuccessMessage() -%}
+      :information_source:  NEW CICD CONTEXT STARTED: 
+      
+      APP: *{{state.gitAppName}}:{{state.appTag}}* 
+      CICD Context: {{state.cicdContextName}}
+      Invoked by: {{event.data.security.invokerUid}}
+      Triggered by: {{event.data.params.triggeredBySystem}}
+      {% if event.data.params.relatedCicdContextDataId != 'none' %}
+      Related CICD context id: `{{event.data.params.relatedCicdContextDataId}}`
+      Related PipelineRun: <{{configData.dashboard.pipelineRunUrl}}/{{event.data.params.relatedPipelineRunUid}}|{{event.data.params.relatedPipelineRunUid}}>
+      {% endif %}
+      {{statusLink()}}
+    {%- endmacro -%}
+
+
+
+#--------------------------------------------------------
+#
+# Variables
+# 
+# These are well known variables referenced in the pipeline
+# config, but may need to be overriden by specific apps
+# or categories of apps.
+# 
+#
+#--------------------------------------------------------
+variables:
+  
+  #
+  # See jinja2 macro: deployButtonValue
+  # This is the list of helmfile-deploy app environment
+  # app names that the version-checks.py script
+  # will validate version consistency across
+  #
+  predeployAppNamesToVersionCheck: "{{state.appName}}"
+
+  #
+  # See jinja2 macro: removePVHeader
+  #
+  # The appName to use when selecting the rollbackInfo
+  # for the PV target to rollback to
+  #
+  deployerRollbackInfoSelector: "{{state.appName}}"
+
+

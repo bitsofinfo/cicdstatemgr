@@ -36,7 +36,7 @@ kubectl apply -f $SCRIPTPATH/tekton-pipelines-mods.yaml
 kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/previous/v0.6.1/release.yaml
 
 # install dashboard
-kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.8.0/tekton-dashboard-release.yaml
+kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.7.1/tekton-dashboard-release.yaml
 
 # NodePort change
 kubectl apply -f $SCRIPTPATH/tekton-dashboard-mods.yaml
@@ -64,22 +64,22 @@ kubectl apply -f $SCRIPTPATH/redis.yaml
 # a Docker registry instance that resides in the cluster that Kaniko uses 
 # for its cache. https://github.com/GoogleContainerTools/kaniko
 kubectl apply -f $SCRIPTPATH/image-registry-cache.yaml
+\
+# Trivy server
+kubectl apply -f $SCRIPTPATH/trivy-server.yaml
 
+# Create secrets for slack oauth token (i.e to verify inbound slack actions)
+kubectl create secret generic slack-oauth-token --from-file=slack-oauth-token=secrets/slack-oauth-token 
 
-
+# setup our namespaces for where the apps will be deployed
+# separate ones for dev/prod
 kubectl create namespace apps-dev
-kubectl create namespace apps-qa
 kubectl create namespace apps-prod
 
 kubectl create clusterrolebinding cicd-tekton-dev \
     --serviceaccount=tekton-pipelines:cicd-tekton \
     --clusterrole=cluster-admin \
     --namespace=apps-dev
-
-kubectl create clusterrolebinding cicd-tekton-stage \
-    --serviceaccount=tekton-pipelines:cicd-tekton \
-    --clusterrole=cluster-admin \
-    --namespace=apps-qa
 
 kubectl create clusterrolebinding cicd-tekton-prod \
     --serviceaccount=tekton-pipelines:cicd-tekton \
