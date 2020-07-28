@@ -112,6 +112,16 @@ Configure YOUR FORK of [nginx-hello-world](https://github.com/bitsofinfo/nginx-h
 
 * Ensure its active and save
 
+## Trigger it
+
+Once it is up you can trigger the pipline by pushing a tag to your FORK of [nginx-hello-world](https://github.com/bitsofinfo/nginx-hello-world/)
+
+```
+cd [myforkof-nginx-hello-world]
+git tag -a 0.0.1 -m "0.0.1"; git push origin 0.0.1
+```
+
+This should trigger a new `start` pipeline run followed by an auto trigger of `build`. Slack alerts should show up in your Slack workspace's `#cicdstatemgr-dev` channel and you can view your Tekton dashboard at the URLs emitted from the install script run earlier.
 
 ## Cleanup
 
