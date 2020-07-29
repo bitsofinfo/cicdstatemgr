@@ -8,7 +8,7 @@ TEKTON_DASHBOARD_URL=$2
 SLACK_ORG_URL="https://bitsofinfo.slack.com/"
 
 SED_OPTIONS=""
-SED_VERSION=$(sed --version)
+SED_VERSION=$(sed --version >/dev/null 2>&1)
 if [ "$?" == "1" ]; then
   SED_OPTIONS=" -e "
 fi
@@ -33,7 +33,7 @@ kubectl delete secret cicdstatemgr-secrets
 # replace 
 SLACK_BEARER_TOKEN=$(cat secrets/slack-bearer-token)
 cp confs/cicdstatemgr-secrets.yaml confs/cicdstatemgr-secrets.yaml.tmp
-sed -i "s|@SLACK_BEARER_TOKEN@|${SLACK_BEARER_TOKEN}|g" confs/cicdstatemgr-secrets.yaml.tmp
+sed -i $SED_OPTIONS "s|@SLACK_BEARER_TOKEN@|${SLACK_BEARER_TOKEN}|g" confs/cicdstatemgr-secrets.yaml.tmp
 
 kubectl create secret generic cicdstatemgr-secrets \
   --from-file=cicdstatemgr-secrets.yaml=$SCRIPTPATH/confs/cicdstatemgr-secrets.yaml.tmp \
