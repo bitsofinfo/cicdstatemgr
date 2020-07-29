@@ -1,6 +1,6 @@
 # Tekton example
 
-This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages to provide user-interaction. Visually the flow this example mediates useig `cicdstatemgr` looks like this:
+This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages to provide user-interaction. Visually the flow this example produces by leveraging `cicdstatemgr` looks like this:
 
 ![Diagram of example](img/tekton.png "Diagram1")
 
