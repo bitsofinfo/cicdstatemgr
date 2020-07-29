@@ -163,7 +163,7 @@ Want to see how Tekton was installed? Check out the [core/ components](core/)
 
 Want to see how the Tekton pipelines/triggers and EventListener are defined? Check out the [pipelines/ components](pipelines/)
 
-Want to see how all the Slack messages and interaction work? Check out the [pipelines/bases] and [pipelines/confs] directories which contain the configs and pipeline-configs that `cicdstatemgr` consumes.
+Want to see how all the Slack messages and interaction work? Check out the [pipelines/bases](pipelines/bases) and [pipelines/confs](pipelines/confs) directories which contain the configs and pipeline-configs that `cicdstatemgr` consumes.
 
 
 ## Cleanup
