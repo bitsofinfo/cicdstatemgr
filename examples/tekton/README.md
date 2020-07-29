@@ -22,8 +22,12 @@ TBD
 The following needs to be installed on your local.
 
 * [minkube v1.12.1+](https://kubernetes.io/docs/tasks/tools/install-minikube/) (assumes os-x w/ [hyperkit](https://minikube.sigs.k8s.io/docs/drivers/hyperkit/))
-* [ngrok free](https://ngrok.com/)
+
+* [ngrok free](https://ngrok.com/) and ensure the `ngrok` command is on your `$PATH`
+
 * `kubectl`: 1.16+
+  
+* All commands below should run in the `bash` shell
 
 You also need to do the following before starting:
 
@@ -116,26 +120,61 @@ Configure YOUR FORK of [nginx-hello-world](https://github.com/bitsofinfo/nginx-h
 
 * Ensure its active and save
 
-# Trigger it
+# View the Tekton dashboard
 
-Once it is up you can trigger the pipline by pushing a tag to your FORK of [nginx-hello-world](https://github.com/bitsofinfo/nginx-hello-world/)
+Go back to your terminal and find the output from the `install.sh` you ran earlier. 
+
+Find the `Tekton Dashboard: http:/x.x.x.x:xxxxx` output, grab this URL and open it in your browser. 
+
+You can also get it via `minikube service list`
+
+# Trigger the build pipeline
+
+Once it is up you can trigger the pipeline by pushing a tag to your FORK of [nginx-hello-world](https://github.com/bitsofinfo/nginx-hello-world/)
 
 ```
 cd [myforkof-nginx-hello-world]
 
-git tag -a 0.0.1 -m "0.0.1"; git push origin 0.0.1
+git tag -a 1.0.0 -m "1.0.0"; git push origin 1.0.0
 ```
 
 This should trigger a new `start` pipeline run followed by an auto trigger of `build`. Slack alerts should show up in your Slack workspace's `#cicdstatemgr-dev` channel and you can view your Tekton dashboard at the URLs emitted from the install script run earlier.
 
-If you click on any `deploy/apply` buttons this will apply the `nginx-hello-world` k8s manifests to the k8s cluster within either the `apps-dev` or `apps-prod` namespaces. You can then do a `minikube services list` to get a local URL to hit them app to verify they are running.
+If you click on any `deploy/apply` buttons this will apply the `nginx-hello-world` k8s manifests to the k8s cluster within either the `apps-dev` or `apps-prod` namespaces. 
+
+You can then do a `minikube service list` to get a local URL to hit them app to verify they are running.
+
+It should look something like this as `nginx-hello-world-[version]` deployments are applied to the cluster as you click on the buttons.
+
+```
+|------------------|-----------------------------|--------------------|----------------------------|
+|    NAMESPACE     |            NAME             |    TARGET PORT     |            URL             |
+|------------------|-----------------------------|--------------------|----------------------------|
+| apps-dev         | nginx-hello-world-1-0-0    | http/80            | http://192.168.64.34:30691 |
+| apps-prod        | nginx-hello-world-1-0-0    | http/80            | http://192.168.64.34:30425 |
+....
+```
+
+## Next steps
+
+This example is intended to serve as... well just that, an example of how you can leverage `cicdstatemgr` along with [Tekton](https://github.com/tektoncd) to create CICD workflows and mediate a lot of the interaction via a tool like Slack.
+
+Want to see how Tekton was installed? Check out the [core/ components](core/)
+
+Want to see how the Tekton pipelines/triggers and EventListener are defined? Check out the [pipelines/ components](pipelines/)
+
+Want to see how all the Slack messages and interaction work? Check out the [pipelines/bases] and [pipelines/confs] directories which contain the configs and pipeline-configs that `cicdstatemgr` consumes.
+
 
 ## Cleanup
+
+Running the following will kill the `ngrok` process (the pid is in `.ngrok.pid`), and then issue a `minikube delete`
+
+Note that if you run `install.sh` again, you will have to re-register the `ngrok` url again with slack/github as the url changes everytime you restart `ngrok`
 
 ```
 ./remove.sh
 ```
-
 
 ## notes
 
