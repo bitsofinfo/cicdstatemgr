@@ -7,8 +7,8 @@ NGROK_URL=$1
 TEKTON_DASHBOARD_URL=$2
 SLACK_ORG_URL="https://bitsofinfo.slack.com/"
 
-SED_VERSION=$(sed --version)
 SED_OPTIONS=""
+SED_VERSION=$(sed --version)
 if [ "$?" == "1" ]; then
   SED_OPTIONS=" -e "
 fi
