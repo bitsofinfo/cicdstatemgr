@@ -7,10 +7,16 @@ NGROK_URL=$1
 TEKTON_DASHBOARD_URL=$2
 SLACK_ORG_URL="https://bitsofinfo.slack.com/"
 
+SED_VERSION=$(sed --version)
+SED_OPTIONS=""
+if [ "$?" == "1" ]; then
+  SED_OPTIONS=" -e "
+fi
+
 cp confs/cicdstatemgr-config.yaml confs/cicdstatemgr-config.yaml.tmp
-sed -i "s|@NGROK_URL@|${NGROK_URL}|g" confs/cicdstatemgr-config.yaml.tmp
-sed -i "s|@TEKTON_DASHBOARD_URL@|${TEKTON_DASHBOARD_URL}|g" confs/cicdstatemgr-config.yaml.tmp
-sed -i "s|@SLACK_ORG_URL@|${SLACK_ORG_URL}|g" confs/cicdstatemgr-config.yaml.tmp
+sed -i $SED_OPTIONS "s|@NGROK_URL@|${NGROK_URL}|g" confs/cicdstatemgr-config.yaml.tmp
+sed -i $SED_OPTIONS "s|@TEKTON_DASHBOARD_URL@|${TEKTON_DASHBOARD_URL}|g" confs/cicdstatemgr-config.yaml.tmp
+sed -i $SED_OPTIONS "s|@SLACK_ORG_URL@|${SLACK_ORG_URL}|g" confs/cicdstatemgr-config.yaml.tmp
 
 
 kubectl delete configmap cicdstatemgr-configs
