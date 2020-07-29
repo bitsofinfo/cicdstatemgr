@@ -1,6 +1,8 @@
 # Tekton example
 
-This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages to provide user-interaction.
+This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages to provide user-interaction. Visually the flow this example mediates useig `cicdstatemgr` looks like this:
+
+![Diagram of example](img/tekton.png "Diagram1")
 
 This example runs locally using [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 
