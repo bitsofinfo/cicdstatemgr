@@ -6,6 +6,10 @@ This demonstrates the usage of `--set` which provides a way to set any value wit
 
 This assumes you've already run [INIT_NEW](INIT_NEW.md)
 
+Whenever you call `--set` the `cicdContextData` that is loaded will be fetched from any non-primary stores first (i.e. disk files) and then only fetched from a primary store as a last resort. See [config.yaml](config.yaml)
+
+Each time you `--set` the data is re-flushed to all data sources (primary and non-primary). See [config.yaml](config.yaml)
+
 Let's ensure the following value exists via `--set`:
 ```
 cicdstatemgr \
