@@ -47,6 +47,11 @@ state:
   cicdContextName: stage
   key1: yet a new value
   templateTest: '{{tmplctx.prop1}}'
+  fileBody:
+    dog: beagle
+    bark:
+      quality: high
+      volume: loud
 variables:
   baseVar1: baseVarVal1
   myVar1: test
