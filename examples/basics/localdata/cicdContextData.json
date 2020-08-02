@@ -58,7 +58,14 @@
     "cicdContextDataId": "context-data-id-1",
     "cicdContextName": "stage",
     "key1": "yet a new value",
-    "templateTest": "{{tmplctx.prop1}}"
+    "templateTest": "{{tmplctx.prop1}}",
+    "fileBody": {
+      "dog": "beagle",
+      "bark": {
+        "quality": "high",
+        "volume": "loud"
+      }
+    }
   },
   "variables": {
     "baseVar1": "baseVarVal1",

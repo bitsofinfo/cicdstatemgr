@@ -6,6 +6,8 @@ For the following set of examples here we are just running these commands locall
 
 Run the following command from within the root of this project. This command will initialized a brand new `cicdContextData` object bound to an identifier you specify in the `--init-new` argument
 
+`--init-new` can be used along with the `--set` and `--handle-event` arguments as well
+
 ```
 cicdstatemgr \
     --config config.yaml  \

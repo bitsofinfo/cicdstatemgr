@@ -54,3 +54,7 @@ Lets start by using the [--init-new set of arguments](INIT_NEW.md)
 ## --get
 
 Next lets `--get` some values from the context data by using the [--get argument](GET.md)
+
+## --set
+
+Next lets `--set` some values into the context data by using the [--set argument](SET.md)
