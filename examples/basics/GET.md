@@ -6,6 +6,8 @@ Its important to note that the you can still `--get` any literal value, the valu
 
 This assumes you've already run [INIT_NEW](INIT_NEW.md)
 
+Whenever you call `--get` the `cicdContextData` that is loaded will be fetched from any non-primary stores first (i.e. disk files) and then only fetched from a primary store as a last resort if data does not exist in non-primary stores already. See [config.yaml](config.yaml)
+
 Let's ensure the following value exists via `--set`:
 ```
 cicdstatemgr \
