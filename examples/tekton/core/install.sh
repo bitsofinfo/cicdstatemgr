@@ -69,6 +69,7 @@ kubectl apply -f $SCRIPTPATH/image-registry-cache.yaml
 kubectl apply -f $SCRIPTPATH/trivy-server.yaml
 
 # Create secrets for slack oauth token (i.e to verify inbound slack actions)
+cat secrets/slack-oauth-token | tr -d '\n' > secrets/slack-oauth-token.tmp; mv secrets/slack-oauth-token.tmp secrets/slack-oauth-token
 kubectl create secret generic slack-oauth-token --from-file=slack-oauth-token=secrets/slack-oauth-token 
 
 # setup our namespaces for where the apps will be deployed
