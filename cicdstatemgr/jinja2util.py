@@ -6,15 +6,21 @@
 
 import base64
 import yaml
+import json
 from jinja2 import Environment
 
 def createEnvironment() -> Environment:
     env = Environment(extensions=['jinja2.ext.loopcontrols'])
     env.filters['to_nice_yaml'] = to_nice_yaml
+    env.filters['from_json'] = from_json
     env.filters['kv_comma_pairs_to_json'] = kv_comma_pairs_to_json
     env.filters['to_base64'] = to_base64
     return env
     
+
+# Jinja filter
+def from_json(value):
+    return json.loads(value)
 
 # Jinja filter
 def to_nice_yaml(value, default_flow_style=False, sort_keys=False, indent=2):

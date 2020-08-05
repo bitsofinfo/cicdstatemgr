@@ -6,6 +6,17 @@ jinja2-macros:
       This is basicMacro! msg = {{msg}}
     {%- endmacro -%}
 
+  echo: |
+    {%- macro echo(msg) -%}
+      {{msg}}
+    {%- endmacro -%}
+
+  random: |
+    {%- macro random() -%}
+      {{ range(10000, 99999) | random }}
+    {%- endmacro -%}
+
+
 variables:
   baseVar1: "baseVarVal1"
 
@@ -17,10 +28,11 @@ cicd-contexts:
     pipelines:
       start:
         event-handlers:
+        
           some-event:
             notify:
               message: |
-                {{ basicMacro('some-event fired') }}
+                {{ basicMacro('some-event fired in the start pipeline') }}
     
 
 
