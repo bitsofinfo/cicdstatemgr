@@ -174,7 +174,7 @@ class CicdStateMgr():
             if blankOnError:
                 return ""
             else:
-                return "<jinja2 parse error>"
+                return "<jinja2 parse error> {}".format(origTemplate)
 
     def persist(self, cicdContextData, skipPrimary=False):
         logging.debug("persist() skipPrimary={} cicdContextDataId={}".format(skipPrimary,cicdContextData[STATE][CICD_CONTEXT_DATA_ID]))
@@ -709,14 +709,17 @@ class CicdStateMgr():
             contextDataForTemplate['body'] = responseBodyObj
             
             # always apply global auto capture rules
-            if 'auto-capture-response-data' in self.configData[CONFIG_DATA_KEY]['notify']:
-                captureConfs = self.configData[CONFIG_DATA_KEY]['notify']['auto-capture-response-data']
-                for captureConf in captureConfs:
-                    valueToSet = self.parse_template(str(captureConf['from']),contextDataForTemplate)
-                    if valueToSet and isinstance(valueToSet,str):
-                        valueToSet = valueToSet.strip()
-                        if valueToSet:
-                            self.set_value_in_dict_via_prop_path(cicdContextData, captureConf['to'], valueToSet)
+            if 'notify' in self.configData[CONFIG_DATA_KEY]:
+                if 'auto-capture-response-data' in self.configData[CONFIG_DATA_KEY]['notify']:
+                    captureConfs = self.configData[CONFIG_DATA_KEY]['notify']['auto-capture-response-data']
+                    for captureConf in captureConfs:
+                        valueToSet = self.parse_template(str(captureConf['from']),contextDataForTemplate)
+                        if valueToSet and isinstance(valueToSet,str):
+                            valueToSet = valueToSet.strip()
+                            if valueToSet:
+                                # the 'to' directive can be a template as well
+                                setToKey = self.parse_template(captureConf['to'],contextDataForTemplate)
+                                self.set_value_in_dict_via_prop_path(cicdContextData, setToKey, valueToSet)
 
             # ... and then apply the pipeline specific notify capture rules
             if 'capture-response-data' in notifyConfig:
@@ -726,7 +729,9 @@ class CicdStateMgr():
                     if valueToSet and isinstance(valueToSet,str):
                         valueToSet = valueToSet.strip()
                         if valueToSet:
-                            self.set_value_in_dict_via_prop_path(cicdContextData, captureConf['to'], valueToSet)
+                            # the 'to' directive can be a template as well
+                            setToKey = self.parse_template(captureConf['to'],contextDataForTemplate)
+                            self.set_value_in_dict_via_prop_path(cicdContextData, setToKey, valueToSet)
 
         else:
             logging.error("event_handle_notify() http response code: {} FAILED: {} ".format(response.status_code,response.content))
@@ -761,7 +766,7 @@ class CicdStateMgr():
             'Connection': 'keep-alive'
         }
 
-        logging.debug("event_handle_manual_choice(): POSTing notification to {} : {}".format(notifyUrl,notifyPayload))
+        logging.debug("event_handle_manual_choice(): POSTing manual choices to {} : {}".format(notifyUrl,notifyPayload))
 
         response = requests.request("POST", notifyUrl, data=notifyPayload, headers=headers)
         
