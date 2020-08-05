@@ -25,3 +25,28 @@ ls -al localdata/*
 -rw-r--r--  1 bof  staff  1415 Aug  2 18:17 localdata/cicdContextData.yaml
 ```
 
+Note that the PATH of where the local files are written as well as the filenames themselves can be controlled via the `datasources` section within a [config.yaml](config.yaml) file.
+
+After data is locally cached via `--load` the idea is that you can then utilize the data in various ways:
+
+* Via any programs that can read directly from JSON or YAML such as `jq`, `yq` or others you wrote yourself. Really anything.
+  
+* Via shell scripts by doing a `source localdata/cicdContextData.sh` to load all variables into the shell for subsequent use
+
+* Via `cicdstatemgr` itself via its `--get` method etc
+
+
+Load can also be combined w/ `--set` and `--handle-event` such as:
+```
+cicdstatemgr    \
+     --config config.yaml \
+     --secrets secrets.yaml \
+     --id "context-data-id-1" \
+     --load \
+     --set state.key1=valuechanged \
+     --set state.testHeader2Value="myvalueforheader2" \
+     --set state.triggerAutoArg1=99999 \
+     --handle-event build=testEvent
+```
+
+The above will load the data, write it to all non-primary datasources, then `--set` all your specified values, and then finally `--handle-event` which can subsequently have handlers that reference the data `--set` previously.

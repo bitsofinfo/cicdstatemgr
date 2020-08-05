@@ -66,3 +66,144 @@ cicdstatemgr:
 
 
 
+
+  #
+  # This is the default baseline configuration for 
+  # the 'trigger-pipeline' event handler which can 
+  # be referenced in any individual app's pipeline-config.yaml
+  # under any:
+  #  [pipelineName].event-handlers.[eventName].trigger-pipeline section
+  #
+  # 
+  trigger:
+
+    # The URL all POSTs will be sent to
+    url: https://postman-echo.com/post
+
+    # Headers that will be automatically applied
+    # jinja2 references are valid here
+    headers:
+      - name: "test-header-1"
+        value: "{{secretData.someSuperSecret}}"
+      - name: "test-header-2"
+        value: "{{state.testHeader2Value}}"
+      - name: "random-header"
+        value: "{{random()}}"
+
+    # these argument are always sent in the payload that
+    # a 'trigger-pipeline' event handler sends in
+    # addition to ones that you can optionally configure
+    # in each individual event handler config in a pipeline
+    # config yaml file under its trigger-pipeline.args section
+    # the "trigger-pipeline.name" can be referenced here in the
+    # context variable "triggerPipeline"
+    auto-args:
+      autoArg1: "{{state.triggerAutoArg1}}"
+      randomId: "{{random()}}"
+      triggerPipelineName: "{{triggerPipeline.name}}"
+
+      
+  #
+  # This is the default baseline configuration for 
+  # the 'notify' event handler which can 
+  # be referenced in any individual app's pipeline-config.yaml
+  # under any:
+  #  [pipelineName].event-handlers.[eventName].notify section
+  #
+  # 
+  notify:
+
+    # 
+    # After a notify POST is sent to the endpoint the response
+    # body (unmarshalled from JSON) can be parsed via the 
+    # 'auto-capture-response-data' config below based on one or 
+    # more items below.
+    #
+    # Each array element below defines a individual instruction
+    # set for data to capture from the 'body'. 
+    #
+    #   from: jinja2 template that when parsed yields a string value
+    #     to: sets the value yielded via the 'from:' to this target in the cicdContextData
+    #         note the 'to' value can have jinja2 template syntax in it as well
+    #
+    auto-capture-response-data:
+      # the slack thread ID, only set if not previously set
+      - from: |
+          {%- if body.data -%}
+            {{- body.data.message -}}
+          {%- endif -%}  
+        to: state.postedData.{{body.data.randomId}}.body.message
+
+      - from: |
+          {%- if body.headers -%}
+            {{- body.headers['user-agent'] -}}
+          {%- endif -%}  
+        to: state.postedData.{{body.data.randomId}}.headers.userAgent
+
+      - from: |
+          {%- if body.data -%}
+            {{- body.data.randomId -}}
+          {%- endif -%}  
+        to: state.lastPostedDataRandomId
+
+  # 
+  # Configuration for the slack http client within cicdstatmgr
+  # used for the responder/notify/manual-choice handlers
+  # For this example we are just sending everything to postman echo
+  # 
+  slack:
+    url: https://postman-echo.com/post
+    orgUrl: http://bitsofinfo.slack.com
+
+  # 
+  # Configuration for the Tekton dashboard
+  #
+  dashboard:
+    pipelineRunUrl: http://localhost/#/namespaces/tekton-pipelines/pipelineruns
+
+  #
+  # Base templates used by the manual-choice and notify event handlers
+  #
+  templates:
+
+    # The notify handler constructs a context containing each handler invocations
+    # rendered message, target channel and the cicdContextData in the jinja2 context
+    # this will render the body to be POSTED to the notification endpoint
+    notify: >
+      {
+      "channel": "{{channel}}",
+      "message": "{{notify.message}}",
+      "randomId": "{{random()}}"
+      }
+
+    # The manual-choice handler constructs a context containing each handler invocations
+    # rendered manualChoice objects, target channel and the cicdContextData in the jinja2 context
+    # this will render the body to be POSTED to the notification endpoint
+    manual-choice: >
+      {
+         "channel": "{{channel}}",
+         "randomId": "{{random()}}",
+          choices": [
+            {% for choiceName,choice in manualChoice.choices.items() %}
+                { 
+                  "header": "{{choice.header}}"
+                  "options": [
+                          {% for option in choice.options %}
+                            {
+                              "value": "{{option.value}}",
+                              "text": "{{option.text}}"
+                            } {{ "," if not loop.last }}
+                          {% endfor %}
+                        ]
+                } {{ "," if not loop.last }}
+            {% endfor %}
+          ]
+      }
+
+    # The respond handler constructs a context containing each handler invocations
+    # rendered message object, target channel and the cicdContextData in the jinja2 context
+    # this will render the body to be POSTED to the notification endpoint
+    respond: >
+        {
+          "response_text": "{{respond.message}}"
+        }
