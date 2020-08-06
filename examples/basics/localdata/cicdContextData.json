@@ -12,6 +12,11 @@
     },
     "build": {
       "event-handlers": {
+        "testEvent": {
+          "notify": {
+            "message": "{{ basicMacro('testEventFired!!! yes...') }}\n"
+          }
+        },
         "testNotifyEvent": {
           "notify": {
             "message": "{{ basicMacro('build is successful') }}\n",
@@ -103,6 +108,11 @@
         "pipelines": {
           "build": {
             "event-handlers": {
+              "testEvent": {
+                "notify": {
+                  "message": "{{ basicMacro('testEventFired!!! yes...') }}\n"
+                }
+              },
               "testNotifyEvent": {
                 "notify": {
                   "message": "{{ basicMacro('build is successful') }}\n",
@@ -193,7 +203,7 @@
   "state": {
     "cicdContextDataId": "context-data-id-1",
     "cicdContextName": "stage",
-    "key1": "value1",
+    "key1": "valuechanged",
     "templateTest": "{{tmplctx.prop1}}",
     "key2": "value2",
     "fileBody": {
@@ -202,7 +212,31 @@
         "quality": "high",
         "volume": "loud"
       }
-    }
+    },
+    "testHeader2Value": "myvalueforheader2",
+    "triggerAutoArg1": "dummyVal",
+    "postedData": {
+      "14144": {
+        "body": {
+          "message": "This is basicMacro! msg = testEventFired!!! yes..."
+        },
+        "headers": {
+          "userAgent": "python-requests/2.24.0"
+        }
+      },
+      "88824": {
+        "body": {
+          "message": "This is basicMacro! msg = build is successful"
+        },
+        "headers": {
+          "userAgent": "python-requests/2.24.0"
+        }
+      }
+    },
+    "lastPostedDataRandomId": "88824",
+    "lastPostedToNotifyChannel": "stage",
+    "lastPostedHttpResponse": "{\"args\": {}, \"data\": {\"channel\": \"stage\", \"message\": \"This is basicMacro! msg = build is successful\", \"randomId\": \"88824\"}, \"files\": {}, \"form\": {}, \"headers\": {\"accept\": \"*/*\", \"accept-encoding\": \"gzip, deflate\", \"authorization\": \"Bearer FAKE_TOKEN\", \"cache-control\": \"no-cache\", \"content-length\": \"103\", \"content-type\": \"application/json; charset=UTF-8\", \"host\": \"postman-echo.com\", \"user-agent\": \"python-requests/2.24.0\", \"x-amzn-trace-id\": \"Root=1-5f2c6557-78a602786f47a1704c689544\", \"x-forwarded-port\": \"443\", \"x-forwarded-proto\": \"https\"}, \"json\": {\"channel\": \"stage\", \"message\": \"This is basicMacro! msg = build is successful\", \"randomId\": \"88824\"}, \"url\": \"https://postman-echo.com/post\"}",
+    "lastPostedNotifyMessage": "This is basicMacro! msg = build is successful"
   },
   "variables": {
     "baseVar1": "baseVarVal1",
