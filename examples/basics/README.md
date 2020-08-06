@@ -76,4 +76,4 @@ Next lets `--load` the context data for usage via [--load argument](LOAD.md)
 
 ## --handle-event
 
-Finally lets play with the `--handle-event` option to fire off messages to endpoints via the [--handle-event argument](HANDLE_EVENT.md)
+Finally lets play with the `--handle-event` option to fire off HTTP POSTs to endpoints and automatically set values etc via the [--handle-event argument](HANDLE_EVENT.md)
