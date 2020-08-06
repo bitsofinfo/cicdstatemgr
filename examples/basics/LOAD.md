@@ -1,5 +1,7 @@
 ## --load 
 
+*NOTE: see the functioning [scripts in the test/ directory](test/) for commands that match what is described in this doc*
+
 This demonstrates the usage of `--load` which provides a way to load all data for a given `cicdContextDataId` into both memory for the current invocation as well as into all non-primary stores, sourced from the primary store. 
 
 If you look at [config.yaml](config.yaml) you will see there are multiple `datasources` listed. When `--load` is invoked, the data is loaded from the primary and then flushed to non-primary stores. In this example's case the non-primary stores are just local files, so when you are running a CICD system, `--load` would be called at the start of a task, where the data can then be referenced from numerous subsequent steps. This works nicely w/ [Tekton pipelines](https://github.com/tektoncd/pipeline) as each `Task` is a pod that is made up of multiple `steps` which are `containers`, all of which share a common filesystem. In this setup your first Tekton `Task` `step` can call `--load` to seed the filesystem with local copies of the context data that originates from the primary.
