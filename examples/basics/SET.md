@@ -1,4 +1,6 @@
-## --set 
+# --set 
+
+*NOTE: see the functioning [scripts in the test/ directory](test/) for commands that match what is described in this doc*
 
 This demonstrates the usage of `--set` which provides a way to set any value within the `cicdContextData` as well as load values from `file://` references. 
 
