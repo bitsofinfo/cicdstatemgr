@@ -1,4 +1,4 @@
-## Initialize a new set of cicd context data
+# Initialize a new set of cicd context data
 
 *NOTE: see the functioning [scripts in the test/ directory](test/) for commands that match what is described in this doc*
 

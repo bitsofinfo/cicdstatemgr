@@ -1,4 +1,4 @@
-## --get 
+# --get 
 
 *NOTE: see the functioning [scripts in the test/ directory](test/) for commands that match what is described in this doc*
 
