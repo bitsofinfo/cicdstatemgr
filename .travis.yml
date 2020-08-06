@@ -3,6 +3,11 @@ language: python
 python:
   - "3.8"
 
+addons:
+    snaps:
+      - yq
+      - jq
+
 services:
   - docker
 
@@ -16,7 +21,10 @@ install:
   - pip3 install -r requirements.txt
   - pip3 install .
 
-script: pytest
+script: 
+  - pytest
+  - cd examples/basics
+  - ./test/test_basics.sh
 
 before_deploy:
   - echo TRAVIS_TAG=$TRAVIS_TAG
