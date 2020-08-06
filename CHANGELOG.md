@@ -1,3 +1,9 @@
+# 1.0.21
+* jinja2 parse error include original non-macro prefixed template
+* parse `to` on set-values handlers
+* add `from_json` jinja2 filter
+* 
+
 # 1.0.20
 * fix `--get` when `get_via_jsonng_expression()` has jsonpath parse error. return literal expression as the value
   

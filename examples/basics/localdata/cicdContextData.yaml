@@ -9,15 +9,41 @@ pipelines:
             '
   build:
     event-handlers:
-      testEvent:
+      testNotifyEvent:
         notify:
           message: '{{ basicMacro(''build is successful'') }}
 
             '
+          capture-response-data:
+          - from: '{{ body.data.channel }}'
+            to: state.lastPostedToNotifyChannel
+          - from: '{{ body|tojson }}'
+            to: state.lastPostedHttpResponse
+      testRespondEvent:
+        respond:
+          if: '{{ state.lastPostedHttpResponse }}'
+          url: '{{ (state.lastPostedHttpResponse|from_json).url }}'
+          message: 'dummy responder message for {{ state.lastPostedDataRandomId }}
+
+            '
+      testSetValuesEvent:
+        set-values:
+          extractLastPostedNotifyMessage:
+            if: "{%- if state.lastPostedHttpResponse -%}\n  1\n{%- endif -%}  \n"
+            set:
+            - from: '{%- set lastPostedHttpResponse = (state.lastPostedHttpResponse|from_json)
+                -%}
+
+                {{- lastPostedHttpResponse.data.message -}}
+
+                '
+              to: state.lastPostedNotifyMessage
+      testTriggerPipelineEvent:
         trigger-pipeline:
           name: build
           args:
-            whatever: '{{state.postedData.headers.userAgent}}'
+            whatever: '{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}'
+      testManualChoiceEvent:
         manual-choice:
           title: '{{ basicMacro(''here are my choices'') }}
 
@@ -49,15 +75,43 @@ appPipelinesConfig:
       pipelines:
         build:
           event-handlers:
-            testEvent:
+            testNotifyEvent:
               notify:
                 message: '{{ basicMacro(''build is successful'') }}
 
                   '
+                capture-response-data:
+                - from: '{{ body.data.channel }}'
+                  to: state.lastPostedToNotifyChannel
+                - from: '{{ body|tojson }}'
+                  to: state.lastPostedHttpResponse
+            testRespondEvent:
+              respond:
+                if: '{{ state.lastPostedHttpResponse }}'
+                url: '{{ (state.lastPostedHttpResponse|from_json).url }}'
+                message: 'dummy responder message for {{ state.lastPostedDataRandomId
+                  }}
+
+                  '
+            testSetValuesEvent:
+              set-values:
+                extractLastPostedNotifyMessage:
+                  if: "{%- if state.lastPostedHttpResponse -%}\n  1\n{%- endif -%}\
+                    \  \n"
+                  set:
+                  - from: '{%- set lastPostedHttpResponse = (state.lastPostedHttpResponse|from_json)
+                      -%}
+
+                      {{- lastPostedHttpResponse.data.message -}}
+
+                      '
+                    to: state.lastPostedNotifyMessage
+            testTriggerPipelineEvent:
               trigger-pipeline:
                 name: build
                 args:
-                  whatever: '{{state.postedData.headers.userAgent}}'
+                  whatever: '{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}'
+            testManualChoiceEvent:
               manual-choice:
                 title: '{{ basicMacro(''here are my choices'') }}
 
@@ -91,16 +145,14 @@ jinja2Macros:
 state:
   cicdContextDataId: context-data-id-1
   cicdContextName: stage
-  key1: valuechanged
-  testHeader2Value: myvalueforheader2
-  triggerAutoArg1: '99999'
-  postedData:
-    '12191':
-      body:
-        message: This is basicMacro! msg = some-event fired in the start pipeline
-      headers:
-        userAgent: python-requests/2.24.0
-  lastPostedDataRandomId: '12191'
+  key1: value1
+  templateTest: '{{tmplctx.prop1}}'
+  key2: value2
+  fileBody:
+    dog: beagle
+    bark:
+      quality: high
+      volume: loud
 variables:
   baseVar1: baseVarVal1
   myVar1: test
