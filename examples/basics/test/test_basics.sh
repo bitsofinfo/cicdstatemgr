@@ -44,7 +44,7 @@ pip install wheel
 pip install --requirement requirements.txt
 
 
-
+# run the scripts
 $SCRIPTPATH/init-new.sh
 $SCRIPTPATH/get.sh
 $SCRIPTPATH/set.sh
