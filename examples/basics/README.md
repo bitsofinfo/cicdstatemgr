@@ -52,6 +52,7 @@ pip install cicdstatemgr
 ## Optionally install yq & jq
 
 https://github.com/mikefarah/yq
+
 https://github.com/stedolan/jq
 
 # Exploring the cicdstatemgr CLI options
