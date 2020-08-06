@@ -32,15 +32,15 @@ cicd-contexts:
 
 There are several different event handlers that can be configured. All of the handlers are centered around the concept of taking data from the current `cicdContextData` + event configuration, rendering it via `jinja2` then POSTing it to an endpoint, then optionally consuming values off of the response that is returned and storing them back in the `cicdContextData`
 
-* `notify`
-* `trigger-pipeline`
-* `manual-choice`
-* `respond`
-* `set-values`
+* [notify](#notify)
+* [trigger-pipeline](#notify)
+* [manual-choice](#notify)
+* [respond](#notify)
+* [set-values](#notify)
 
 **IMPORTANT**: for purposes of this example, you should run the examples in the order as they appear in the document below
 
-## notify
+## <a name="#notify"/>notify
 
 The `notify` event handler constructs a `jinja2` context which is a copy of the the `cicdContextData` object PLUS the following keys:
 
