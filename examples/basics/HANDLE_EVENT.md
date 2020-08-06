@@ -168,7 +168,7 @@ The logs will show a POST as follows:
 ```
 
 
-# <a name="#choice"/>manual-choice
+<a name="#choice"/># manual-choice
 
 The `manual-choice` event handler is logically intended to render a message that contains one or more manual sets of "choices", where each set of choices is made up of a `header` and an array of one or more "options" which yield `text` and `value`. How exactly these choice groups and their options are rendered into a message that gets POSTed to an endpoint is entirely up to you. You can define the template that these are rendered against within the `templates.manual-choice` template within [config.yaml](config.yaml)
 
