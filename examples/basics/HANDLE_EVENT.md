@@ -33,14 +33,14 @@ cicd-contexts:
 There are several different event handlers that can be configured. All of the handlers are centered around the concept of taking data from the current `cicdContextData` + event configuration, rendering it via `jinja2` then POSTing it to an endpoint, then optionally consuming values off of the response that is returned and storing them back in the `cicdContextData`
 
 * [notify](#notify)
-* [trigger-pipeline](#trigger)
-* [manual-choice](#choice)
+* [trigger-pipeline](#trigger-pipeline)
+* [manual-choice](#manual-choice)
 * [respond](#respond)
-* [set-values](#set)
+* [set-values](#set-values)
 
 **IMPORTANT**: for purposes of this example, you should run the examples in the order as they appear in the document below
 
-# <a name="#notify"/>notify
+# notify
 
 The `notify` event handler constructs a `jinja2` context which is a copy of the the `cicdContextData` object PLUS the following keys:
 
@@ -134,7 +134,7 @@ lastPostedHttpResponse: '{''args'': {}, ''data'': {''channel'': ''stage'', ''mes
   ```
 
 
-# <a name="#trigger"/>trigger-pipeline
+# trigger-pipeline
 
 The `trigger-pipeline` event handler is logically intended to be a special action where you want to automatically trigger another thread of execution within the CICD engine. The `trigger-pipeline` event handler results in a custom HTTP POST being forumlated comprised of a set of custom headers + simple KV pair JSON body POSTED to an HTTP endpoint. This is intended to trigger additional things in a self referencing way such as invoking a [Tekton Triggers EventListener endpoint](https://github.com/tektoncd/triggers/blob/master/docs/eventlisteners.md)
 
@@ -168,7 +168,7 @@ The logs will show a POST as follows:
 ```
 
 
-# <a name="#choice"/>manual-choice
+# manual-choice
 
 The `manual-choice` event handler is logically intended to render a message that contains one or more manual sets of "choices", where each set of choices is made up of a `header` and an array of one or more "options" which yield `text` and `value`. How exactly these choice groups and their options are rendered into a message that gets POSTed to an endpoint is entirely up to you. You can define the template that these are rendered against within the `templates.manual-choice` template within [config.yaml](config.yaml)
 
@@ -238,7 +238,7 @@ The logs will show a POST as follows:
 Again the intent of `manual-choice` is to permit you to render some sort of interactive message to be posted to the configured `slack.url` endpoint. You are responsible for configuring an appropriate application in the target system that will handle the user-interactions by POSTing them BACK to your CICD engine (in the case of Tekton, an [Tekton Trigger EventListener endpoint](https://github.com/tektoncd/triggers/blob/master/docs/eventlisteners.md)) and then parsing the inbound POST, extracting the selected values and then triggering another pipeline that can interpret and act on those values.
 
 
-# <a name="#set"/>set-values
+# set-values
 
 The `set-values` event handler is logically intended to evaluate something with an `if` and then passing, consume values `from` some reference within a jinja2 context and if that reference yeilds a non-blank value, to set that value `to` another location in `cicdContextData`. 
 
@@ -273,7 +273,7 @@ redis-cli --user cicdstatemgr --pass '123$aBcZ' mget context-data-id-1 | yq r - 
 This is basicMacro! msg = build is successful
 ```
 
-# <a name="#respond"/>respond
+# respond
 
 The `respond` event handler is logically intended to be a quick way to define an event that sends a `message` to a custom `url` `if` some condition passes.
 
