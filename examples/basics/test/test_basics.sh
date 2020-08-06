@@ -48,4 +48,9 @@ pip install --requirement requirements.txt
 $SCRIPTPATH/init-new.sh
 $SCRIPTPATH/get.sh
 $SCRIPTPATH/set.sh
-
+$SCRIPTPATH/load.sh
+$SCRIPTPATH/handle-event.notify.sh
+$SCRIPTPATH/handle-event.trigger-pipeline.sh
+$SCRIPTPATH/handle-event.manual-choice.sh
+$SCRIPTPATH/handle-event.set-values.sh
+$SCRIPTPATH/handle-event.respond.sh
