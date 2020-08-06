@@ -5,6 +5,8 @@
 #
 # Should be run from the root of the basics/ dir
 
+SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
 #-----------------
 # README.md
 #-----------------
@@ -43,7 +45,7 @@ pip install --requirement requirements.txt
 
 
 
-./init-new.sh
-./get.sh
-./set.sh
+$SCRIPTPATH/init-new.sh
+$SCRIPTPATH/get.sh
+$SCRIPTPATH/set.sh
 
