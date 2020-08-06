@@ -1,6 +1,10 @@
 # Basic example
 
-The following examples will give you a brief overview of how you can uses `cicdstatemgr`
+The following examples will give you a decent overview of how you can make use of `cicdstatemgr`
+
+## scripts
+
+Note that all the examples provided in the various markdown files in this directory are also covered in the [scripts in the test/ directory](test/)
 
 ## Pre-req: Setup Redis
 
@@ -45,9 +49,10 @@ pip install wheel
 pip install cicdstatemgr
 ```
 
-## Optionally install yq
+## Optionally install yq & jq
 
 https://github.com/mikefarah/yq
+https://github.com/stedolan/jq
 
 # Exploring the cicdstatemgr CLI options
 
@@ -64,3 +69,11 @@ Next lets `--get` some values from the context data by using the [--get argument
 ## --set
 
 Next lets `--set` some values into the context data by using the [--set argument](SET.md)
+
+## --load
+
+Next lets `--load` the context data for usage via [--load argument](LOAD.md)
+
+## --handle-event
+
+Finally lets play with the `--handle-event` option to fire off messages to endpoints via the [--handle-event argument](HANDLE_EVENT.md)
