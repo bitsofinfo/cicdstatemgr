@@ -45,6 +45,12 @@ pip install wheel
 pip install cicdstatemgr
 ```
 
+## Optionally install yq
+
+https://github.com/mikefarah/yq
+
+# Exploring the cicdstatemgr CLI options
+
 ## --init-new
 
 Lets start by imagining a new pipeline starts in our CICD system, we have a task that needs to initialize a new set of CICD context data.

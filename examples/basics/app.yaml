@@ -20,7 +20,7 @@ cicd-contexts:
       build:
         event-handlers:
 
-          testEvent:
+          testNotifyEvent:
 
             notify:
               message: |
@@ -29,37 +29,40 @@ cicd-contexts:
               capture-response-data:
                 - from: "{{ body.data.channel }}"
                   to: state.lastPostedToNotifyChannel
-                - from: "{{ body|from_json }}"
+                - from: "{{ body|tojson }}"
                   to: state.lastPostedHttpResponse
 
+
+          testRespondEvent:
             respond:
-              if: "{{ event.data.params.request.body.api_app_id }}"
-              url: "{{ event.data.params.request.body.response_url }}"
+              if: "{{ state.lastPostedHttpResponse }}"
+              url: "{{ (state.lastPostedHttpResponse|from_json).url }}"
               message: |
-                {{ responderMessage(event.data.params.request.body) }}
+                dummy responder message for {{ state.lastPostedDataRandomId }}
 
+          testSetValuesEvent:
             set-values: 
-              # set state values from an Github triggered start
-              gitValues:
-                if: "{{ event.data.params.request.body.head_commit }}"
+              extractLastPostedNotifyMessage:
+                if:  |
+                  {%- if state.lastPostedHttpResponse -%}
+                    1
+                  {%- endif -%}  
                 set:
-                  - from: "{{ event.data.params.request.body.head_commit.message }}"
-                    to: "state.commitMsg"
+                  - from: |
+                      {%- set lastPostedHttpResponse = (state.lastPostedHttpResponse|from_json) -%}
+                      {{- lastPostedHttpResponse.data.message -}}
+                    to: "state.lastPostedNotifyMessage"
 
-                  - from: "{{ event.data.params.request.body.after }}"  
-                    to: "state.commitId"
-
-                  - from: "{{ event.data.params.request.body.repository.clone_url }}"  
-                    to: "state.gitCloneUrl"
-
+          testTriggerPipelineEvent:
             # see config.yaml for additional headers
             # and auto-args that will supplement what is
             # specified here
             trigger-pipeline:
               name: build
               args:
-                whatever: "{{state.postedData.headers.userAgent}}"
+                whatever: "{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
 
+          testManualChoiceEvent:
             manual-choice:
               title: |
                 {{ basicMacro('here are my choices') }}
