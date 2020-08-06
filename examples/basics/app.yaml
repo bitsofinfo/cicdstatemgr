@@ -20,6 +20,11 @@ cicd-contexts:
       build:
         event-handlers:
 
+          testEvent:
+            notify:
+              message: |
+                {{ basicMacro('testEventFired!!! yes...') }}
+
           testNotifyEvent:
 
             notify:
