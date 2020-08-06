@@ -1,5 +1,7 @@
 ## Initialize a new set of cicd context data
 
+*NOTE: see the functioning [scripts in the test/ directory](test/) for commands that match what is described in this doc*
+
 Lets start by imagining a new `build` pipeline starts in our CICD system, we have a task in the `build` pipeline that needs to initialize a new set of CICD context data. Within our `build` pipelines we could have a task/step that uses `cicdstatemgr` to initialize a new set of CICD context data.
 
 For the following set of examples here we are just running these commands locally.
