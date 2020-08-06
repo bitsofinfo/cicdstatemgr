@@ -1,5 +1,7 @@
 ## --handle-event 
 
+*NOTE: see the functioning [scripts in the test/ directory](test/) for commands that match what is described in this doc*
+
 This demonstrates the usage of `--handle-event` which provides a way to take action (by invoking REST endpoints) and sending data to those endpoints (i.e. Slack or Tekton EventListeners) that reference data within the `cicdContextData` itself. The data that is sent is generally produced via `jinja2` templates which are provided via each event's configuration within an app's pipeline-config.yaml file.
 
 The `--handle-event` argument takes the following syntax:

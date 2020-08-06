@@ -1,5 +1,7 @@
 ## --get 
 
+*NOTE: see the functioning [scripts in the test/ directory](test/) for commands that match what is described in this doc*
+
 This demonstrates the usage of `--get` which provides a way to fetch any value from the `cicdContextData`. The key feature of `--get` is that the raw value will be evaluated as a `jinja2` template. This permits you to define templates in your `cicdContextData` that refer to any variables, including short lived variables that you can define via the `--tmpl-ctx-data` attribute that will be made available in the `jinja2` context when the `--get` rendering occurs.
 
 Its important to note that the you can still `--get` any literal value, the values can optionally contain `jinja2` syntax.
