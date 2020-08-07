@@ -1,6 +1,6 @@
 # Tekton example
 
-This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages to provide user-interaction. Visually the workflow this example produces by leveraging `cicdstatemgr` looks like this:
+This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages to provide user-interaction. Visually the workflow this example produces looks like this:
 
 ![Diagram of example](img/tekton.png "Diagram1")
 
@@ -12,9 +12,9 @@ Need help? [join bitsofinfo.slack.com](https://join.slack.com/t/bitsofinfo/share
 
 ## Overview
 
-Don't want to run it locally? Watch here:
+Here is a video screencast that walks through this example after it is up and running:
 
-TBD
+<iframe width="560" height="315" src="https://www.youtube.com/embed/449xT2iDlzQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 ## Pre-requisites
@@ -76,10 +76,7 @@ cd cicdstatemgr/examples/tekton
 ./install.sh
 ```
 
-When all done you can remove with:
-```
-./remove.sh
-```
+When all done reviewing this example, see the [cleanup](#cleanup) section below.
 
 The install script assumes (and prefers) you have no prior minikube cluster, it starts `minikube` enables the `registry` addon, then proceeds to apply a base [Tekton](https://tekton.dev/) installation (complete with the 3 Tekton projects: `pipelines`, `triggers`, `dashboard`). On top of Tekton, it then proceeds to install a Tekton [CICD workflow of pipelines](pipelines/) which utilize `cicdstatemgr` to orchestrate all interactions.
 
@@ -164,7 +161,6 @@ Want to see how Tekton was installed? Check out the [core/ components](core/)
 Want to see how the Tekton pipelines/triggers and EventListener are defined? Check out the [pipelines/ components](pipelines/)
 
 Want to see how all the Slack messages and interaction work? Check out the [pipelines/bases](pipelines/bases) and [pipelines/confs](pipelines/confs) directories which contain the configs and pipeline-configs that `cicdstatemgr` consumes.
-
 
 ## Cleanup
 
