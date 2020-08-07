@@ -14,7 +14,7 @@ Need help? [join bitsofinfo.slack.com](https://join.slack.com/t/bitsofinfo/share
 
 Here is a video screencast that walks through this example after it is up and running:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/449xT2iDlzQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/449xT2iDlzQ/0.jpg)](https://www.youtube.com/watch?v=449xT2iDlzQ)
 
 
 ## Pre-requisites
