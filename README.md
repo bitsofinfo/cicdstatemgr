@@ -46,7 +46,7 @@ state:
 
 Your tasks might need to both read and write to information in this `state` and ensure its persisted somewhere. `cicdstatemgr` can help with this.
 
-## What cicdstatemgr is (and is not)**
+## What cicdstatemgr is (and is not)
 
 * `cicdstatemgr` is NOT a CICD engine nor an out of the box CICD solution; its only a tool that you can use within a CICD framework to help configure, customize and maintain state for your CICD application as well as invoke endpoints in reaction to things going on in your CICD pipeline.
 
