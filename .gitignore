@@ -4,6 +4,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.DS_Store
+
+*.mp4
+
 # C extensions
 *.so
 
