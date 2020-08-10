@@ -1,0 +1,16 @@
+# See: examples/basics for a more complete example
+# this is an ultra minimalistic example
+cicdstatemgr:
+  datasources:
+    yamlfile:
+      path: localdata/cicdContextData.yaml
+      isPrimary: true
+    jsonfile:
+      path: localdata/cicdContextData.json
+
+  slack:
+    url: https://postman-echo.com/post
+
+  templates:
+    notify: >
+      {"message": "{{notify.message}} {{echo('world')}}"

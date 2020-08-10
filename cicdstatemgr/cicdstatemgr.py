@@ -148,12 +148,13 @@ class CicdStateMgr():
         with open(configFilePath) as f:
             self.configData = yaml.load(f, Loader=yaml.FullLoader)
 
-        with open(secretsFilePath) as f:
-            self.secretData = yaml.load(f, Loader=yaml.FullLoader)
+        if secretsFilePath:
+            with open(secretsFilePath) as f:
+                self.secretData = yaml.load(f, Loader=yaml.FullLoader)
 
         # create all data sources
         dsConfigs = copy.deepcopy(self.configData[CONFIG_DATA_KEY]["datasources"])
-        if 'datasources' in self.secretData[SECRET_DATA_KEY]:
+        if self.secretData and 'datasources' in self.secretData[SECRET_DATA_KEY]:
             dsConfigs = dict_merge(dsConfigs,copy.deepcopy(self.secretData[SECRET_DATA_KEY]["datasources"]))
         self.dataSourceMgr = DataSourceMgr(dsConfigs)
 
