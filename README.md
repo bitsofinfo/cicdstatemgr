@@ -52,8 +52,6 @@ state:
 
 Your tasks might need to both read and write to information in this `state` and ensure its persisted somewhere. `cicdstatemgr` can help with this.
 
-<img align="center" src="examples/tekton/img/pattern.png">
-
 ## What cicdstatemgr is (and is not)
 
 * `cicdstatemgr` is NOT a CICD engine nor an out of the box CICD solution; its only a tool that you can use within a CICD framework to help configure, customize and maintain state for your CICD application as well as invoke endpoints in reaction to things going on in your CICD pipeline.
@@ -63,6 +61,12 @@ Your tasks might need to both read and write to information in this `state` and 
 * `cicdstatemgr` is a way to store and load data related to your pipeline and access it in numerous ways; via it's CLI, a network store (`redis`) or via files cached on disk within your task's filesystem (`sourceable` shell files, `yaml`, `json` etc)
 
 * `cicdstatemgr` is a way to allow each of your app's that flow through your CICD system to customize the behavior of your pipelines at runtime via app pipeline configuration files that live within each app's source.
+
+* `cicdstatemgr` can in theory be used in any CICD execution platform as you just invoke it from within logical tasks/steps in any CICD pipeline. that said; this project arose out of needs that came up when using [Tekton Pipelines](https://tekton.dev) 
+
+<img align="center" src="examples/tekton/img/pattern.png">
+
+<img align="center" src="examples/tekton/img/overview.png">
   
 ## Simple example
 
