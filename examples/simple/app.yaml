@@ -1,0 +1,15 @@
+# See: examples/basics for a more complete example
+# this is an ultra minimalistic example
+jinja2-macros: 
+  echo: |
+      {%- macro echo(msg) -%}
+        hello {{msg}}
+      {%- endmacro -%}
+cicd-contexts:
+  stage:
+    pipelines:
+      build:
+        event-handlers:
+          testEvent:
+            notify:
+              message: "Basic message {{state.key1}}"

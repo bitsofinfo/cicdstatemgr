@@ -34,11 +34,11 @@ class CicdStateMgrCli():
     def cli_add_config_arguments(self, parser:argparse.ArgumentParser):
         parser.add_argument('--config', default=None, \
             help="Full or relative path to yaml config file, if not specified will auto consume " + \
-                "from the path defined by the environment variable CICDOPS_CONFIG_PATH")
+                "from the path defined by the environment variable CICDSTATEMGR_CONFIG_PATH")
 
         parser.add_argument('--secrets', default=None, \
             help="Full or relative path to secrets yaml config file, if not specified will auto consume " + \
-                "from the path defined by the environment variable CICDOPS_SECRETS_PATH")
+                "from the path defined by the environment variable CICDSTATEMGR_SECRETS_PATH")
 
 
     def cli_add_init_arguments(self, parser:argparse.ArgumentParser):
@@ -48,14 +48,14 @@ class CicdStateMgrCli():
         parser.add_argument('--init-cicd-context-name', help="The cicd context name, default 'stage'", default="stage")
 
         parser.add_argument('--init-bases-dir', default=None, \
-            help="Full or relative path to directory that contains pipeline YAML base files. CICDOPS_BASES_DIR_PATH")
+            help="Full or relative path to directory that contains pipeline YAML base files. CICDSTATEMGR_BASES_DIR_PATH")
         
         parser.add_argument('--init-app-config-file', default=None, \
             help="Full or relative path to the app's CICD config file, if not specified will auto consume " + \
-                "from the path defined by the environment variable CICDOPS_INIT_APP_CONFIG_PATH")
+                "from the path defined by the environment variable CICDSTATEMGR_INIT_APP_CONFIG_PATH")
 
     def cli_add_id_arguments(self, parser:argparse.ArgumentParser):
-        parser.add_argument('--id', default=None, help="The cicdContextDataId value, can also be set in the CICDOPS_CONTEXT_DATA_ID")
+        parser.add_argument('--id', default=None, help="The cicdContextDataId value, can also be set in the CICDSTATEMGR_CONTEXT_DATA_ID")
 
     def cli_add_tmpl_arguments(self, parser:argparse.ArgumentParser):
         parser.add_argument('--tmpl-ctx-var', action='append', default=None, \
@@ -98,16 +98,17 @@ class CicdStateMgrCli():
         # We must have a configFile
         configFilePath = args.config
         if not configFilePath:
-            configFilePath = os.getenv("CICDOPS_CONFIG_PATH")
+            configFilePath = os.getenv("CICDSTATEMGR_CONFIG_PATH")
         if not configFilePath:
-            raise Exception("USAGE: --config <path> is required or set env var CICDOPS_CONFIG_PATH")
+            raise Exception("USAGE: --config <path> is required or set env var CICDSTATEMGR_CONFIG_PATH")
 
-        # We must have a secrets configFile
+        # We can also have have a secrets configFile
         secretsFilePath = args.secrets
         if not secretsFilePath:
-            secretsFilePath = os.getenv("CICDOPS_SECRETS_PATH")
+            secretsFilePath = os.getenv("CICDSTATEMGR_SECRETS_PATH")
+        # not required anymore
         if not secretsFilePath:
-            raise Exception("USAGE: --secrets <path> is required or set env var CICDOPS_SECRETS_PATH")
+            raise Exception("USAGE: --secrets <path> is required or set env var CICDSTATEMGR_SECRETS_PATH")
 
         return CicdStateMgr(configFilePath,secretsFilePath)
 
@@ -117,17 +118,17 @@ class CicdStateMgrCli():
         # we need the app config file path
         appConfigFilePath = args.init_app_config_file
         if not appConfigFilePath:
-            appConfigFilePath = os.getenv("CICDOPS_INIT_APP_CONFIG_PATH")
+            appConfigFilePath = os.getenv("CICDSTATEMGR_INIT_APP_CONFIG_PATH")
         if not appConfigFilePath:
-            raise Exception("USAGE: --init-app-config <path> is required or set env var CICDOPS_INIT_APP_CONFIG_PATH")
+            raise Exception("USAGE: --init-app-config <path> is required or set env var CICDSTATEMGR_INIT_APP_CONFIG_PATH")
 
 
-        # We must have a basesDir for init
+        # We optionally can have a basesDir for init
         basesDirPath = args.init_bases_dir
         if not basesDirPath:
-            basesDirPath = os.getenv("CICDOPS_BASES_DIR_PATH")
-        if not basesDirPath or not os.path.exists(basesDirPath):
-            raise Exception("USAGE: --init-bases-dir <path> is required (and must exist) or set env var CICDOPS_BASES_DIR_PATH")
+            basesDirPath = os.getenv("CICDSTATEMGR_BASES_DIR_PATH")
+        #if not basesDirPath or not os.path.exists(basesDirPath):
+        #    raise Exception("USAGE: --init-bases-dir <path> is required (and must exist) or set env var CICDSTATEMGR_BASES_DIR_PATH")
 
 
         # was --set also passed? set those values
@@ -156,9 +157,9 @@ class CicdStateMgrCli():
         # --id is required
         cicdContextDataId = args.id
         if not cicdContextDataId:
-            cicdContextDataId = os.getenv("CICDOPS_CONTEXT_DATA_ID")
+            cicdContextDataId = os.getenv("CICDSTATEMGR_CONTEXT_DATA_ID")
         if not cicdContextDataId:
-            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDOPS_CONTEXT_DATA_ID")
+            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDSTATEMGR_CONTEXT_DATA_ID")
 
         # was --set also passed? set those values
         valsToSet = None
@@ -181,9 +182,9 @@ class CicdStateMgrCli():
     def cli_consume_get_args(self,args) -> GetArgs:
         cicdContextDataId = args.id
         if not cicdContextDataId:
-            cicdContextDataId = os.getenv("CICDOPS_CONTEXT_DATA_ID")
+            cicdContextDataId = os.getenv("CICDSTATEMGR_CONTEXT_DATA_ID")
         if not cicdContextDataId:
-            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDOPS_CONTEXT_DATA_ID")
+            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDSTATEMGR_CONTEXT_DATA_ID")
 
         return GetArgs(cicdContextDataId,args.get,args.tmpl_ctx_var)
 
@@ -213,10 +214,10 @@ class CicdStateMgrCli():
         # --id required
         cicdContextDataId = args.id
         if not cicdContextDataId:
-            cicdContextDataId = os.getenv("CICDOPS_CONTEXT_DATA_ID")
+            cicdContextDataId = os.getenv("CICDSTATEMGR_CONTEXT_DATA_ID")
 
         if not cicdContextDataId:
-            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDOPS_CONTEXT_DATA_ID")
+            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDSTATEMGR_CONTEXT_DATA_ID")
             
         if not args.handle_event:
             raise Exception("USAGE: --handle-event <pipelineName.pipelineRunUid=init|failure|success|...> ")
@@ -243,9 +244,9 @@ class CicdStateMgrCli():
         # --id required
         id = args.id
         if not id:
-            id = os.getenv("CICDOPS_CONTEXT_DATA_ID")
+            id = os.getenv("CICDSTATEMGR_CONTEXT_DATA_ID")
         if not id:
-            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDOPS_CONTEXT_DATA_ID")
+            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDSTATEMGR_CONTEXT_DATA_ID")
             
         if not isinstance(args.set,list) and "=" not in args.set:
             raise Exception("USAGE: --set path.to.prop=<primitiveValue | /path/to/file.[json|yaml]>")
