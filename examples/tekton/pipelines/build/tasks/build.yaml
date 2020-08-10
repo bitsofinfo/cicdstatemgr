@@ -42,7 +42,7 @@ spec:
     # STEP load CICD context data
     #----------------------------------
     - name: load-cicd-context-data
-      image: bitsofinfo/cicdstatemgr:1.0.20
+      image: bitsofinfo/cicdstatemgr:1.0.21
       command:
       - /bin/bash
       args:
