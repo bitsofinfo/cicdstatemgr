@@ -24,7 +24,7 @@ The best place to start is the [examples](examples/)
 
 So what does this do exactly?
 
-<img align="right" width="500" src="imgs/init-new.png">`cicdstatemgr` is a small python library and CLI to help you maintain state and configuration data that can span process/task boundaries in a CICD system that does not natively provide such a facility. It also provides some built in features that let you handle "events" by invoking HTTP endpoints for doing things like notifications, triggering hooks, integrating with end-user interactive apps like Slack/Teams etc.
+<img align="right" width="550" src="imgs/init-new.png">`cicdstatemgr` is a small python library and CLI to help you maintain state and configuration data that can span process/task boundaries in a CICD system that does not natively provide such a facility. It also provides some built in features that let you handle "events" by invoking HTTP endpoints for doing things like notifications, triggering hooks, integrating with end-user interactive apps like Slack/Teams etc.
 
 Within a CICD system you often have one or more pipelines, each of which is made up of one or more tasks. Sometimes tasks run one after another, other times there is some manual intervention etc. Likewise when you have different but related pipelines that have to execute in a specific order. Within this kind of setup you generally have a lot of configuration and execution "state" that you want to maintain, i.e. variables, meta-data, audit information etc, and you want to be able to manage this state across different processes boundaries. 
 
