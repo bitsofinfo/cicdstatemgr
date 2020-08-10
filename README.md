@@ -14,6 +14,7 @@ This project was born out of needs that arised when building a custom CI/CD solu
 * [Examples](examples/) 
 * [Install](#install)
 * [Docker](#docker)
+* [Security](#security)
 
 Here is a video screencast that walks through [an example](examples/tekton) that you can [experiment with yourself](examples/tekton):
 
@@ -209,9 +210,22 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 ## Docker
 
+https://hub.docker.com/repository/docker/bitsofinfo/cicdstatemgr
+
 ```
 docker run -it bitsofinfo/cicdstatemgr:latest cicdstatemgr -h
 ```
+
+## Security reminder
+
+`cicdstatemgr` provides a lot of flexibility and one of it's core capabilities is doing runtime evaluations of data contained in the `cicdContextData` via `jinja2` templating to yield results. What you do with those results (strings) is up to you! 
+
+If you utilize these features and blindly pass the resulting data on to language/shell interpreters this could result in exposing your system to code injection if you are not careful with what you are doing. This is true of any CICD platform who's "inputs" ultimately are consumed from sources maintained by humans (i.e. SCMs). You should always behave with a trust no-one mindset and check both your inputs that can dynamically create derived results, especially those derived results are used to dynamically create commands or payloads to endpoints etc. 
+
+The point of this section is simply that: a friendly reminder!
+
+
+
 
 
 
