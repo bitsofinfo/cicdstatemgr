@@ -216,7 +216,7 @@ https://hub.docker.com/repository/docker/bitsofinfo/cicdstatemgr
 docker run -it bitsofinfo/cicdstatemgr:latest cicdstatemgr -h
 ```
 
-## Security reminder
+## Security 
 
 `cicdstatemgr` provides a lot of flexibility and one of it's core capabilities is doing runtime evaluations of data contained in the `cicdContextData` via `jinja2` templating to yield results. What you do with those results (strings) is up to you! 
 
