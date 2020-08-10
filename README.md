@@ -57,9 +57,12 @@ Your tasks might need to both read and write to information in this `state` and 
 
 * `cicdstatemgr` is a way to allow each of your app's that flow through your CICD system to customize the behavior of your pipelines at runtime via app pipeline configuration files that live within each app's source.
   
-## Utra simmple example
+## Simple example
 
-For a more complete example see: [examples](examples/)
+For a more complete set of CLI usage examples see: [examples](examples/)
+
+To see a more involved example on how `cicdstatemgr` can be used along with `Tekton pipelines` check out the [examples/tekton](examples/tekton) project.
+
 
 Init:
 ```
@@ -123,9 +126,9 @@ cicdstatemgr \
 ...
 ```
 
-For a more complete example see: [examples](examples/)
+For a more complete set of CLI usage examples see: [examples](examples/)
 
-
+To see a more involved example on how `cicdstatemgr` can be used along with `Tekton pipelines` check out the [examples/tekton](examples/tekton) project.
 
 
 ## Making use of cicdstatemgr
