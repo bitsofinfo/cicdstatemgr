@@ -47,7 +47,7 @@ state:
 
 Your tasks might need to both read and write to information in this `state` and ensure its persisted somewhere. `cicdstatemgr` can help with this.
 
-<img align="center" width="500" src="examples/tekton/img/pattern.png">
+<img align="center" src="examples/tekton/img/pattern.png">
 
 ## What cicdstatemgr is (and is not)
 
