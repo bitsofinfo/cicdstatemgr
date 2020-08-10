@@ -67,12 +67,11 @@ Your tasks might need to both read and write to information in this `state` and 
 ---
 
 **Example pattern that can be used with `cicdstatemgr` and Tekton pipelines:**
-
 <img align="center" src="examples/tekton/img/pattern.png">
 
 ---
 
-
+**High level flow example:**
 <img align="center" src="imgs/overview.png">
   
 ## Simple example
