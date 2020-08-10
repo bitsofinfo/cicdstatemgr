@@ -64,9 +64,9 @@ Your tasks might need to both read and write to information in this `state` and 
 
 * `cicdstatemgr` can in theory be used in any CICD execution platform as you just invoke it from within logical tasks/steps in any CICD pipeline. that said; this project arose out of needs that came up when using [Tekton Pipelines](https://tekton.dev) 
 
-<img align="center" src="examples/tekton/img/pattern.png">
+<img align="center" src="examples/tekton/imgs/pattern.png">
 
-<img align="center" src="examples/tekton/img/overview.png">
+<img align="center" src="examples/tekton/imgs/overview.png">
   
 ## Simple example
 
