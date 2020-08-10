@@ -16,7 +16,9 @@ This project was born out of needs that arised when building a custom CI/CD solu
 
 Here is a video screencast that walks through [an example](examples/tekton) that you can [experiment with yourself](examples/tekton):
 
+<p align="center">
 [![cicdstatemgr screencast](https://img.youtube.com/vi/449xT2iDlzQ/0.jpg)](https://www.youtube.com/watch?v=449xT2iDlzQ)
+</p>
 
 The best place to start is the [examples](examples/)
 
