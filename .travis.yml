@@ -25,6 +25,7 @@ script:
   - pytest
   - cd examples/basics
   - ./test/test_basics.sh
+  - cd ../../
 
 before_deploy:
   - echo TRAVIS_TAG=$TRAVIS_TAG
