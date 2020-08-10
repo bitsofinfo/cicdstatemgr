@@ -9,6 +9,7 @@ This project was born out of needs that arised when building a custom CI/CD solu
 
 * [Overview](#overview)
 * [Concepts](#concepts)
+* [Usage](examples/basics) 
 * [Examples](examples/) 
 * [Install](#install)
 * [Docker](#docker)
@@ -55,6 +56,77 @@ Your tasks might need to both read and write to information in this `state` and 
 * `cicdstatemgr` is a way to store and load data related to your pipeline and access it in numerous ways; via it's CLI, a network store (`redis`) or via files cached on disk within your task's filesystem (`sourceable` shell files, `yaml`, `json` etc)
 
 * `cicdstatemgr` is a way to allow each of your app's that flow through your CICD system to customize the behavior of your pipelines at runtime via app pipeline configuration files that live within each app's source.
+  
+## Utra simmple example
+
+For a more complete example see: [examples](examples/)
+
+Init:
+```
+export CICDSTATEMGR_CONFIG_PATH=examples/simple/config.yaml
+export CICDSTATEMGR_SECRETS_PATH=examples/simple/secrets.yaml
+
+export CICDSTATEMGR_CONTEXT_DATA_ID=$(cicdstatemgr \
+                                    --init-new "context-data-id-1" \
+                                    --init-app-config-file examples/simple/app.yaml \
+                                    --init-cicd-context-name stage \
+                                    --set "state.key1=value1"\
+                                    --set 'state.template1={{ctx.data1}}')
+
+cat localdata/cicdContextData.yaml
+
+pipelines:
+  build:
+    event-handlers:
+      testEvent:
+        notify:
+          message: Basic message {{state.key1}}
+appPipelinesConfig:
+  jinja2-macros:
+    echo: "{%- macro echo(msg) -%}\n  hello {{msg}}\n{%- endmacro -%}\n"
+  cicd-contexts:
+    stage:
+      pipelines:
+        build:
+          event-handlers:
+            testEvent:
+              notify:
+                message: Basic message {{state.key1}}
+jinja2Macros:
+  byName:
+    echo: "{%- macro echo(msg) -%}\n  hello {{msg}}\n{%- endmacro -%}\n"
+  all: "{%- macro echo(msg) -%}\n  hello {{msg}}\n{%- endmacro -%}"
+state:
+  cicdContextDataId: context-data-id-1
+  cicdContextName: stage
+  key1: value1
+  template1: '{{ctx.data1}}'
+```
+
+
+Get:
+```
+cicdstatemgr \
+  --get "state.template1" \
+  --tmpl-ctx-var 'ctx.data1=state.key1'
+
+value1
+```
+
+Handle event:
+```
+cicdstatemgr \
+  --handle-event build=testEvent
+
+...
+2020-08-10 02:21:19,887 - root - DEBUG - event_handle_notify(): POST response OK {'args': {}, 'data': '{"message": "Basic message value1 hello world"', 'files': {}, 'form': {}, 'headers': {'x-forwarded-proto': 'https', 'x-forwarded-port': '443', 'host': 'postman-echo.com', 'x-amzn-trace-id': 'Root=1-5f30af1f-ecf28bcce2278a5a5bd8d326', 'content-length': '46', 'user-agent': 'python-requests/2.24.0', 'accept-encoding': 'gzip, deflate', 'accept': '*/*', 'content-type': 'application/json; charset=UTF-8', 'authorization': 'Bearer FAKE_TOKEN', 'cache-control': 'no-cache'}, 'json': None, 'url': 'https://postman-echo.com/post'} 
+...
+```
+
+For a more complete example see: [examples](examples/)
+
+
+
 
 ## Making use of cicdstatemgr
 
