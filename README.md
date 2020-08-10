@@ -7,6 +7,7 @@
 
 This project was born out of needs that arised when building a custom CI/CD solution using the Kubernetes native [Tekton Pipelines](https://github.com/tektoncd/pipeline) project.
 
+* [Status](#status)
 * [Overview](#overview)
 * [Concepts](#concepts)
 * [Usage](examples/basics) 
@@ -19,6 +20,10 @@ Here is a video screencast that walks through [an example](examples/tekton) that
 [![cicdstatemgr screencast](https://img.youtube.com/vi/449xT2iDlzQ/0.jpg)](https://www.youtube.com/watch?v=449xT2iDlzQ)
 
 The best place to start is the [examples](examples/)
+
+## Status
+
+This project is still considered **beta** software. It is currently being used in a single production CICD platform that services dozens of individual applications.
 
 ## Overview 
 
