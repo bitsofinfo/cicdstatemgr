@@ -26,15 +26,15 @@ cicdstatemgr \
 2020-08-06 11:55:57,119 - root - DEBUG - redis -> localhost isPrimary:True isLocal:False
 2020-08-06 11:55:57,120 - root - INFO - DataSourceMgr() primary ds = redis
 2020-08-06 11:55:57,120 - root - DEBUG - DataSourceMgr() Initializing datasource: yamlfile
-2020-08-06 11:55:57,122 - root - DEBUG - yamlfile -> /Users/***REMOVED***/Documents/***REMOVED***/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.yaml isPrimary:False isLocal:True
+2020-08-06 11:55:57,122 - root - DEBUG - yamlfile -> /Users/bof/Documents/xyz/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.yaml isPrimary:False isLocal:True
 2020-08-06 11:55:57,122 - root - DEBUG - DataSourceMgr() Initializing datasource: jsonfile
-2020-08-06 11:55:57,123 - root - DEBUG - jsonfile -> /Users/***REMOVED***/Documents/***REMOVED***/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.json isPrimary:False isLocal:True
+2020-08-06 11:55:57,123 - root - DEBUG - jsonfile -> /Users/bof/Documents/xyz/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.json isPrimary:False isLocal:True
 2020-08-06 11:55:57,123 - root - DEBUG - DataSourceMgr() Initializing datasource: shellfile
-2020-08-06 11:55:57,125 - root - DEBUG - shellfile -> /Users/***REMOVED***/Documents/***REMOVED***/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.sh isPrimary:False isLocal:True
+2020-08-06 11:55:57,125 - root - DEBUG - shellfile -> /Users/bof/Documents/xyz/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.sh isPrimary:False isLocal:True
 2020-08-06 11:55:57,125 - root - DEBUG - DataSourceMgr() Initializing datasource: idfile
-2020-08-06 11:55:57,126 - root - DEBUG - idfile -> /Users/***REMOVED***/Documents/***REMOVED***/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.id isPrimary:False isLocal:True
+2020-08-06 11:55:57,126 - root - DEBUG - idfile -> /Users/bof/Documents/xyz/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/localdata/cicdContextData.id isPrimary:False isLocal:True
 2020-08-06 11:55:57,126 - root - DEBUG - initialize() id=context-data-id-1 cicdContextName=stage pathToAppCicdConfigYamlFile=app.yaml basesDir=bases eventPipelineName=None eventNameToFire=None tmplCtxVars=None
-2020-08-06 11:55:57,126 - root - DEBUG - initialize() loading app pipeline template: /Users/***REMOVED***/Documents/***REMOVED***/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/app.yaml
+2020-08-06 11:55:57,126 - root - DEBUG - initialize() loading app pipeline template: /Users/bof/Documents/xyz/code/github.com/bitsofinfo/cicdstatemgr/examples/basics/app.yaml
 2020-08-06 11:55:57,143 - root - DEBUG - initialize() applying base pipeline template: bases/base1.yaml
 2020-08-06 11:55:57,147 - root - DEBUG - recursive_set() setting state.key1 to value1 within parent of: None
 2020-08-06 11:55:57,147 - root - DEBUG - recursive_set() setting key1 to value1 within parent of: state
