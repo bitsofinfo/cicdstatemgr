@@ -1,0 +1,197 @@
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: start
+spec:
+
+  workspaces:
+
+    - name: cicdstatemgr-configs
+      description: The workspace where cicdstatemgr configs reside
+      mountPath: /workspace/cicdstatemgr-configs
+      readOnly: true
+
+    - name: cicdstatemgr-secrets
+      description: The workspace where cicdstatemgr secrets reside
+      mountPath: /workspace/cicdstatemgr-secrets
+      readOnly: true
+
+  results:
+    - name: last-exit-code
+      description: The last exit code of this task
+
+    - name: cicdContextDataId
+      description: The CICD context data id
+
+  params:
+
+    - name: cicdContextName
+      type: string
+
+    - name: version
+      type: string
+      default: v1
+
+    - name: relatedCicdContextDataId
+      type: string
+      description:
+        the related cicdContextDataId  
+      default: "none"
+
+    - name: relatedPipelineRunUid
+      type: string
+      description:
+        the related pipelineRunUid  
+      default: "none"
+
+    - name: relatedPipelineName
+      type: string
+      description:
+        the related pipelineName  
+      default: "none"
+
+    - name: pipelineRunUid
+      type: string
+      description:
+        the pipelineRun uid
+      default: NONE
+
+    - name: invokerUid
+      type: string
+      description:
+        The invokerUid triggering this
+      default: tekton-deploy-task
+
+    - name: triggeredBySystem
+      type: string
+      description:
+        The system that triggered this
+
+    - name: triggeredByDescription
+      type: string
+      description:
+        The system that triggered this description
+
+    - name: gitAppName
+      type: string
+      description:
+        The git app name a pipeline is being started for
+
+    - name: appTag
+      type: string
+      description:
+        The application tag 
+
+    - name: commitId
+      type: string
+      description:
+        The application commitId 
+
+    - name: originalRequestBody
+      type: string
+
+    - name: uniqueString
+      type: string
+
+    - name: gitCloneUrl
+      type: string
+
+  steps:
+
+    #----------------------------------
+    # STEP init CICD context data
+    #----------------------------------
+    - name: init-cicd-context-data
+      image: bitsofinfo/cicdstatemgr:1.0.21
+      command:
+      - /bin/bash
+      args:
+      - -c
+      - |
+
+        echo -n '$(inputs.params.originalRequestBody)' > /tekton/results/originalRequestBody
+
+        # ok proceed w/ clone so we can get our required pipeline file
+        git clone --depth 1 --branch $(inputs.params.appTag) $(inputs.params.gitCloneUrl) /tmp/$(inputs.params.gitAppName)
+
+        GIT_CLONE_EXIT_CODE=$?
+
+        if [ "$GIT_CLONE_EXIT_CODE" != "0" ] || [ ! -d "/tmp/$(inputs.params.gitAppName)/.git" ]; then
+        
+          echo "Git clone failed with exit code: $GIT_CLONE_EXIT_CODE OR /tmp/$(inputs.params.gitAppName)/.git does not exist!"
+          echo -n 1 > /tekton/results/last-exit-code
+
+        else
+
+          # adjust appName
+          GIT_APP_NAME="$(inputs.params.gitAppName)"
+          APP_NAME=${GIT_APP_NAME/omg-/}
+          APP_NAME=${APP_NAME/obtg-/}
+
+          INITIALIZED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          CICD_CONTEXT_DATA_ID="${GIT_APP_NAME}-$(inputs.params.appTag)-$(inputs.params.version)-$(inputs.params.cicdContextName)-$(inputs.params.uniqueString)"
+            
+          cicdstatemgr \
+                --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
+                --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
+                  \
+                --init-new $CICD_CONTEXT_DATA_ID \
+                --init-bases-dir /workspace/cicdstatemgr-configs/ \
+                --init-app-config-file /tmp/$(inputs.params.gitAppName)/app-pipeline-config.yaml \
+                --init-cicd-context-name $(inputs.params.cicdContextName) \
+                \
+                --set "state.cicdVersion=$(inputs.params.version)" \
+                --set "state.appName=${APP_NAME}" \
+                --set "state.appTag=$(inputs.params.appTag)" \
+                --set "state.gitAppName=${GIT_APP_NAME}" \
+                --set "state.commitId=$(inputs.params.commitId)" \
+                --set "state.gitCloneUrl=$(inputs.params.gitCloneUrl)" \
+                  \
+                --set "state.start.$(inputs.params.pipelineRunUid).security.invokerUid=$(inputs.params.invokerUid)" \
+                  \
+                --set "state.start.$(inputs.params.pipelineRunUid).initializedAt=$INITIALIZED_AT" \
+                --set 'state.start.$(inputs.params.pipelineRunUid).params.request.body=file:///tekton/results/originalRequestBody' \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.pipelineRunUid=$(inputs.params.pipelineRunUid)" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.pipelineName=start" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.cicdContextName=$(inputs.params.cicdContextName)" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.cicdContextDataId=$CICD_CONTEXT_DATA_ID" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.invokerUid=$(inputs.params.invokerUid)" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.relatedCicdContextDataId=$(inputs.params.relatedCicdContextDataId)" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.relatedPipelineRunUid=$(inputs.params.relatedPipelineRunUid)" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.relatedPipelineName=$(inputs.params.relatedPipelineName)" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.triggeredBySystem=$(inputs.params.triggeredBySystem)" \
+                --set "state.start.$(inputs.params.pipelineRunUid).params.triggeredByDescription=$(inputs.params.triggeredByDescription)" \
+                --handle-event start=init \
+                --tmpl-ctx-var "event.data=state.start.$(inputs.params.pipelineRunUid)" 
+
+       
+          INIT_NEW_EXIT_CODE=$?
+
+          # otherwise proceed
+          echo
+
+          cat /tekton/results/cicdContextDataId
+          echo 
+          echo
+
+          cat /tekton/results/cicdContextDataJson
+          echo 
+          echo
+
+          echo
+
+          if [ "$INIT_NEW_EXIT_CODE" != "0" ]; then echo "INIT NEW CONTEXT FAILED"; else echo "INIT NEW CONTEXT SUCCEEDED" ; fi
+          echo
+
+          echo -n $INIT_NEW_EXIT_CODE > /tekton/results/last-exit-code
+
+          # exit fast if the auth was a failure above
+          if [ "$INIT_NEW_EXIT_CODE" != "0" ]; then
+            exit $INIT_NEW_EXIT_CODE
+          fi
+        
+        fi
+
+

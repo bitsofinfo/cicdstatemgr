@@ -1,0 +1,175 @@
+---
+
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: test
+
+spec:
+  params:
+    - name: pipelineRunUid
+      type: string
+    - name: cicdContextDataId
+      type: string
+    - name: originalRequestBody
+      type: string 
+
+    # for security checks
+    - name: cicdContextName
+      type: string
+    - name: invokerUid
+      type: string
+    - name: relatedCicdContextDataId
+      type: string
+    - name: relatedPipelineRunUid
+      type: string
+    - name: relatedPipelineName
+      type: string
+    - name: triggeredBySystem
+      type: string
+    - name: triggeredByDescription
+      type: string
+      
+  workspaces:
+    - name: cicdstatemgr-secrets
+      description: cicdstatemgr secrets workspace
+    - name: cicdstatemgr-configs
+      description: cicdstatemgr configs workspace
+
+  tasks:
+
+      #---------------------
+      # init
+      #---------------------
+    - name: init
+      taskRef:
+        name: init
+      workspaces:
+        - name: cicdstatemgr-configs
+          workspace: cicdstatemgr-configs
+        - name: cicdstatemgr-secrets
+          workspace: cicdstatemgr-secrets
+      params:
+        - name: pipelineRunUid
+          value: $(params.pipelineRunUid)
+        - name: cicdContextDataId
+          value: $(params.cicdContextDataId)
+        - name: pipelineName
+          value: test
+        - name: originalRequestBody
+          value: $(params.originalRequestBody)
+
+        # for security checks
+        - name: cicdContextName
+          value: $(params.cicdContextName)
+        - name: invokerUid
+          value: $(params.invokerUid)
+        - name: relatedCicdContextDataId
+          value: $(params.relatedCicdContextDataId)
+        - name: relatedPipelineRunUid
+          value: $(params.relatedPipelineRunUid)
+        - name: relatedPipelineName
+          value: $(params.relatedPipelineName)
+        - name: triggeredBySystem
+          value: $(params.triggeredBySystem)
+        - name: triggeredByDescription
+          value: $(params.triggeredByDescription)
+
+
+      #---------------------
+      # execute test invocation
+      #---------------------
+    - name: test-invoke
+
+      taskRef:
+        name: test-invoke
+
+      runAfter: 
+        - init
+
+      workspaces:
+        - name: cicdstatemgr-configs
+          workspace: cicdstatemgr-configs
+        - name: cicdstatemgr-secrets
+          workspace: cicdstatemgr-secrets
+
+      params:
+        - name: pipelineRunUid
+          value: $(params.pipelineRunUid)
+        - name: cicdContextDataId
+          value: $(params.cicdContextDataId)
+
+
+
+
+      #---------------------------
+      # Finish success
+      #---------------------------
+    - name:  finish-success
+      taskRef:
+        name: handle-event
+
+      runAfter: 
+        - test-invoke
+
+      workspaces:
+        - name: cicdstatemgr-configs
+          workspace: cicdstatemgr-configs
+        - name: cicdstatemgr-secrets
+          workspace: cicdstatemgr-secrets
+
+      conditions:
+        - conditionRef: exit-code-is-success
+          params:
+            - name: exit-code
+              value: $(tasks.test-invoke.results.last-exit-code)
+
+      params:
+        - name: pipelineRunUid
+          value: $(params.pipelineRunUid)
+        - name: cicdContextDataId
+          value: $(params.cicdContextDataId)
+        - name: pipelineName
+          value: test
+        - name: eventName
+          value: success
+        - name: exitWithExitCode
+          value: "0"
+
+
+
+
+      #---------------------------
+      # Finish failure
+      #---------------------------
+    - name:  finish-failure
+      taskRef:
+        name: handle-event
+
+      workspaces:
+        - name: cicdstatemgr-configs
+          workspace: cicdstatemgr-configs
+        - name: cicdstatemgr-secrets
+          workspace: cicdstatemgr-secrets
+          
+      conditions:
+        - conditionRef: exit-code-is-failure
+          params:
+            - name: exit-code
+              value: $(tasks.test-invoke.results.last-exit-code)
+
+      params:
+        - name: pipelineRunUid
+          value: $(params.pipelineRunUid)
+        - name: cicdContextDataId
+          value: $(params.cicdContextDataId)
+        - name: pipelineName
+          value: test
+        - name: eventName
+          value: failure
+        - name: exitWithExitCode
+          value: "1"
+       
+       
+
+

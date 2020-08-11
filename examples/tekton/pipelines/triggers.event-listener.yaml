@@ -124,7 +124,7 @@ spec:
                 expression: "body.cicdContextName" 
 
 
-                # see actual ***REMOVED***pipeline.yaml's
+                # see actual obtgpipeline.yaml's
               - key: intercepted.targetAppName
                 expression: "body.targetAppName"
 
