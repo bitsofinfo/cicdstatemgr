@@ -187,7 +187,7 @@ spec:
 
           echo -n $INIT_NEW_EXIT_CODE > /tekton/results/last-exit-code
 
-          # exit fast if the auth was a failure above
+          # exit fast if was a failure above
           if [ "$INIT_NEW_EXIT_CODE" != "0" ]; then
             exit $INIT_NEW_EXIT_CODE
           fi
