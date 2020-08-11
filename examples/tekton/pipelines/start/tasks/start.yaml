@@ -128,6 +128,7 @@ spec:
           GIT_APP_NAME="$(inputs.params.gitAppName)"
           APP_NAME=${GIT_APP_NAME}
 
+
           INITIALIZED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           CICD_CONTEXT_DATA_ID="${GIT_APP_NAME}-$(inputs.params.appTag)-$(inputs.params.version)-$(inputs.params.cicdContextName)-$(inputs.params.uniqueString)"
