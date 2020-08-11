@@ -1,10 +1,3 @@
-
-#----------------------------------
-# DEPLOY COREDATA PIPELINE
-# - calls deployer task 3x for 
-#   full, batch, auth
-#----------------------------------
-
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:

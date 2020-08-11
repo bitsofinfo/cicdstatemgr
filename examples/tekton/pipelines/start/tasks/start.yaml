@@ -126,8 +126,7 @@ spec:
 
           # adjust appName
           GIT_APP_NAME="$(inputs.params.gitAppName)"
-          APP_NAME=${GIT_APP_NAME/omg-/}
-          APP_NAME=${APP_NAME/obtg-/}
+          APP_NAME=${GIT_APP_NAME}
 
           INITIALIZED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
