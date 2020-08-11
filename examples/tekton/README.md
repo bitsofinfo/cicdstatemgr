@@ -162,6 +162,8 @@ Want to see how the Tekton pipelines/triggers and EventListener are defined? Che
 
 Want to see how all the Slack messages and interaction work? Check out the [pipelines/bases](pipelines/bases) and [pipelines/confs](pipelines/confs) directories which contain the configs and pipeline-configs that `cicdstatemgr` consumes.
 
+Want to just get familiar with how the `cicdstatemgr` CLI functionality works? see [examples/basics](../basics/)
+
 ## Cleanup
 
 Running the following will kill the `ngrok` process (the pid is in `.ngrok.pid`), and then issue a `minikube delete`
