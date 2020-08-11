@@ -54,14 +54,14 @@ This context object is then evaluated against the `jinja2` template located in t
 
 The result of that evaluation is then sent as a JSON body over an HTTP(s) `POST` to the `--config` file's configured `slack.url`
 
-The HTTP response from the `POST` (if JSON) is then passed to another `jinja2` evaluation against the rules defined in the `--config` file's `notify.auth-capture-response-data` section as well as the optional `notify.capture-response-data`. This creates a `jinja2` context which is the `cicdContextData` object PLUS the following keys:
+The HTTP response from the `POST` (if JSON) is then passed to another `jinja2` evaluation against the rules defined in the `--config` file's `notify.auto-capture-response-data` section as well as the optional `notify.capture-response-data`. This creates a `jinja2` context which is the `cicdContextData` object PLUS the following keys:
 
 ```
 configData: <contents of the --config file>
 body: <the response body unmarshalled from JSON>
 ```
 
-This context is then used to evaluate each `notify.capture-response-data` and/or `--config` yaml file's `notify.auth-capture-response-data` set of `from:` and `to:` items. Which can be used to capture values from a HTTP response and save them into the `cicdContextData`
+This context is then used to evaluate each `notify.capture-response-data` and/or `--config` yaml file's `notify.auto-capture-response-data` set of `from:` and `to:` items. Which can be used to capture values from a HTTP response and save them into the `cicdContextData`
 
 The syntax for each `notify` block within an app's pipeline config is:
 ```
