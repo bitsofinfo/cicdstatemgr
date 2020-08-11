@@ -108,8 +108,8 @@ source localdata/cicdContextData.sh
 $ echo $CICD_state__key1
 value1
 
-$ echo $CICD_pipelines__build__event_handlers__init__notify__message
-{{ helloWorld('start is successful') }}
+$ echo $CICD_pipelines__build__event_handlers__testEvent__notify__message
+{{ basicMacro('testEventFired!!! yes...') }}
 
 $ echo $CICD_state__cicdContextDataId
 context-data-id-1
