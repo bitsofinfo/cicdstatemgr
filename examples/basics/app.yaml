@@ -85,3 +85,10 @@ cicd-contexts:
                   options:
                     - text: "{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
                       value: "{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
+
+      # example of disabling something inheriterd from a base
+      test:
+        event-handlers:
+          another-event:
+            notify:
+              enabled: False

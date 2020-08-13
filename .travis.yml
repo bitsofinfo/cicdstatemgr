@@ -41,7 +41,9 @@ deploy:
   on:
     tags: true
 
+# ugh, there is some latency in pypi, sleep....
 after_deploy:
+  - sleep 60
   - found=1; while [ $found -eq 1 ]; do sleep 5; x=$(curl -s https://pypi.org/simple/cicdstatemgr/ 2>&1 | grep $TRAVIS_TAG); found=$?; echo "found? $found";  done
   - docker build --build-arg GIT_TAG=$TRAVIS_TAG -t bitsofinfo/cicdstatemgr:$TRAVIS_TAG .
   - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin

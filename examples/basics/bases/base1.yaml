@@ -34,6 +34,9 @@ cicd-contexts:
               message: |
                 {{ basicMacro('some-event fired in the start pipeline') }}
     
-
-
-
+      test:
+        event-handlers:
+          another-event:
+            notify:
+              message: |
+                {{ basicMacro('another-event fired in the test pipeline') }}

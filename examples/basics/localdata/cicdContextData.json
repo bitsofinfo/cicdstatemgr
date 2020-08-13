@@ -10,6 +10,16 @@
         }
       }
     },
+    "test": {
+      "event-handlers": {
+        "another-event": {
+          "notify": {
+            "message": "{{ basicMacro('another-event fired in the test pipeline') }}\n",
+            "enabled": false
+          }
+        }
+      }
+    },
     "build": {
       "event-handlers": {
         "testEvent": {
@@ -186,6 +196,15 @@
                 }
               }
             }
+          },
+          "test": {
+            "event-handlers": {
+              "another-event": {
+                "notify": {
+                  "enabled": false
+                }
+              }
+            }
           }
         }
       }
@@ -216,7 +235,7 @@
     "testHeader2Value": "myvalueforheader2",
     "triggerAutoArg1": "dummyVal",
     "postedData": {
-      "14144": {
+      "40652": {
         "body": {
           "message": "This is basicMacro! msg = testEventFired!!! yes..."
         },
@@ -224,7 +243,7 @@
           "userAgent": "python-requests/2.24.0"
         }
       },
-      "88824": {
+      "88539": {
         "body": {
           "message": "This is basicMacro! msg = build is successful"
         },
@@ -233,9 +252,9 @@
         }
       }
     },
-    "lastPostedDataRandomId": "88824",
+    "lastPostedDataRandomId": "88539",
     "lastPostedToNotifyChannel": "stage",
-    "lastPostedHttpResponse": "{\"args\": {}, \"data\": {\"channel\": \"stage\", \"message\": \"This is basicMacro! msg = build is successful\", \"randomId\": \"88824\"}, \"files\": {}, \"form\": {}, \"headers\": {\"accept\": \"*/*\", \"accept-encoding\": \"gzip, deflate\", \"authorization\": \"Bearer FAKE_TOKEN\", \"cache-control\": \"no-cache\", \"content-length\": \"103\", \"content-type\": \"application/json; charset=UTF-8\", \"host\": \"postman-echo.com\", \"user-agent\": \"python-requests/2.24.0\", \"x-amzn-trace-id\": \"Root=1-5f2c6557-78a602786f47a1704c689544\", \"x-forwarded-port\": \"443\", \"x-forwarded-proto\": \"https\"}, \"json\": {\"channel\": \"stage\", \"message\": \"This is basicMacro! msg = build is successful\", \"randomId\": \"88824\"}, \"url\": \"https://postman-echo.com/post\"}",
+    "lastPostedHttpResponse": "{\"args\": {}, \"data\": {\"channel\": \"stage\", \"message\": \"This is basicMacro! msg = build is successful\", \"randomId\": \"88539\"}, \"files\": {}, \"form\": {}, \"headers\": {\"accept\": \"*/*\", \"accept-encoding\": \"gzip, deflate\", \"authorization\": \"Bearer FAKE_TOKEN\", \"cache-control\": \"no-cache\", \"content-length\": \"103\", \"content-type\": \"application/json; charset=UTF-8\", \"host\": \"postman-echo.com\", \"user-agent\": \"python-requests/2.24.0\", \"x-amzn-trace-id\": \"Root=1-5f358333-a06275a3a89ac13c61637386\", \"x-forwarded-port\": \"443\", \"x-forwarded-proto\": \"https\"}, \"json\": {\"channel\": \"stage\", \"message\": \"This is basicMacro! msg = build is successful\", \"randomId\": \"88539\"}, \"url\": \"https://postman-echo.com/post\"}",
     "lastPostedNotifyMessage": "This is basicMacro! msg = build is successful"
   },
   "variables": {

@@ -508,16 +508,29 @@ class CicdStateMgr():
             handlers = cicdContextData['pipelines'][pipelineName]['event-handlers'][eventName]
 
             for handlerName in handlers:
+
+                # get the config for the handler
+                handlerConfig = handlers[handlerName]
+
+                # check for 'enabled' flag permits derivatives
+                # to toggle on off, inherited handler configs
+                if 'enabled' in handlerConfig:
+                    enabledVal = handlerConfig['enabled'] 
+                    if type(enabledVal) == bool and (enabledVal == False):
+                        logging.debug("on_event_handler() {} enabled:{} skipping....".format(handlerName,enabledVal))
+                        continue
+
+                # ok we can proceed
                 if handlerName == 'trigger-pipeline':
-                    self.event_handle_trigger_pipeline(handlers[handlerName],cicdContextData, tmplCtxVars)
+                    self.event_handle_trigger_pipeline(handlerConfig,cicdContextData, tmplCtxVars)
                 if handlerName == 'manual-choice':
-                    self.event_handle_manual_choice(handlers[handlerName],cicdContextData, tmplCtxVars)
+                    self.event_handle_manual_choice(handlerConfig,cicdContextData, tmplCtxVars)
                 if handlerName == 'notify':
-                    self.event_handle_notify(handlers[handlerName], cicdContextData, tmplCtxVars)
+                    self.event_handle_notify(handlerConfig, cicdContextData, tmplCtxVars)
                 if handlerName == 'respond':
-                    self.event_handle_respond(handlers[handlerName], cicdContextData, tmplCtxVars)
+                    self.event_handle_respond(handlerConfig, cicdContextData, tmplCtxVars)
                 if handlerName == 'set-values':
-                    self.event_handle_set_values(handlers[handlerName], cicdContextData, tmplCtxVars)
+                    self.event_handle_set_values(handlerConfig, cicdContextData, tmplCtxVars)
 
         # persist it all
         if persistCicdContextData:

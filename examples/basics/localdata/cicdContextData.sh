@@ -1,6 +1,8 @@
 CICD_channel="stage"
 CICD_pipelines__start__event_handlers__some_event__notify__message="{{ basicMacro('some-event fired in the start pipeline') }}
 "
+CICD_pipelines__test__event_handlers__another_event__notify__message="{{ basicMacro('another-event fired in the test pipeline') }}
+"
 CICD_pipelines__build__event_handlers__testEvent__notify__message="{{ basicMacro('testEventFired!!! yes...') }}
 "
 CICD_pipelines__build__event_handlers__testNotifyEvent__notify__message="{{ basicMacro('build is successful') }}
@@ -107,13 +109,13 @@ CICD_state__fileBody__bark__quality="high"
 CICD_state__fileBody__bark__volume="loud"
 CICD_state__testHeader2Value="myvalueforheader2"
 CICD_state__triggerAutoArg1="dummyVal"
-CICD_state__postedData__14144__body__message="This is basicMacro! msg = testEventFired!!! yes..."
-CICD_state__postedData__14144__headers__userAgent="python-requests/2.24.0"
-CICD_state__postedData__88824__body__message="This is basicMacro! msg = build is successful"
-CICD_state__postedData__88824__headers__userAgent="python-requests/2.24.0"
-CICD_state__lastPostedDataRandomId="88824"
+CICD_state__postedData__40652__body__message="This is basicMacro! msg = testEventFired!!! yes..."
+CICD_state__postedData__40652__headers__userAgent="python-requests/2.24.0"
+CICD_state__postedData__88539__body__message="This is basicMacro! msg = build is successful"
+CICD_state__postedData__88539__headers__userAgent="python-requests/2.24.0"
+CICD_state__lastPostedDataRandomId="88539"
 CICD_state__lastPostedToNotifyChannel="stage"
-CICD_state__lastPostedHttpResponse="{"args": {}, "data": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "88824"}, "files": {}, "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type": "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0", "x-amzn-trace-id": "Root=1-5f2c6557-78a602786f47a1704c689544", "x-forwarded-port": "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "88824"}, "url": "https://postman-echo.com/post"}"
+CICD_state__lastPostedHttpResponse="{"args": {}, "data": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "88539"}, "files": {}, "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type": "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0", "x-amzn-trace-id": "Root=1-5f358333-a06275a3a89ac13c61637386", "x-forwarded-port": "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "88539"}, "url": "https://postman-echo.com/post"}"
 CICD_state__lastPostedNotifyMessage="This is basicMacro! msg = build is successful"
 CICD_variables__baseVar1="baseVarVal1"
 CICD_variables__myVar1="test"

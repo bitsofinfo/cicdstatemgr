@@ -1,3 +1,6 @@
+# 1.0.22
+* add support for toggling any `event-handlers:` sub entry in a derivative via `enabled: False` See #4
+
 # 1.0.21
 * jinja2 parse error include original non-macro prefixed template
 * parse `to` on set-values handlers

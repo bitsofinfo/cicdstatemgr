@@ -37,6 +37,9 @@ There are several different event handlers that can be configured. All of the ha
 * [manual-choice](#manual-choice)
 * [respond](#respond)
 * [set-values](#set-values)
+  
+Related items:
+* [disabling inherited event-handler configs](#disabling-inherited-event-handler-configs)
 
 **IMPORTANT**: for purposes of this example, you should run the examples in the order as they appear in the document below
 
@@ -306,4 +309,38 @@ Ok what did this do?
 2020-08-06 14:04:31,600 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): postman-echo.com:443
 2020-08-06 14:04:31,819 - urllib3.connectionpool - DEBUG - https://postman-echo.com:443 "POST /post HTTP/1.1" 200 565
 2020-08-06 14:04:31,821 - root - DEBUG - event_handle_respond(): POST response OK {'args': {}, 'data': {'response_text': 'dummy responder message for 16769'}, 'files': {}, 'form': {}, 'headers': {'x-forwarded-proto': 'https', 'x-forwarded-port': '443', 'host': 'postman-echo.com', 'x-amzn-trace-id': 'Root=1-5f2c0def-27008cf2dd4baf0e8bbf5026', 'content-length': '58', 'user-agent': 'python-requests/2.24.0', 'accept-encoding': 'gzip, deflate', 'accept': '*/*', 'content-type': 'application/json; charset=UTF-8', 'authorization': 'Bearer FAKE_TOKEN', 'cache-control': 'no-cache'}, 'json': {'response_text': 'dummy responder message for 16769'}, 'url': 'https://postman-echo.com/post'} 
+```
+
+# Disabling inherited event-handler configs
+
+Sometimes you might have a `base` file that declares an `event-handler` config that you need to disable within a derivative app pipeline config yaml.
+
+For example in the [app.yaml](app.yaml) you can see the following, which disables the corresponding inherited event defined in [bases/base1/yaml](bases/base1.yaml)
+
+```
+...
+    event-handlers:
+      ...
+      test:
+        another-event:
+          notify:
+            enabled: False
+```
+
+So if we run:
+```
+cicdstatemgr    \
+     --config config.yaml \
+     --secrets secrets.yaml \
+     --id "context-data-id-1" \
+     --handle-event test=another-event
+```
+
+You will see in the logs:
+
+```
+...
+2020-08-13 18:09:38,593 - root - DEBUG - on_event_handler() eventName=another-event, cicdContextDataId=context-data-id-1, pipelineName=test tmplCtxVars=None
+2020-08-13 18:09:38,594 - root - DEBUG - on_event_handler() notify enabled:False skipping....
+...
 ```

@@ -7,6 +7,14 @@ pipelines:
           message: '{{ basicMacro(''some-event fired in the start pipeline'') }}
 
             '
+  test:
+    event-handlers:
+      another-event:
+        notify:
+          message: '{{ basicMacro(''another-event fired in the test pipeline'') }}
+
+            '
+          enabled: false
   build:
     event-handlers:
       testEvent:
@@ -139,6 +147,11 @@ appPipelinesConfig:
                     options:
                     - text: '{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}'
                       value: '{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}'
+        test:
+          event-handlers:
+            another-event:
+              notify:
+                enabled: false
 jinja2Macros:
   byName:
     basicMacro: "{%- macro basicMacro(msg) -%}\n  This is basicMacro! msg = {{msg}}\n\
@@ -166,26 +179,26 @@ state:
   testHeader2Value: myvalueforheader2
   triggerAutoArg1: dummyVal
   postedData:
-    '14144':
+    '40652':
       body:
         message: This is basicMacro! msg = testEventFired!!! yes...
       headers:
         userAgent: python-requests/2.24.0
-    '88824':
+    '88539':
       body:
         message: This is basicMacro! msg = build is successful
       headers:
         userAgent: python-requests/2.24.0
-  lastPostedDataRandomId: '88824'
+  lastPostedDataRandomId: '88539'
   lastPostedToNotifyChannel: stage
   lastPostedHttpResponse: '{"args": {}, "data": {"channel": "stage", "message": "This
-    is basicMacro! msg = build is successful", "randomId": "88824"}, "files": {},
+    is basicMacro! msg = build is successful", "randomId": "88539"}, "files": {},
     "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization":
     "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type":
     "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0",
-    "x-amzn-trace-id": "Root=1-5f2c6557-78a602786f47a1704c689544", "x-forwarded-port":
+    "x-amzn-trace-id": "Root=1-5f358333-a06275a3a89ac13c61637386", "x-forwarded-port":
     "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message":
-    "This is basicMacro! msg = build is successful", "randomId": "88824"}, "url":
+    "This is basicMacro! msg = build is successful", "randomId": "88539"}, "url":
     "https://postman-echo.com/post"}'
   lastPostedNotifyMessage: This is basicMacro! msg = build is successful
 variables:
