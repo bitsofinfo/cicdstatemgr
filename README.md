@@ -20,7 +20,7 @@ Here is a video screencast that walks through [an example](examples/tekton) that
 
 [![cicdstatemgr screencast](https://img.youtube.com/vi/449xT2iDlzQ/0.jpg)](https://www.youtube.com/watch?v=449xT2iDlzQ)
 
-The best place to start is the [examples](examples/)
+The best place to start is the [examples](examples/) or read some [background info here](https://bitsofinfo.wordpress.com/2020/08/13/tekton-pipelines-cicd-slack-triggers-state/)
 
 ## Status
 
@@ -28,7 +28,7 @@ This project is still considered **beta** software. It is currently being used i
 
 ## Overview 
 
-So what does this do exactly?
+So what does this do exactly? ([you can also read this blog post](https://bitsofinfo.wordpress.com/2020/08/13/tekton-pipelines-cicd-slack-triggers-state/))
 
 <img align="right" width="550" src="imgs/init-new.png">`cicdstatemgr` is a small python library and CLI to help you maintain state and configuration data that can span process/task boundaries in a CICD system that does not natively provide such a facility. It also provides some built in features that let you handle "events" by invoking HTTP endpoints for doing things like notifications, triggering hooks, integrating with end-user interactive apps like Slack/Teams etc.
 
