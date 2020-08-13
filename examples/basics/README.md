@@ -2,6 +2,8 @@
 
 The following examples will give you a decent overview of how you can make use of `cicdstatemgr`
 
+[For more background info see this blog post](https://bitsofinfo.wordpress.com/2020/08/13/tekton-pipelines-cicd-slack-triggers-state/)
+
 ## scripts
 
 Note that all the examples provided in the various markdown files in this directory are also covered in the [scripts in the test/ directory](test/)

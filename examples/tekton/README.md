@@ -14,6 +14,8 @@ Need help? [join bitsofinfo.slack.com](https://join.slack.com/t/bitsofinfo/share
 
 Here is a video screencast that walks through this example after it is up and running:
 
+[For more background info see this blog post](https://bitsofinfo.wordpress.com/2020/08/13/tekton-pipelines-cicd-slack-triggers-state/)
+
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/449xT2iDlzQ/0.jpg)](https://www.youtube.com/watch?v=449xT2iDlzQ)
 
 
