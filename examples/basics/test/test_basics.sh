@@ -22,10 +22,10 @@ docker run \
 # yq
 if [[ `uname` == 'Darwin' ]]; then
   if [ -z "$(which yq)" ]; then
-    brew install yq
+    sudobrew install yq
   fi
 else
-  snap install yq
+  sudo snap install yq
 fi
 
 # jq
@@ -34,7 +34,7 @@ if [[ `uname` == 'Darwin' ]]; then
     brew install jq
   fi
 else
-  snap install yq
+  sudo snap install yq
 fi
 
 # setup python venv
