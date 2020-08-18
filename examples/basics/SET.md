@@ -122,3 +122,119 @@ cicdstatemgr \
 
 high
 ```
+
+---
+
+Let's set an `list`:
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --set 'state.testList[]=a,b,c'
+```
+
+Get it: 
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --get 'state.testList[2]'
+
+c
+```
+
+Append:
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --set 'state.testList[]=d,e,f'
+
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --get 'state.testList'
+
+["a", "b", "c", "d", "e", "f"]
+```
+
+Clear and reset + new + append
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --set 'state.testList[]=[]' \
+    --set 'state.testList[]=x,y,z' \
+    --set 'state.testList[]=d' 
+
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --get 'state.testList'
+
+["x", "y", "z", "d"]
+```
+
+---
+
+Let's set an `set` (list w/ no duplicates permitted):
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --set 'state.testSet{}=a,b,c,c,c,c'
+```
+
+Get it: 
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --get 'state.testSet'
+
+["a", "b", "c"]
+```
+
+Append:
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --set 'state.testSet{}=d,e,e,e,f'
+
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --get 'state.testSet'
+
+["a", "b", "c", "d", "e", "f"]
+```
+
+Clear and reset + new + append
+```
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --set 'state.testSet{}=[]' \
+    --set 'state.testSet{}=x,y,z' \
+    --set 'state.testSet{}=d,d,d' 
+
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --get 'state.testSet'
+
+["x", "y", "z", "d"]
+```

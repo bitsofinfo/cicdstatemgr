@@ -1,3 +1,15 @@
+# 1.0.23
+
+* document/refine support for the `list` datatype for the `--set` argument
+  * i.e. `--set some.path.myset[]=e,f,g,e` = [e,f,g,e]
+  * any subsequent `--set` calls to same key act as an add/extension to existing values
+  * `--set some.path.myset[]=[]` clears any pre-existing values
+
+* add support for the `set` datatype (no-duplicates list) for the `--set` argument
+  * i.e. `--set some.path.myset{}=e,f,g,e` = [e,f,g]
+  * any subsequent `--set` calls to same key act as an add/extension to existing values
+  * `--set some.path.myset{}=[]` clears any pre-existing values
+  
 # 1.0.22
 * add support for toggling any `event-handlers:` sub entry in a derivative via `enabled: False` See #4
 

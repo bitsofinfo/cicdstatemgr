@@ -339,7 +339,7 @@ class CicdStateMgr():
             return self.parse_template(toReturn,templateContext) 
         else:
             logging.warning("get_value() propPath:{} tmplCtxVars:{}, the propPath yielded a non-string value {}".format(propPath,tmplCtxVars,toReturn) + \
-                " I cannot parse the value as a template... returning as-is")
+                " I cannot parse the value as a template... returning object {} as-is (JSON marshalled)".format(str(type(toReturn))))
 
         if isinstance(toReturn,list):
             return json.dumps(toReturn)
@@ -356,35 +356,57 @@ class CicdStateMgr():
         key = parts[0]
 
         intentIsList = False
+        intentIsSet = False
 
         if '[]' in key:
             intentIsList = True
             key = key.replace('[]','')
 
+        if '{}' in key:
+            intentIsSet = True
+            key = key.replace('{}','')
+
         if key in mapp:
 
             v = mapp[key]
 
-            # list flag and not a list? 
+            # list/set flag and not a list type? 
             # seed a empty one
-            if not v and intentIsList:
+            if not v and (intentIsList or intentIsSet):
                 v = []
+                mapp[key] = v
 
             # are there remaining entries in the propPath?
             remaining = propPath.split(".")[1:]
 
-            if isinstance(v,dict) and not intentIsList and remaining:
+            if isinstance(v,dict) and not intentIsList and not intentIsSet and remaining:
                 return self.recursive_set(".".join(remaining),value,v,key)
 
             elif isinstance(v,list) and intentIsList:
-                v.append(value)
+                if value == '[]': # empty
+                    mapp[key] = []
+                else:
+                    valsToSet = value.split(',')
+                    v.extend(valsToSet)
 
-            elif not intentIsList:
+            elif isinstance(v,list) and intentIsSet:
+                # hack w/ a temp set and swap back to a list
+                # as to not have to deal w/ JSON's lack of marshaller 
+                # for set datatype
+                if value == '[]': # empty
+                    mapp[key] = []
+                else:
+                    valsToSet = value.split(',')
+                    v.extend(valsToSet)
+                    reordered = sorted(set(v),key=v.index)
+                    mapp[key] = reordered
+
+            elif not intentIsList and not intentIsSet:
                 mapp[key] = value
                 return value
 
             else:
-                logging.error("recursive_set() propPath:{} key:{} specifies a list, yet a list[] does not exist at this position!".format(propPath,key))
+                logging.error("recursive_set() propPath:{} key:{} hints as a list[] or set\{\}, yet a list/set does not exist at this position!".format(propPath,key))
                 sys.exit(1)
 
         elif len(parts) > 1:
@@ -392,9 +414,13 @@ class CicdStateMgr():
             mapp[key] = {}
             return self.recursive_set(".".join(remaining),value,mapp[key],key)
             
-        elif intentIsList:
+        elif intentIsList or intentIsSet:
             mapp[key] = []
-            mapp[key].append(value)
+            if value != '[]': 
+                valsToSet = value.split(',')
+                if intentIsSet:
+                    valsToSet = sorted(set(valsToSet),key=valsToSet.index)
+                mapp[key].extend(valsToSet)
 
         else:
             mapp[key] = value
