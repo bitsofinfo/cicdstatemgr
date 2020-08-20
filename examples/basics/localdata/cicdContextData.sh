@@ -74,31 +74,6 @@ CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__event_handlers_
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__event_handlers__testManualChoiceEvent__manual_choice__choices__choiceGroup2__header="Choice group two {{ echo('blah') }}:"
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__event_handlers__testManualChoiceEvent__manual_choice__choices__choiceGroup2__options__0__text="{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__event_handlers__testManualChoiceEvent__manual_choice__choices__choiceGroup2__options__0__value="{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
-CICD_jinja2Macros__byName__basicMacro="{%- macro basicMacro(msg) -%}
-  This is basicMacro! msg = {{msg}}
-{%- endmacro -%}
-"
-CICD_jinja2Macros__byName__echo="{%- macro echo(msg) -%}
-  {{msg}}
-{%- endmacro -%}
-"
-CICD_jinja2Macros__byName__random="{%- macro random() -%}
-  {{ range(10000, 99999) | random }}
-{%- endmacro -%}
-"
-CICD_jinja2Macros__byName__helloWorld="{%- macro helloWorld(msg) -%}
-  Hello world msg = {{msg}}
-{%- endmacro -%}
-"
-CICD_jinja2Macros__all="{%- macro basicMacro(msg) -%}
-  This is basicMacro! msg = {{msg}}
-{%- endmacro -%}{%- macro echo(msg) -%}
-  {{msg}}
-{%- endmacro -%}{%- macro random() -%}
-  {{ range(10000, 99999) | random }}
-{%- endmacro -%}{%- macro helloWorld(msg) -%}
-  Hello world msg = {{msg}}
-{%- endmacro -%}"
 CICD_state__cicdContextDataId="context-data-id-1"
 CICD_state__cicdContextName="stage"
 CICD_state__key1="valuechanged"
@@ -114,13 +89,13 @@ CICD_state__testSet__2="c"
 CICD_state__testSet__3="d"
 CICD_state__testHeader2Value="myvalueforheader2"
 CICD_state__triggerAutoArg1="dummyVal"
-CICD_state__postedData__16712__body__message="This is basicMacro! msg = testEventFired!!! yes..."
-CICD_state__postedData__16712__headers__userAgent="python-requests/2.24.0"
-CICD_state__postedData__49231__body__message="This is basicMacro! msg = build is successful"
-CICD_state__postedData__49231__headers__userAgent="python-requests/2.24.0"
-CICD_state__lastPostedDataRandomId="49231"
+CICD_state__postedData__50608__body__message="This is basicMacro! msg = testEventFired!!! yes..."
+CICD_state__postedData__50608__headers__userAgent="python-requests/2.24.0"
+CICD_state__postedData__25350__body__message="This is basicMacro! msg = build is successful"
+CICD_state__postedData__25350__headers__userAgent="python-requests/2.24.0"
+CICD_state__lastPostedDataRandomId="25350"
 CICD_state__lastPostedToNotifyChannel="stage"
-CICD_state__lastPostedHttpResponse="{"args": {}, "data": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "49231"}, "files": {}, "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type": "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0", "x-amzn-trace-id": "Root=1-5f3c3949-48b01df8968b96c86af32d4c", "x-forwarded-port": "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "49231"}, "url": "https://postman-echo.com/post"}"
+CICD_state__lastPostedHttpResponse="{"args": {}, "data": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "25350"}, "files": {}, "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type": "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0", "x-amzn-trace-id": "Root=1-5f3eb56d-2e4f112af109c06ea527b2e4", "x-forwarded-port": "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "25350"}, "url": "https://postman-echo.com/post"}"
 CICD_state__lastPostedNotifyMessage="This is basicMacro! msg = build is successful"
 CICD_variables__baseVar1="baseVarVal1"
 CICD_variables__myVar1="test"

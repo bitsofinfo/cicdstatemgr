@@ -55,6 +55,11 @@ cicdstatemgr:
     shellfile:
       path: localdata/cicdContextData.sh
 
+      # you can list out key names that will be excluded
+      # from shell VARIABLE generation completely
+      excludeKeyNames:
+        - jinja2Macros
+
     #
     # ID file output = only contains the cicdContextData ID
     #

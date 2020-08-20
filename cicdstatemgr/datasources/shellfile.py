@@ -15,9 +15,12 @@ from ..utils import get_file_path
 class DataSource(CicdContextDataSource):
     filePath = None
     isPrimary = False
+    excludeKeyNames = []
 
     def __init__(self, config=dict):
         self.filePath = config['path']
+        if 'excludeKeyNames' in config:
+            self.excludeKeyNames = config['excludeKeyNames']
 
         if 'isPrimary' in config:
             self.isPrimary = config['isPrimary']
@@ -38,6 +41,10 @@ class DataSource(CicdContextDataSource):
     def flatten(self, d, parent_key='', sep="__"):
         items = []
         for k, v in d.items():
+
+            # skip.... if key is in excludes
+            if self.excludeKeyNames and k in self.excludeKeyNames:
+                continue
 
             if isinstance(v,list) and len(v) > 0:
                 for i in range(len(v)):
