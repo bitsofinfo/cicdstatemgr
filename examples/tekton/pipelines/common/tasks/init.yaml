@@ -73,7 +73,7 @@ spec:
     # set vars + handle init event
     #----------------------------------
     - name: load-and-init
-      image: bitsofinfo/cicdstatemgr:1.0.22
+      image: bitsofinfo/cicdstatemgr:1.0.23
       command:
       - /bin/bash
       args:
