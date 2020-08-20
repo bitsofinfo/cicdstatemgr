@@ -1,3 +1,6 @@
+# 1.0.24
+* address #5 exclude shell datasource from generating jinja2macro shell vars (too large)
+
 # 1.0.23
 
 * document/refine support for the `list` datatype for the `--set` argument
