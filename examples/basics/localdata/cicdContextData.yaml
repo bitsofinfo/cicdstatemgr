@@ -168,46 +168,8 @@ jinja2Macros:
 state:
   cicdContextDataId: context-data-id-1
   cicdContextName: stage
-  key1: valuechanged
+  key1: yet a new value
   templateTest: '{{tmplctx.prop1}}'
-  key2: value2
-  fileBody:
-    dog: beagle
-    bark:
-      quality: high
-      volume: loud
-  testList:
-  - a
-  testSet:
-  - a
-  - b
-  - c
-  - d
-  testHeader2Value: myvalueforheader2
-  triggerAutoArg1: dummyVal
-  postedData:
-    '50608':
-      body:
-        message: This is basicMacro! msg = testEventFired!!! yes...
-      headers:
-        userAgent: python-requests/2.24.0
-    '25350':
-      body:
-        message: This is basicMacro! msg = build is successful
-      headers:
-        userAgent: python-requests/2.24.0
-  lastPostedDataRandomId: '25350'
-  lastPostedToNotifyChannel: stage
-  lastPostedHttpResponse: '{"args": {}, "data": {"channel": "stage", "message": "This
-    is basicMacro! msg = build is successful", "randomId": "25350"}, "files": {},
-    "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization":
-    "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type":
-    "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0",
-    "x-amzn-trace-id": "Root=1-5f3eb56d-2e4f112af109c06ea527b2e4", "x-forwarded-port":
-    "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message":
-    "This is basicMacro! msg = build is successful", "randomId": "25350"}, "url":
-    "https://postman-echo.com/post"}'
-  lastPostedNotifyMessage: This is basicMacro! msg = build is successful
 variables:
   baseVar1: baseVarVal1
   myVar1: test

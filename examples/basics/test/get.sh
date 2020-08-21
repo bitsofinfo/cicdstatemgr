@@ -91,3 +91,33 @@ else
     echo
 fi
 
+
+
+
+
+
+
+
+cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --set 'state.templateTest={{tmplctx.prop1}}'
+
+
+VALUE=$(cicdstatemgr \
+    --config config.yaml  \
+    --secrets secrets.yaml \
+    --id "context-data-id-1" \
+    --get "state.templateTest" \
+    --tmpl-ctx-var tmplctx.prop1='x=1 y=2 z=3') 
+if [ "$VALUE" != 'x=1 y=2 z=3' ]; then
+    echo
+    echo 'FAIL: GET: state.templateTest != x=1 y=2 z=3'
+    echo
+    exit 1
+else
+    echo
+    echo "OK: GET: state.templateTest RHS (=) template success"
+    echo
+fi

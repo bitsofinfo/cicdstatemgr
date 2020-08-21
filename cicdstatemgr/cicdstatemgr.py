@@ -598,7 +598,7 @@ class CicdStateMgr():
         # add any custom template context vars into the tmpContext
         if tmplCtxVars:
             for kvPair in tmplCtxVars:
-                parts = kvPair.split('=')
+                parts = kvPair.split('=',1) # only split on first one
                 if len(parts) != 2:
                     raise Exception("create_event_handler_template_context() tmplCtxVars item {} needs to be in format propPath=expression".format(kvPair))
                 

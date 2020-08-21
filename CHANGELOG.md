@@ -1,3 +1,6 @@
+# 1.0.25
+* address #6 fix `--tmpl-ctx-var` w/ `=` vals
+
 # 1.0.24
 * address #5 exclude shell datasource from generating jinja2macro shell vars (too large)
 
