@@ -25,7 +25,7 @@ kubectl create namespace tekton-pipelines
 kubectl config set-context --current --namespace=tekton-pipelines
 
 # install pipelines
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.15.0/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.15.2/release.yaml
 
 # install pipelines customizations (configmaps)
 # - feature-flags 
@@ -36,7 +36,7 @@ kubectl apply -f $SCRIPTPATH/tekton-pipelines-mods.yaml
 kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/previous/v0.7.0/release.yaml
 
 # install dashboard
-kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.8.2/tekton-dashboard-release.yaml
+kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.9.0/tekton-dashboard-release.yaml
 
 # NodePort change
 kubectl apply -f $SCRIPTPATH/tekton-dashboard-mods.yaml
