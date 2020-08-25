@@ -177,7 +177,7 @@ cicdstatemgr:
     notify: >
       {
       "channel": "{{channel}}",
-      "message": "{{notify.message}}",
+      "message": "{{notify.message|json_dumps(stripLeadingTrailingQuotes=True)}}",
       "randomId": "{{random()}}"
       }
 

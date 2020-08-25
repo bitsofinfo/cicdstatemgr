@@ -13,10 +13,17 @@ def createEnvironment() -> Environment:
     env = Environment(extensions=['jinja2.ext.loopcontrols'])
     env.filters['to_nice_yaml'] = to_nice_yaml
     env.filters['from_json'] = from_json
+    env.filters['json_dumps'] = json_dumps
     env.filters['kv_comma_pairs_to_json'] = kv_comma_pairs_to_json
     env.filters['to_base64'] = to_base64
     return env
     
+# Jinja filter
+def json_dumps(value,indent=None,stripLeadingTrailingQuotes=False):
+    toReturn = json.dumps(value,indent=indent)
+    if stripLeadingTrailingQuotes:
+        return toReturn[1:-1]
+    return toReturn
 
 # Jinja filter
 def from_json(value):

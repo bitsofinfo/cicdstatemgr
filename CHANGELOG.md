@@ -1,3 +1,6 @@
+# 1.0.26
+* address #8 new jinja2 filter `json_dumps(value,indent=None,stripLeadingTrailingQuotes=False)`
+ 
 # 1.0.25
 * address #6 fix `--tmpl-ctx-var` w/ `=` vals
 

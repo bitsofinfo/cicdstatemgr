@@ -86,6 +86,11 @@ cicd-contexts:
                     - text: "{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
                       value: "{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
 
+          testEmbeddedJsonEvent:
+            notify:
+              message: |
+                Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle" }
+
       # example of disabling something inheriterd from a base
       test:
         event-handlers:
