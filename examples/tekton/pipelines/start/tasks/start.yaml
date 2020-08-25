@@ -103,7 +103,7 @@ spec:
     # STEP init CICD context data
     #----------------------------------
     - name: init-cicd-context-data
-      image: bitsofinfo/cicdstatemgr:1.0.25
+      image: bitsofinfo/cicdstatemgr:1.0.26
       command:
       - /bin/bash
       args:

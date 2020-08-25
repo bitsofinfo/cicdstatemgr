@@ -36,7 +36,7 @@ spec:
     # STEP load CICD context data
     #----------------------------------
     - name: load-cicd-context-data
-      image: bitsofinfo/cicdstatemgr:1.0.25
+      image: bitsofinfo/cicdstatemgr:1.0.26
       command:
       - /bin/bash
       args:
@@ -64,7 +64,7 @@ spec:
     #----------------------------------
 
     - name: test-invoke
-      image: bitsofinfo/cicdstatemgr:1.0.25
+      image: bitsofinfo/cicdstatemgr:1.0.26
       command:
       - /bin/bash
       args:
