@@ -710,6 +710,39 @@ class CicdStateMgr():
             logging.error("handle_resevent_handle_respondponder() http response code: {} FAILED: {} ".format(response.status_code,response.content))
 
 
+    def capture_http_response_data(self, cicdContextData:dict, responseBodyObj, eventHandlerName:str, eventHandlerConfig:dict ):
+
+        logging.debug("capture_http_response_data() for {} ".format(eventHandlerName))
+        
+        contextDataForTemplate = copy.deepcopy(cicdContextData)
+        contextDataForTemplate['configData'] = self.configData[CONFIG_DATA_KEY]
+        contextDataForTemplate['body'] = responseBodyObj
+        
+        # always apply global auto capture rules
+        if eventHandlerName in self.configData[CONFIG_DATA_KEY]:
+            if 'auto-capture-response-data' in self.configData[CONFIG_DATA_KEY][eventHandlerName]:
+                captureConfs = self.configData[CONFIG_DATA_KEY][eventHandlerName]['auto-capture-response-data']
+                for captureConf in captureConfs:
+                    valueToSet = self.parse_template(str(captureConf['from']),contextDataForTemplate)
+                    if valueToSet and isinstance(valueToSet,str):
+                        valueToSet = valueToSet.strip()
+                        if valueToSet:
+                            # the 'to' directive can be a template as well
+                            setToKey = self.parse_template(captureConf['to'],contextDataForTemplate)
+                            self.set_value_in_dict_via_prop_path(cicdContextData, setToKey, valueToSet)
+
+        # ... and then apply the pipeline specific notify capture rules
+        if 'capture-response-data' in eventHandlerConfig:
+            captureConfs = eventHandlerConfig['capture-response-data']
+            for captureConf in captureConfs:
+                valueToSet = self.parse_template(str(captureConf['from']),contextDataForTemplate)
+                if valueToSet and isinstance(valueToSet,str):
+                    valueToSet = valueToSet.strip()
+                    if valueToSet:
+                        # the 'to' directive can be a template as well
+                        setToKey = self.parse_template(captureConf['to'],contextDataForTemplate)
+                        self.set_value_in_dict_via_prop_path(cicdContextData, setToKey, valueToSet)
+
 
     def event_handle_notify(self, notifyConfig, cicdContextData, tmplCtxVars):
 
@@ -744,35 +777,8 @@ class CicdStateMgr():
             responseBodyObj = json.loads(response.content)
             logging.debug("event_handle_notify(): POST response OK {} ".format(responseBodyObj))
 
-            contextDataForTemplate = copy.deepcopy(cicdContextData)
-            contextDataForTemplate['configData'] = self.configData[CONFIG_DATA_KEY]
-            contextDataForTemplate['body'] = responseBodyObj
+            self.capture_http_response_data(cicdContextData, responseBodyObj, 'notify', notifyConfig)
             
-            # always apply global auto capture rules
-            if 'notify' in self.configData[CONFIG_DATA_KEY]:
-                if 'auto-capture-response-data' in self.configData[CONFIG_DATA_KEY]['notify']:
-                    captureConfs = self.configData[CONFIG_DATA_KEY]['notify']['auto-capture-response-data']
-                    for captureConf in captureConfs:
-                        valueToSet = self.parse_template(str(captureConf['from']),contextDataForTemplate)
-                        if valueToSet and isinstance(valueToSet,str):
-                            valueToSet = valueToSet.strip()
-                            if valueToSet:
-                                # the 'to' directive can be a template as well
-                                setToKey = self.parse_template(captureConf['to'],contextDataForTemplate)
-                                self.set_value_in_dict_via_prop_path(cicdContextData, setToKey, valueToSet)
-
-            # ... and then apply the pipeline specific notify capture rules
-            if 'capture-response-data' in notifyConfig:
-                captureConfs = notifyConfig['capture-response-data']
-                for captureConf in captureConfs:
-                    valueToSet = self.parse_template(str(captureConf['from']),contextDataForTemplate)
-                    if valueToSet and isinstance(valueToSet,str):
-                        valueToSet = valueToSet.strip()
-                        if valueToSet:
-                            # the 'to' directive can be a template as well
-                            setToKey = self.parse_template(captureConf['to'],contextDataForTemplate)
-                            self.set_value_in_dict_via_prop_path(cicdContextData, setToKey, valueToSet)
-
         else:
             logging.error("event_handle_notify() http response code: {} FAILED: {} ".format(response.status_code,response.content))
 
@@ -784,6 +790,38 @@ class CicdStateMgr():
         templateContext = self.create_event_handler_template_context('manualChoice',manualChoiceConfig,cicdContextData,tmplCtxVars)
 
         templateContext['manualChoice']['title'] = self.parse_template(manualChoiceConfig['title'],templateContext)
+
+
+        # pre-process and generate any "choices" that come from "choice-generators"
+        if 'choice-generators' in templateContext['manualChoice']:
+            choiceGenerators = templateContext['manualChoice']['choice-generators']
+            for generatorName, generator in choiceGenerators.items():
+                logging.debug("manualChoice: processing choice-generator: {}".format(generatorName))
+                if 'foreach' not in generator or 'template' not in generator:
+                    logging.debug("manualChoice: invalid choice-generator: {}, expected 'foreach' and 'template' properties".format(generatorName))
+                
+                # parse foreach template, then "get" that resolved path which should return a dictionary
+                foreachJsonPathExp = self.parse_template(generator['foreach'],templateContext)
+                foreachDict = self.get_value(cicdContextData[STATE][CICD_CONTEXT_DATA_ID],foreachJsonPathExp,None)
+
+                iteratorJsonPathExp = self.parse_template(generator['iterator'],templateContext)
+                iteratorName = self.get_value(cicdContextData[STATE][CICD_CONTEXT_DATA_ID],iteratorJsonPathExp,None)
+                if not iteratorName:
+                    iteratorName = generator['iterator']
+                
+                for itemName,item in foreachDict.items():
+                    templateContext[iteratorName] = item
+                    optionsYaml = self.parse_template(generator['template'],templateContext)
+
+                    # iterate and render into a choices yaml, turn into object
+                    # then dynamically append to ['manualChoice']['choices']
+                    generatedChoice = yaml.load(optionsYaml, Loader=yaml.FullLoader)
+                    choiceKeyName = list(generatedChoice.keys())[0] 
+                    choiceConfig = list(generatedChoice.values())[0]
+                    templateContext['manualChoice']['choices'][choiceKeyName] = choiceConfig
+
+
+        # now render out all choices...
         for choiceName in templateContext['manualChoice']['choices']:
             choiceConfig = templateContext['manualChoice']['choices'][choiceName]
             choiceConfig['header'] = self.parse_template(choiceConfig['header'],templateContext)
@@ -811,7 +849,10 @@ class CicdStateMgr():
         response = requests.request("POST", notifyUrl, data=notifyPayload, headers=headers)
         
         if response.status_code >= 200 and response.status_code <= 299:
-            logging.debug("event_handle_manual_choice(): POST response OK {} ".format(json.loads(response.content)))
+            responseBodyObj = json.loads(response.content)
+            logging.debug("event_handle_manual_choice(): POST response OK {} ".format(json.dumps(responseBodyObj)))
+            self.capture_http_response_data(cicdContextData, responseBodyObj, 'manual-choice', manualChoiceConfig)
+            
         else:
             logging.error("event_handle_manual_choice() http response code: {} FAILED: {} ".format(response.status_code,response.content))
 

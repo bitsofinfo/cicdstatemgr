@@ -240,6 +240,16 @@ The logs will show a POST as follows:
 
 Again the intent of `manual-choice` is to permit you to render some sort of interactive message to be posted to the configured `slack.url` endpoint. You are responsible for configuring an appropriate application in the target system that will handle the user-interactions by POSTing them BACK to your CICD engine (in the case of Tekton, an [Tekton Trigger EventListener endpoint](https://github.com/tektoncd/triggers/blob/master/docs/eventlisteners.md)) and then parsing the inbound POST, extracting the selected values and then triggering another pipeline that can interpret and act on those values.
 
+## manual-choice & auto-capture-response-data
+
+The `manual-choice` handler supports the same http response capture functionality that `notify` does as explained previously above. The HTTP response from the `manual-choice` `POST` (if JSON) is then passed to another `jinja2` evaluation against the rules defined in the `--config` file's `manual-choice.auto-capture-response-data` section as well as the optional `manual-choice.capture-response-data`. This creates a `jinja2` context which is the `cicdContextData` object PLUS the keys described above in the `notify` section previously described.
+
+## manual-choice & choice-generators
+
+The `manual-choice` handler also has the ability to generate choice configs dynamically based on a template + a dictionary of items within the cicdContextData. For an example of this see [app.yaml](app.yaml) and look at `stage.pipelines.test2` as well as the test script at [test/handle-event.manual-choice.sh](test/handle-event.manual-choice.sh)
+
+In that [example](test/handle-event.manual-choice.sh) we load a small JSON structure into the `cicdContextData` at `state.choiceGeneratorItems` from ([set.manual-choice-gen-data.json](set.manual-choice-gen-data.json)), the `choice-generator` in [app.yaml](app.yaml) then references `state.choiceGeneratorItems` for its `foreach` and assigns each top level key to the `iterator` name `currentItem`. This is then passed against the provided `template` to generate additional choice options that will be combined with the hardwired one(s) in the [app.yaml](app.yaml) to yield the final set that will be posted.
+
 
 # set-values
 

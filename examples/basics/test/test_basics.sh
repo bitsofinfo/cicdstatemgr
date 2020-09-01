@@ -50,8 +50,8 @@ $SCRIPTPATH/get.sh
 $SCRIPTPATH/set.sh
 $SCRIPTPATH/load.sh
 $SCRIPTPATH/handle-event.notify.sh
-#$SCRIPTPATH/handle-event.trigger-pipeline.sh
-#$SCRIPTPATH/handle-event.manual-choice.sh
-#$SCRIPTPATH/handle-event.set-values.sh
-#$SCRIPTPATH/handle-event.respond.sh
-#$SCRIPTPATH/handle-event.disable.sh
+$SCRIPTPATH/handle-event.trigger-pipeline.sh
+$SCRIPTPATH/handle-event.manual-choice.sh
+$SCRIPTPATH/handle-event.set-values.sh
+$SCRIPTPATH/handle-event.respond.sh
+$SCRIPTPATH/handle-event.disable.sh

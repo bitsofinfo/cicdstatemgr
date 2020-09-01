@@ -1,3 +1,7 @@
+# 1.1.0
+* Added support for `choice-generators` within `manual-choice` event handlers. Permits the dynamic generation of new choice sets via a `template` based on a pointer to a dictionary containing data that can be cross referened in an `iterator`. 
+* Added `*-capture-response-data` support for `manual-choice` POSTs
+ 
 # 1.0.26
 * address #8 new jinja2 filter `json_dumps(value,indent=None,stripLeadingTrailingQuotes=False)`
  

@@ -105,6 +105,43 @@
           }
         }
       }
+    },
+    "test2": {
+      "event-handlers": {
+        "blah-event": {
+          "manual-choice": {
+            "title": "test manual choice with generators",
+            "capture-response-data": [
+              {
+                "from": "{{ body|json_dumps }}",
+                "to": "state.lastPostedHttpResponse"
+              }
+            ],
+            "choice-generators": {
+              "testGenerator1": {
+                "foreach": "state.choiceGeneratorItems",
+                "iterator": "currentItem",
+                "template": "testkey-{{currentItem.name}}:\n  header: |\n    {{'{{'}} echo('{{currentItem.name}}') {{'}}'}}\n  options:\n    - style: primary\n      value: \"{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}\"\n      text: '{{currentItem.name}}'\n    - style: primary\n      value: \"{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}\"\n      text: '{{currentItem.name}}'\n"
+              }
+            },
+            "choices": {
+              "choiceGroup1": {
+                "header": "Choice group one:",
+                "options": [
+                  {
+                    "text": "Choice 1",
+                    "value": "c1"
+                  },
+                  {
+                    "text": "Choice 2",
+                    "value": "c2"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
   "appPipelinesConfig": {
@@ -215,6 +252,43 @@
                 }
               }
             }
+          },
+          "test2": {
+            "event-handlers": {
+              "blah-event": {
+                "manual-choice": {
+                  "title": "test manual choice with generators",
+                  "capture-response-data": [
+                    {
+                      "from": "{{ body|json_dumps }}",
+                      "to": "state.lastPostedHttpResponse"
+                    }
+                  ],
+                  "choice-generators": {
+                    "testGenerator1": {
+                      "foreach": "state.choiceGeneratorItems",
+                      "iterator": "currentItem",
+                      "template": "testkey-{{currentItem.name}}:\n  header: |\n    {{'{{'}} echo('{{currentItem.name}}') {{'}}'}}\n  options:\n    - style: primary\n      value: \"{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}\"\n      text: '{{currentItem.name}}'\n    - style: primary\n      value: \"{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}\"\n      text: '{{currentItem.name}}'\n"
+                    }
+                  },
+                  "choices": {
+                    "choiceGroup1": {
+                      "header": "Choice group one:",
+                      "options": [
+                        {
+                          "text": "Choice 1",
+                          "value": "c1"
+                        },
+                        {
+                          "text": "Choice 2",
+                          "value": "c2"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -252,9 +326,9 @@
       "d"
     ],
     "testHeader2Value": "myvalueforheader2",
-    "triggerAutoArg1": "99999",
+    "triggerAutoArg1": "dummyVal",
     "postedData": {
-      "33633": {
+      "16870": {
         "body": {
           "message": "This is basicMacro! msg = testEventFired!!! yes..."
         },
@@ -262,7 +336,7 @@
           "userAgent": "python-requests/2.24.0"
         }
       },
-      "34382": {
+      "12665": {
         "body": {
           "message": "This is basicMacro! msg = build is successful"
         },
@@ -270,7 +344,7 @@
           "userAgent": "python-requests/2.24.0"
         }
       },
-      "85110": {
+      "64048": {
         "body": {
           "message": "Here is some JSON from c:\\windowspath\\test and \"quotes\" { \"dog\":\"beagle\" }"
         },
@@ -279,9 +353,23 @@
         }
       }
     },
-    "lastPostedDataRandomId": "85110",
+    "lastPostedDataRandomId": "64048",
     "lastPostedToNotifyChannel": "stage",
-    "lastPostedHttpResponse": "{\"args\": {}, \"data\": {\"channel\": \"stage\", \"message\": \"This is basicMacro! msg = build is successful\", \"randomId\": \"34382\"}, \"files\": {}, \"form\": {}, \"headers\": {\"accept\": \"*/*\", \"accept-encoding\": \"gzip, deflate\", \"authorization\": \"Bearer FAKE_TOKEN\", \"cache-control\": \"no-cache\", \"content-length\": \"103\", \"content-type\": \"application/json; charset=UTF-8\", \"host\": \"postman-echo.com\", \"user-agent\": \"python-requests/2.24.0\", \"x-amzn-trace-id\": \"Root=1-5f4540da-a3a31ca26f178fa0ca7999ea\", \"x-forwarded-port\": \"443\", \"x-forwarded-proto\": \"https\"}, \"json\": {\"channel\": \"stage\", \"message\": \"This is basicMacro! msg = build is successful\", \"randomId\": \"34382\"}, \"url\": \"https://postman-echo.com/post\"}"
+    "lastPostedHttpResponse": "{\"args\": {}, \"data\": {\"channel\": \"stage\", \"randomId\": \"23100\", \"choices\": [{\"header\": \"Choice group one:\", \"options\": [{\"value\": \"c1\", \"text\": \"Choice 1\"}, {\"value\": \"c2\", \"text\": \"Choice 2\"}]}, {\"header\": \"item-one\", \"options\": [{\"value\": \"item-one item1 desc\", \"text\": \"item-one\"}, {\"value\": \"item-one item1 desc\", \"text\": \"item-one\"}]}, {\"header\": \"item-two\", \"options\": [{\"value\": \"item-two item2 desc\", \"text\": \"item-two\"}, {\"value\": \"item-two item2 desc\", \"text\": \"item-two\"}]}, {\"header\": \"item-three\", \"options\": [{\"value\": \"item-three item3 desc\", \"text\": \"item-three\"}, {\"value\": \"item-three item3 desc\", \"text\": \"item-three\"}]}]}, \"files\": {}, \"form\": {}, \"headers\": {\"x-forwarded-proto\": \"https\", \"x-forwarded-port\": \"443\", \"host\": \"postman-echo.com\", \"x-amzn-trace-id\": \"Root=1-5f4e5edb-3543ccd3948c723fc2e7f076\", \"content-length\": \"1955\", \"user-agent\": \"python-requests/2.24.0\", \"accept-encoding\": \"gzip, deflate\", \"accept\": \"*/*\", \"content-type\": \"application/json; charset=UTF-8\", \"authorization\": \"Bearer FAKE_TOKEN\", \"cache-control\": \"no-cache\"}, \"json\": {\"channel\": \"stage\", \"randomId\": \"23100\", \"choices\": [{\"header\": \"Choice group one:\", \"options\": [{\"value\": \"c1\", \"text\": \"Choice 1\"}, {\"value\": \"c2\", \"text\": \"Choice 2\"}]}, {\"header\": \"item-one\", \"options\": [{\"value\": \"item-one item1 desc\", \"text\": \"item-one\"}, {\"value\": \"item-one item1 desc\", \"text\": \"item-one\"}]}, {\"header\": \"item-two\", \"options\": [{\"value\": \"item-two item2 desc\", \"text\": \"item-two\"}, {\"value\": \"item-two item2 desc\", \"text\": \"item-two\"}]}, {\"header\": \"item-three\", \"options\": [{\"value\": \"item-three item3 desc\", \"text\": \"item-three\"}, {\"value\": \"item-three item3 desc\", \"text\": \"item-three\"}]}]}, \"url\": \"https://postman-echo.com/post\"}",
+    "choiceGeneratorItems": {
+      "item1": {
+        "name": "item-one",
+        "description": "item1 desc"
+      },
+      "item2": {
+        "name": "item-two",
+        "description": "item2 desc"
+      },
+      "item3": {
+        "name": "item-three",
+        "description": "item3 desc"
+      }
+    }
   },
   "variables": {
     "baseVar1": "baseVarVal1",

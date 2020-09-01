@@ -37,6 +37,27 @@ CICD_pipelines__build__event_handlers__testManualChoiceEvent__manual_choice__cho
 CICD_pipelines__build__event_handlers__testManualChoiceEvent__manual_choice__choices__choiceGroup2__options__0__value="{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
 CICD_pipelines__build__event_handlers__testEmbeddedJsonEvent__notify__message="Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle" }
 "
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__title="test manual choice with generators"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__capture_response_data__0__from="{{ body|json_dumps }}"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__capture_response_data__0__to="state.lastPostedHttpResponse"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__choice_generators__testGenerator1__foreach="state.choiceGeneratorItems"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__choice_generators__testGenerator1__iterator="currentItem"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__choice_generators__testGenerator1__template="testkey-{{currentItem.name}}:
+  header: |
+    {{'{{'}} echo('{{currentItem.name}}') {{'}}'}}
+  options:
+    - style: primary
+      value: "{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}"
+      text: '{{currentItem.name}}'
+    - style: primary
+      value: "{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}"
+      text: '{{currentItem.name}}'
+"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__header="Choice group one:"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__0__text="Choice 1"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__0__value="c1"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__1__text="Choice 2"
+CICD_pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__1__value="c2"
 CICD_appPipelinesConfig__bases__0="base1.yaml"
 CICD_appPipelinesConfig__jinja2_macros__helloWorld="{%- macro helloWorld(msg) -%}
   Hello world msg = {{msg}}
@@ -78,6 +99,27 @@ CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__event_handlers_
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__event_handlers__testManualChoiceEvent__manual_choice__choices__choiceGroup2__options__0__value="{{state.postedData[state.lastPostedDataRandomId].headers.userAgent}}"
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__event_handlers__testEmbeddedJsonEvent__notify__message="Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle" }
 "
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__title="test manual choice with generators"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__capture_response_data__0__from="{{ body|json_dumps }}"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__capture_response_data__0__to="state.lastPostedHttpResponse"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choice_generators__testGenerator1__foreach="state.choiceGeneratorItems"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choice_generators__testGenerator1__iterator="currentItem"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choice_generators__testGenerator1__template="testkey-{{currentItem.name}}:
+  header: |
+    {{'{{'}} echo('{{currentItem.name}}') {{'}}'}}
+  options:
+    - style: primary
+      value: "{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}"
+      text: '{{currentItem.name}}'
+    - style: primary
+      value: "{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}"
+      text: '{{currentItem.name}}'
+"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__header="Choice group one:"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__0__text="Choice 1"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__0__value="c1"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__1__text="Choice 2"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__1__value="c2"
 CICD_state__cicdContextDataId="context-data-id-1"
 CICD_state__cicdContextName="stage"
 CICD_state__key1="valuechanged"
@@ -92,15 +134,21 @@ CICD_state__testSet__1="b"
 CICD_state__testSet__2="c"
 CICD_state__testSet__3="d"
 CICD_state__testHeader2Value="myvalueforheader2"
-CICD_state__triggerAutoArg1="99999"
-CICD_state__postedData__33633__body__message="This is basicMacro! msg = testEventFired!!! yes..."
-CICD_state__postedData__33633__headers__userAgent="python-requests/2.24.0"
-CICD_state__postedData__34382__body__message="This is basicMacro! msg = build is successful"
-CICD_state__postedData__34382__headers__userAgent="python-requests/2.24.0"
-CICD_state__postedData__85110__body__message="Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle" }"
-CICD_state__postedData__85110__headers__userAgent="python-requests/2.24.0"
-CICD_state__lastPostedDataRandomId="85110"
+CICD_state__triggerAutoArg1="dummyVal"
+CICD_state__postedData__16870__body__message="This is basicMacro! msg = testEventFired!!! yes..."
+CICD_state__postedData__16870__headers__userAgent="python-requests/2.24.0"
+CICD_state__postedData__12665__body__message="This is basicMacro! msg = build is successful"
+CICD_state__postedData__12665__headers__userAgent="python-requests/2.24.0"
+CICD_state__postedData__64048__body__message="Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle" }"
+CICD_state__postedData__64048__headers__userAgent="python-requests/2.24.0"
+CICD_state__lastPostedDataRandomId="64048"
 CICD_state__lastPostedToNotifyChannel="stage"
-CICD_state__lastPostedHttpResponse="{"args": {}, "data": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "34382"}, "files": {}, "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type": "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0", "x-amzn-trace-id": "Root=1-5f4540da-a3a31ca26f178fa0ca7999ea", "x-forwarded-port": "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "34382"}, "url": "https://postman-echo.com/post"}"
+CICD_state__lastPostedHttpResponse="{"args": {}, "data": {"channel": "stage", "randomId": "23100", "choices": [{"header": "Choice group one:", "options": [{"value": "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header": "item-one", "options": [{"value": "item-one item1 desc", "text": "item-one"}, {"value": "item-one item1 desc", "text": "item-one"}]}, {"header": "item-two", "options": [{"value": "item-two item2 desc", "text": "item-two"}, {"value": "item-two item2 desc", "text": "item-two"}]}, {"header": "item-three", "options": [{"value": "item-three item3 desc", "text": "item-three"}, {"value": "item-three item3 desc", "text": "item-three"}]}]}, "files": {}, "form": {}, "headers": {"x-forwarded-proto": "https", "x-forwarded-port": "443", "host": "postman-echo.com", "x-amzn-trace-id": "Root=1-5f4e5edb-3543ccd3948c723fc2e7f076", "content-length": "1955", "user-agent": "python-requests/2.24.0", "accept-encoding": "gzip, deflate", "accept": "*/*", "content-type": "application/json; charset=UTF-8", "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache"}, "json": {"channel": "stage", "randomId": "23100", "choices": [{"header": "Choice group one:", "options": [{"value": "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header": "item-one", "options": [{"value": "item-one item1 desc", "text": "item-one"}, {"value": "item-one item1 desc", "text": "item-one"}]}, {"header": "item-two", "options": [{"value": "item-two item2 desc", "text": "item-two"}, {"value": "item-two item2 desc", "text": "item-two"}]}, {"header": "item-three", "options": [{"value": "item-three item3 desc", "text": "item-three"}, {"value": "item-three item3 desc", "text": "item-three"}]}]}, "url": "https://postman-echo.com/post"}"
+CICD_state__choiceGeneratorItems__item1__name="item-one"
+CICD_state__choiceGeneratorItems__item1__description="item1 desc"
+CICD_state__choiceGeneratorItems__item2__name="item-two"
+CICD_state__choiceGeneratorItems__item2__description="item2 desc"
+CICD_state__choiceGeneratorItems__item3__name="item-three"
+CICD_state__choiceGeneratorItems__item3__description="item3 desc"
 CICD_variables__baseVar1="baseVarVal1"
 CICD_variables__myVar1="test"

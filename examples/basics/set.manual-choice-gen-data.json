@@ -1,0 +1,14 @@
+{
+    "item1": {
+        "name": "item-one",
+        "description": "item1 desc"
+    },
+    "item2": {
+        "name": "item-two",
+        "description": "item2 desc"
+    },
+    "item3": {
+        "name": "item-three",
+        "description": "item3 desc"
+    }
+}

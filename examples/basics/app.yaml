@@ -97,3 +97,50 @@ cicd-contexts:
           another-event:
             notify:
               enabled: False
+
+      # example for manual choice generators
+      test2:
+        event-handlers:
+          blah-event:
+            manual-choice:
+              title: "test manual choice with generators"
+
+              capture-response-data:
+                - from: "{{ body|json_dumps }}"
+                  to: state.lastPostedHttpResponse
+
+              choice-generators:
+                testGenerator1:
+                  
+                  # The cicdContextData JsonPath that should yield a dictionary
+                  # This can also OPTIONALLY be a jinja2 template that will be parsed to 
+                  # render the jsonPath expression that will then be used to find
+                  # the foreach dictionary that will be iterated over
+                  foreach: 'state.choiceGeneratorItems'
+
+                  # the name that each key within the yielded `foreach` can be 
+                  # referenced as within the template below
+                  iterator: 'currentItem'
+
+                  # the template, which will render out one or more "choices"
+                  # that will be appended to the overall list of manual-choice.choices
+                  template: >
+                    testkey-{{currentItem.name}}:
+                      header: |
+                        {{'{{'}} echo('{{currentItem.name}}') {{'}}'}}
+                      options:
+                        - style: primary
+                          value: "{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}"
+                          text: '{{currentItem.name}}'
+                        - style: primary
+                          value: "{{'{{'}} echo('{{currentItem.name}} {{currentItem.description}}') {{'}}'}}"
+                          text: '{{currentItem.name}}'
+
+              choices:
+                choiceGroup1:
+                  header: "Choice group one:"
+                  options:
+                    - text: "Choice 1"
+                      value: "c1"
+                    - text: "Choice 2"
+                      value: "c2"
