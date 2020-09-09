@@ -33,7 +33,7 @@ kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previou
 kubectl apply -f $SCRIPTPATH/tekton-pipelines-mods.yaml
 
 # install triggers
-kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/previous/v0.7.0/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/previous/v0.8.0/release.yaml
 
 # install dashboard
 kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.9.0/tekton-dashboard-release.yaml
