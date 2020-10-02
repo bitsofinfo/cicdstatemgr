@@ -1,3 +1,7 @@
+# 1.1.2
+* Support multiple handlers of type `notify` and `trigger-pipeline` per #1
+* Add `if` support for `notify` and `trigger-pipeline` blocks
+
 # 1.1.1
 * Fix non-json http responses in `respond` handling
 * Support arbitrary variables in `respond` config blocks and jinja2 parse them

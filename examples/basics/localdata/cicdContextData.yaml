@@ -89,7 +89,7 @@ pipelines:
           title: test manual choice with generators
           capture-response-data:
           - from: '{{ body|json_dumps }}'
-            to: state.lastPostedHttpResponse
+            to: state.lastPostedHttpResponseFromManualChoice
           choice-generators:
             testGenerator1:
               foreach: state.choiceGeneratorItems
@@ -201,7 +201,7 @@ appPipelinesConfig:
                 title: test manual choice with generators
                 capture-response-data:
                 - from: '{{ body|json_dumps }}'
-                  to: state.lastPostedHttpResponse
+                  to: state.lastPostedHttpResponseFromManualChoice
                 choice-generators:
                   testGenerator1:
                     foreach: state.choiceGeneratorItems
@@ -254,45 +254,33 @@ state:
   testHeader2Value: myvalueforheader2
   triggerAutoArg1: dummyVal
   postedData:
-    '85188':
+    '29493':
       body:
         message: This is basicMacro! msg = testEventFired!!! yes...
       headers:
         userAgent: python-requests/2.24.0
-    '46441':
+    '41495':
       body:
         message: This is basicMacro! msg = build is successful
       headers:
         userAgent: python-requests/2.24.0
-    '76689':
+    '53524':
       body:
         message: Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle"
           }
       headers:
         userAgent: python-requests/2.24.0
-  lastPostedDataRandomId: '76689'
+  lastPostedDataRandomId: '53524'
   lastPostedToNotifyChannel: stage
-  lastPostedHttpResponse: '{"args": {}, "data": {"channel": "stage", "randomId": "17522",
-    "choices": [{"header": "Choice group one:", "options": [{"value": "c1", "text":
-    "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header": "item-one", "options":
-    [{"value": "item-one item1 desc", "text": "item-one"}, {"value": "item-one item1
-    desc", "text": "item-one"}]}, {"header": "item-two", "options": [{"value": "item-two
-    item2 desc", "text": "item-two"}, {"value": "item-two item2 desc", "text": "item-two"}]},
-    {"header": "item-three", "options": [{"value": "item-three item3 desc", "text":
-    "item-three"}, {"value": "item-three item3 desc", "text": "item-three"}]}]}, "files":
-    {}, "form": {}, "headers": {"x-forwarded-proto": "https", "x-forwarded-port":
-    "443", "host": "postman-echo.com", "x-amzn-trace-id": "Root=1-5f774ad1-3925773425d4f493354f72dc",
-    "content-length": "1955", "user-agent": "python-requests/2.24.0", "accept-encoding":
-    "gzip, deflate", "accept": "*/*", "content-type": "application/json; charset=UTF-8",
-    "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache"}, "json": {"channel":
-    "stage", "randomId": "17522", "choices": [{"header": "Choice group one:", "options":
-    [{"value": "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header":
-    "item-one", "options": [{"value": "item-one item1 desc", "text": "item-one"},
-    {"value": "item-one item1 desc", "text": "item-one"}]}, {"header": "item-two",
-    "options": [{"value": "item-two item2 desc", "text": "item-two"}, {"value": "item-two
-    item2 desc", "text": "item-two"}]}, {"header": "item-three", "options": [{"value":
-    "item-three item3 desc", "text": "item-three"}, {"value": "item-three item3 desc",
-    "text": "item-three"}]}]}, "url": "https://postman-echo.com/post"}'
+  lastPostedHttpResponse: '{"args": {}, "data": {"channel": "stage", "message": "This
+    is basicMacro! msg = build is successful", "randomId": "41495"}, "files": {},
+    "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization":
+    "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type":
+    "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0",
+    "x-amzn-trace-id": "Root=1-5f777f60-42d64cc3386ed7ae485e7712", "x-forwarded-port":
+    "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message":
+    "This is basicMacro! msg = build is successful", "randomId": "41495"}, "url":
+    "https://postman-echo.com/post"}'
   choiceGeneratorItems:
     item1:
       name: item-one
@@ -303,6 +291,28 @@ state:
     item3:
       name: item-three
       description: item3 desc
+  lastPostedHttpResponseFromManualChoice: '{"args": {}, "data": {"channel": "stage",
+    "randomId": "56811", "choices": [{"header": "Choice group one:", "options": [{"value":
+    "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header": "item-one",
+    "options": [{"value": "item-one item1 desc", "text": "item-one"}, {"value": "item-one
+    item1 desc", "text": "item-one"}]}, {"header": "item-two", "options": [{"value":
+    "item-two item2 desc", "text": "item-two"}, {"value": "item-two item2 desc", "text":
+    "item-two"}]}, {"header": "item-three", "options": [{"value": "item-three item3
+    desc", "text": "item-three"}, {"value": "item-three item3 desc", "text": "item-three"}]}]},
+    "files": {}, "form": {}, "headers": {"x-forwarded-proto": "https", "x-forwarded-port":
+    "443", "host": "postman-echo.com", "x-amzn-trace-id": "Root=1-5f777f63-06953347213d63420baa1073",
+    "content-length": "1955", "user-agent": "python-requests/2.24.0", "accept-encoding":
+    "gzip, deflate", "accept": "*/*", "content-type": "application/json; charset=UTF-8",
+    "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache"}, "json": {"channel":
+    "stage", "randomId": "56811", "choices": [{"header": "Choice group one:", "options":
+    [{"value": "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header":
+    "item-one", "options": [{"value": "item-one item1 desc", "text": "item-one"},
+    {"value": "item-one item1 desc", "text": "item-one"}]}, {"header": "item-two",
+    "options": [{"value": "item-two item2 desc", "text": "item-two"}, {"value": "item-two
+    item2 desc", "text": "item-two"}]}, {"header": "item-three", "options": [{"value":
+    "item-three item3 desc", "text": "item-three"}, {"value": "item-three item3 desc",
+    "text": "item-three"}]}]}, "url": "https://postman-echo.com/post"}'
+  lastPostedNotifyMessage: This is basicMacro! msg = build is successful
 variables:
   baseVar1: baseVarVal1
   myVar1: test

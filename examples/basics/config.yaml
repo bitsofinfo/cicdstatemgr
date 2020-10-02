@@ -59,6 +59,7 @@ cicdstatemgr:
       # from shell VARIABLE generation completely
       excludeKeyNames:
         - jinja2Macros
+        - testGenerator1
 
     #
     # ID file output = only contains the cicdContextData ID

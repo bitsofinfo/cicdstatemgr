@@ -34,15 +34,15 @@ cicdstatemgr    \
      --handle-event test2=blah-event
 
 
-OPTION_3_VALUE=$(cat localdata/cicdContextData.yaml | yq r - state.lastPostedHttpResponse  | jq -r .data | jq -r .choices[3].options[0].value)
+OPTION_3_VALUE=$(cat localdata/cicdContextData.yaml | yq r - state.lastPostedHttpResponseFromManualChoice  | jq -r .data | jq -r .choices[3].options[0].value)
 if [ "$OPTION_3_VALUE" != "item-three item3 desc" ]; then
     echo
-    echo "FAIL: HANDLE_EVENT [manual-choice]: state.lastPostedHttpResponse  | jq -r .data | jq -r .choices[3].options[0].value != item-three item3 desc"
+    echo "FAIL: HANDLE_EVENT [manual-choice]: state.lastPostedHttpResponseFromManualChoice  | jq -r .data | jq -r .choices[3].options[0].value != item-three item3 desc"
     echo
     exit 1
 else
     echo
-    echo "OK: HANDLE_EVENT [manual-choice]: state.lastPostedHttpResponse success"
+    echo "OK: HANDLE_EVENT [manual-choice]: state.lastPostedHttpResponseFromManualChoice success"
     echo
 fi
 

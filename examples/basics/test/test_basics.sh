@@ -46,12 +46,31 @@ pip install --requirement requirements.txt
 
 # run the scripts
 $SCRIPTPATH/init-new.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/get.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/set.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/load.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/handle-event.notify.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/handle-event.trigger-pipeline.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/handle-event.manual-choice.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/handle-event.set-values.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/handle-event.respond.sh
+if [ "$?" != "0" ]; then exit 1; fi
+
 $SCRIPTPATH/handle-event.disable.sh
+if [ "$?" != "0" ]; then exit 1; fi

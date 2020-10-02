@@ -43,7 +43,7 @@ spec:
     # STEP load CICD context data
     #----------------------------------
     - name: load-cicd-context-data
-      image: bitsofinfo/cicdstatemgr:1.1.0
+      image: bitsofinfo/cicdstatemgr:1.1.2
       command:
       - /bin/bash
       args:
@@ -103,7 +103,7 @@ spec:
     # w/ scan results
     #----------------------------------
     - name: update-cicd-context-data
-      image: bitsofinfo/cicdstatemgr:1.1.0
+      image: bitsofinfo/cicdstatemgr:1.1.2
       command:
       - /bin/bash
       args:

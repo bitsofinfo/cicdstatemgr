@@ -108,7 +108,7 @@ cicd-contexts:
 
               capture-response-data:
                 - from: "{{ body|json_dumps }}"
-                  to: state.lastPostedHttpResponse
+                  to: state.lastPostedHttpResponseFromManualChoice
 
               choice-generators:
                 testGenerator1:

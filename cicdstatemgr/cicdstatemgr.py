@@ -161,6 +161,9 @@ class CicdStateMgr():
 
     def parse_template(self, template, context, blankOnError=False):
 
+        if not template and blankOnError:
+            return ""
+
         origTemplate = template
 
         if 'jinja2Macros' in context:
@@ -622,6 +625,10 @@ class CicdStateMgr():
 
     def event_handle_set_values(self, setValuesConfigs, cicdContextData, tmplCtxVars):
 
+        # support backwards compatibility w/ no subkeys
+        if 'set' in setValuesConfigs:
+            setValuesConfigs = { "default" : setValuesConfigs } 
+
         # setValuesConfig can contain multiple blocks of conditional set stanzas
         for setValueConfName in setValuesConfigs:
 
@@ -635,9 +642,9 @@ class CicdStateMgr():
             cicdContextDataId = cicdContextData[STATE][CICD_CONTEXT_DATA_ID]
 
             # if we didn't get a value back, exit quick (note blankOnError=True)
-            if not self.parse_template(setValuesConfig['if'],templateContext,blankOnError=True).strip():
-                logging.debug("event_handle_set_values() 'if' for {} did not yield anything, ".format(setValueConfName) + \
-                    "nothing todo. setValuesConfig['if']={}".format(setValuesConfig['if']))
+            if 'if' in setValuesConfig and not self.parse_template(setValuesConfig.get('if'),templateContext,blankOnError=True).strip():
+                logging.debug("event_handle_set_values() {}.if for {} did not yield anything, ".format(setValueConfName,setValueConfName) + \
+                    "nothing todo. setValuesConfig['if']={}".format(setValuesConfig.get('if')))
                 continue
 
             # if the 'if" did return something, then we can proceed
@@ -649,78 +656,89 @@ class CicdStateMgr():
                         toPropPath = self.parse_template(fromToConf['to'],templateContext)
                         self.set_value_in_dict_via_prop_path(cicdContextData, toPropPath, valueToSet)
 
-    def event_handle_respond(self, respondConfig, cicdContextData, tmplCtxVars):
+    def event_handle_respond(self, respondConfigs, cicdContextData, tmplCtxVars):
 
-        # build a transient template context
-        templateContext = self.create_event_handler_template_context('respond',respondConfig,cicdContextData,tmplCtxVars)
-
-        # if we didn't get a value back, exit quick
-        if not self.parse_template(respondConfig['if'],templateContext,blankOnError=True):
-            logging.debug("event_handle_respond() 'if' did not yield anything, " + \
-                "nothing todo. respondConfig['if']={}".format(respondConfig['if']))
-            return
-
-        # if the 'if" did return something, then we can proceed
-        # lets parse the message into its final result
-        templateContext['respond']['message'] = self.parse_template(respondConfig['message'],templateContext).strip()
-
-        # no message? skip
-        if not templateContext['respond']['message']:
-            logging.debug("event_handle_respond() 'message' did not yield anything, " + \
-                "nothing todo. respondConfig['message']={}".format(respondConfig['message']))
-            return
-
-        # auto parse all remaining fields in the respond config other than the known ones
-        # which are already handled manually (message, url, if)
-        tmpRespondHandlerConfigToParsed = copy.deepcopy(templateContext['respond'])
-        for propName,propValue in templateContext['respond'].items():
-            if propName not in ["message","url","if"]:
-                tmpRespondHandlerConfigToParsed[propName] = self.parse_template(propValue,templateContext)
-        templateContext['respond'] = tmpRespondHandlerConfigToParsed
-
-        # get the overal config's template for this handler
-        responderTemplate = self.configData[CONFIG_DATA_KEY]['templates']['respond']
-
-        # render the payload
-        respondPayload = self.parse_template(responderTemplate,templateContext)
+        # support backwards compatibility, w/ no subkeys
+        if 'message' in respondConfigs:
+            respondConfigs = { "default" : respondConfigs } 
         
-        # render the target URl we respond to
-        respondToUrl = self.parse_template(respondConfig['url'],templateContext).strip()
+        # respondConfigs can contain multiple blocks of conditional set stanzas
+        for respondConfName in respondConfigs:
 
-        # no url? skip
-        if not respondToUrl:
-            logging.debug("event_handle_respond() 'url' did not yield anything, " + \
-                "nothing todo. respondConfig['url']={}".format(respondConfig['url']))
-            return
+            logging.debug("event_handle_respond() processing respond for: {}".format(respondConfName))
 
-        # get our token from secretData
-        responderToken = self.secretData[SECRET_DATA_KEY]['slack']['token']
+            respondConfig = respondConfigs[respondConfName]
 
-        # setup headers w/ token
-        headers = {
-            'Content-Type': "application/json; charset=UTF-8",
-            'Accept': "*/*",
-            'Authorization': "Bearer {}".format(responderToken),
-            'Cache-Control': "no-cache",
-            'Connection': 'keep-alive'
-        }
+            # build a transient template context
+            templateContext = self.create_event_handler_template_context('respond',respondConfig,cicdContextData,tmplCtxVars)
 
-        logging.debug("event_handle_respond(): POSTing response to {} : {}".format(respondToUrl,respondPayload))
+            # if we didn't get a value back, exit quick
+            if 'if' in respondConfig and not self.parse_template(respondConfig.get('if'),templateContext,blankOnError=True):
+                logging.debug("event_handle_respond() {}.if did not yield anything, ".format(respondConfName) + \
+                    "nothing todo. respondConfig['if']={}".format(respondConfig.get('if')))
+                continue
 
-        response = requests.request("POST", respondToUrl, data=respondPayload, headers=headers)
-        
-        if response.status_code >= 200 and response.status_code <= 299:
-            try:
-                responseBodyObj = json.loads(response.content)
-            except:
-                logging.debug("event_handle_respond() {}, response content not JSON..".format(response.status_code))
-                responseBodyObj = response.content
+            # if the 'if" did return something, then we can proceed
+            # lets parse the message into its final result
+            templateContext['respond']['message'] = self.parse_template(respondConfig['message'],templateContext).strip()
 
-            logging.debug("event_handle_respond(): POST response OK {} ".format(responseBodyObj))
+            # no message? skip
+            if not templateContext['respond']['message']:
+                logging.debug("event_handle_respond() 'message' did not yield anything, " + \
+                    "nothing todo. respondConfig['message']={}".format(respondConfig['message']))
+                continue
 
-        
-        else:
-            logging.error("handle_resevent_handle_respondponder() http response code: {} FAILED: {} ".format(response.status_code,response.content))
+            # auto parse all remaining fields in the respond config other than the known ones
+            # which are already handled manually (message, url, if)
+            tmpRespondHandlerConfigToParsed = copy.deepcopy(templateContext['respond'])
+            for propName,propValue in templateContext['respond'].items():
+                if propName not in ["message","url","if"]:
+                    tmpRespondHandlerConfigToParsed[propName] = self.parse_template(propValue,templateContext)
+            templateContext['respond'] = tmpRespondHandlerConfigToParsed
+
+            # get the overal config's template for this handler
+            responderTemplate = self.configData[CONFIG_DATA_KEY]['templates']['respond']
+
+            # render the payload
+            respondPayload = self.parse_template(responderTemplate,templateContext)
+            
+            # render the target URl we respond to
+            respondToUrl = self.parse_template(respondConfig['url'],templateContext).strip()
+
+            # no url? skip
+            if not respondToUrl:
+                logging.debug("event_handle_respond() 'url' did not yield anything, " + \
+                    "nothing todo. respondConfig['url']={}".format(respondConfig['url']))
+                continue
+
+            # get our token from secretData
+            responderToken = self.secretData[SECRET_DATA_KEY]['slack']['token']
+
+            # setup headers w/ token
+            headers = {
+                'Content-Type': "application/json; charset=UTF-8",
+                'Accept': "*/*",
+                'Authorization': "Bearer {}".format(responderToken),
+                'Cache-Control': "no-cache",
+                'Connection': 'keep-alive'
+            }
+
+            logging.debug("event_handle_respond(): POSTing response to {} : {}".format(respondToUrl,respondPayload))
+
+            response = requests.request("POST", respondToUrl, data=respondPayload, headers=headers)
+            
+            if response.status_code >= 200 and response.status_code <= 299:
+                try:
+                    responseBodyObj = json.loads(response.content)
+                except:
+                    logging.debug("event_handle_respond() {}, response content not JSON..".format(response.status_code))
+                    responseBodyObj = response.content
+
+                logging.debug("event_handle_respond(): POST response OK {} ".format(responseBodyObj))
+
+            
+            else:
+                logging.error("handle_resevent_handle_respondponder() http response code: {} FAILED: {} ".format(response.status_code,response.content))
 
 
     def capture_http_response_data(self, cicdContextData:dict, responseBodyObj, eventHandlerName:str, eventHandlerConfig:dict ):
@@ -757,163 +775,213 @@ class CicdStateMgr():
                         self.set_value_in_dict_via_prop_path(cicdContextData, setToKey, valueToSet)
 
 
-    def event_handle_notify(self, notifyConfig, cicdContextData, tmplCtxVars):
+    def event_handle_notify(self, notifyConfigs, cicdContextData, tmplCtxVars):
 
-        # build a transient template context
-        templateContext = self.create_event_handler_template_context('notify',notifyConfig,cicdContextData,tmplCtxVars)
-
-        templateContext['notify']['message'] = self.parse_template(notifyConfig['message'],templateContext)
-
-        notifyTemplate = self.configData[CONFIG_DATA_KEY]['templates']['notify']
-        notifyPayload = self.parse_template(notifyTemplate,templateContext)
+        # support backwards compatibility where there are no nested named subkeys
+        if 'message' in notifyConfigs:
+            notifyConfigs = { "default" : notifyConfigs } 
         
+        # notifyConfigs can contain multiple blocks of conditional set stanzas
+        for notifyConfName in notifyConfigs:
 
-        notifyUrl = self.configData[CONFIG_DATA_KEY]['slack']['url']
-        notifyToken = self.secretData[CONFIG_DATA_KEY]['slack']['token']
+            logging.debug("event_handle_notify() processing notify for: {}".format(notifyConfName))
 
-        headers = {
-            'Content-Type': "application/json; charset=UTF-8",
-            'Accept': "*/*",
-            'Authorization': "Bearer {}".format(notifyToken),
-            'Cache-Control': "no-cache",
-            'Connection': 'keep-alive'
-        }
+            notifyConfig = notifyConfigs[notifyConfName]
 
-        logging.debug("event_handle_notify(): POSTing notification to {} : {}".format(notifyUrl,notifyPayload))
+            # build a transient template context
+            templateContext = self.create_event_handler_template_context('notify',notifyConfig,cicdContextData,tmplCtxVars)
 
-        response = requests.request("POST", notifyUrl, data=notifyPayload, headers=headers)
-        
-        if response.status_code >= 200 and response.status_code <= 299:
+            # if we didn't get a value back, exit quick
+            if 'if' in notifyConfig and not self.parse_template(notifyConfig.get('if'),templateContext,blankOnError=True):
+                logging.debug("event_handle_notify() {}.if did not yield anything, ".format(notifyConfName) + \
+                    "nothing todo. notifyConfig['if']={}".format(notifyConfig.get('if')))
+                continue
 
-            cicdContextDataId = cicdContextData[STATE][CICD_CONTEXT_DATA_ID]
+            templateContext['notify']['message'] = self.parse_template(notifyConfig['message'],templateContext)
 
-            responseBodyObj = json.loads(response.content)
-            logging.debug("event_handle_notify(): POST response OK {} ".format(responseBodyObj))
-
-            self.capture_http_response_data(cicdContextData, responseBodyObj, 'notify', notifyConfig)
+            notifyTemplate = self.configData[CONFIG_DATA_KEY]['templates']['notify']
+            notifyPayload = self.parse_template(notifyTemplate,templateContext)
             
-        else:
-            logging.error("event_handle_notify() http response code: {} FAILED: {} ".format(response.status_code,response.content))
 
+            notifyUrl = self.configData[CONFIG_DATA_KEY]['slack']['url']
+            notifyToken = self.secretData[CONFIG_DATA_KEY]['slack']['token']
 
+            headers = {
+                'Content-Type': "application/json; charset=UTF-8",
+                'Accept': "*/*",
+                'Authorization': "Bearer {}".format(notifyToken),
+                'Cache-Control': "no-cache",
+                'Connection': 'keep-alive'
+            }
 
-    def event_handle_manual_choice(self, manualChoiceConfig, cicdContextData, tmplCtxVars):
+            logging.debug("event_handle_notify(): POSTing notification to {} : {}".format(notifyUrl,notifyPayload))
 
-        # build a transient template context
-        templateContext = self.create_event_handler_template_context('manualChoice',manualChoiceConfig,cicdContextData,tmplCtxVars)
-
-        templateContext['manualChoice']['title'] = self.parse_template(manualChoiceConfig['title'],templateContext)
-
-
-        # pre-process and generate any "choices" that come from "choice-generators"
-        if 'choice-generators' in templateContext['manualChoice']:
-            choiceGenerators = templateContext['manualChoice']['choice-generators']
-            for generatorName, generator in choiceGenerators.items():
-                logging.debug("manualChoice: processing choice-generator: {}".format(generatorName))
-                if 'foreach' not in generator or 'template' not in generator:
-                    logging.debug("manualChoice: invalid choice-generator: {}, expected 'foreach' and 'template' properties".format(generatorName))
-                
-                # parse foreach template, then "get" that resolved path which should return a dictionary
-                foreachJsonPathExp = self.parse_template(generator['foreach'],templateContext)
-                foreachDict = self.get_value(cicdContextData[STATE][CICD_CONTEXT_DATA_ID],foreachJsonPathExp,None)
-
-                iteratorJsonPathExp = self.parse_template(generator['iterator'],templateContext)
-                iteratorName = self.get_value(cicdContextData[STATE][CICD_CONTEXT_DATA_ID],iteratorJsonPathExp,None)
-                if not iteratorName:
-                    iteratorName = generator['iterator']
-                
-                for itemName,item in foreachDict.items():
-                    templateContext[iteratorName] = item
-                    optionsYaml = self.parse_template(generator['template'],templateContext)
-
-                    # iterate and render into a choices yaml, turn into object
-                    # then dynamically append to ['manualChoice']['choices']
-                    generatedChoice = yaml.load(optionsYaml, Loader=yaml.FullLoader)
-                    choiceKeyName = list(generatedChoice.keys())[0] 
-                    choiceConfig = list(generatedChoice.values())[0]
-                    templateContext['manualChoice']['choices'][choiceKeyName] = choiceConfig
-
-
-        # now render out all choices...
-        for choiceName in templateContext['manualChoice']['choices']:
-            choiceConfig = templateContext['manualChoice']['choices'][choiceName]
-            choiceConfig['header'] = self.parse_template(choiceConfig['header'],templateContext)
-            for option in choiceConfig['options']:
-                option['value'] = self.parse_template(option['value'],templateContext)
-                option['text'] = self.parse_template(option['text'],templateContext)
-
-        manualChoiceTemplate = self.configData[CONFIG_DATA_KEY]['templates']['manual-choice']
-
-        notifyPayload = self.parse_template(manualChoiceTemplate,templateContext)
-
-        notifyUrl = self.configData[CONFIG_DATA_KEY]['slack']['url']
-        notifyToken = self.secretData[SECRET_DATA_KEY]['slack']['token']
-
-        headers = {
-            'Content-Type': "application/json; charset=UTF-8",
-            'Accept': "*/*",
-            'Authorization': "Bearer {}".format(notifyToken),
-            'Cache-Control': "no-cache",
-            'Connection': 'keep-alive'
-        }
-
-        logging.debug("event_handle_manual_choice(): POSTing manual choices to {} : {}".format(notifyUrl,notifyPayload))
-
-        response = requests.request("POST", notifyUrl, data=notifyPayload, headers=headers)
-        
-        if response.status_code >= 200 and response.status_code <= 299:
-            responseBodyObj = json.loads(response.content)
-            logging.debug("event_handle_manual_choice(): POST response OK {} ".format(json.dumps(responseBodyObj)))
-            self.capture_http_response_data(cicdContextData, responseBodyObj, 'manual-choice', manualChoiceConfig)
+            response = requests.request("POST", notifyUrl, data=notifyPayload, headers=headers)
             
-        else:
-            logging.error("event_handle_manual_choice() http response code: {} FAILED: {} ".format(response.status_code,response.content))
+            if response.status_code >= 200 and response.status_code <= 299:
 
+                cicdContextDataId = cicdContextData[STATE][CICD_CONTEXT_DATA_ID]
 
-    def event_handle_trigger_pipeline(self, triggerPipelineConfig, cicdContextData, tmplCtxVars):
+                responseBodyObj = json.loads(response.content)
+                logging.debug("event_handle_notify(): POST response OK {} ".format(responseBodyObj))
 
-        # build a transient template context
-        templateContext = self.create_event_handler_template_context('triggerPipeline',triggerPipelineConfig,cicdContextData,tmplCtxVars)
-
-        triggerUrl = self.configData[CONFIG_DATA_KEY]['trigger']['url']
-        cicdKey = self.secretData[SECRET_DATA_KEY]['trigger']['token']
-
-        payload = {}
-
-        # always apply global trigger auto args
-        if 'auto-args' in self.configData[CONFIG_DATA_KEY]['trigger']:
-            autoArgsConf = self.configData[CONFIG_DATA_KEY]['trigger']['auto-args']
-            for argName in autoArgsConf:
-                payload[argName] = self.parse_template(str(autoArgsConf[argName]),templateContext)
-
-        # and also apply any pipeline specific args which can override the latter
-        if 'args' in triggerPipelineConfig:
-            for argName in triggerPipelineConfig['args']:
-                argumentValue = triggerPipelineConfig['args'][argName]
-                payload[argName] = self.parse_template(str(argumentValue),templateContext)
+                self.capture_http_response_data(cicdContextData, responseBodyObj, 'notify', notifyConfig)
                 
-        headers = {
-            'Content-Type': "application/json",
-            'Accept': "*/*",
-            'Cache-Control': "no-cache"
-        }
+            else:
+                logging.error("event_handle_notify() http response code: {} FAILED: {} ".format(response.status_code,response.content))
 
-        # add secret data
-        templateContext[SECRET_DATA] = self.secretData[SECRET_DATA_KEY]
 
-        for headerConfig in self.configData[CONFIG_DATA_KEY]['trigger']['headers']:
-            headerName = headerConfig['name']
-            headerValue = self.parse_template(str(headerConfig['value']),templateContext)
-            headers[headerName] = headerValue
 
-        logging.debug("event_handle_trigger_pipeline(): POSTing trigger pipeline to {} : {}".format(triggerUrl,json.dumps(payload)))
+    def event_handle_manual_choice(self, manualChoiceConfigs, cicdContextData, tmplCtxVars):
 
-        response = requests.request("POST", triggerUrl, data=json.dumps(payload), headers=headers)
+        # support backwards compatibility where there are no nested keys
+        if 'title' in manualChoiceConfigs:
+            manualChoiceConfigs = { "default" : manualChoiceConfigs } 
         
-        if response.status_code >= 200 and response.status_code <= 299:
-            logging.debug("event_handle_trigger_pipeline(): POST response OK {} ".format(json.loads(response.content)))
-        else:
-            logging.error("event_handle_trigger_pipeline() http response code: {} FAILED: {} ".format(response.status_code,response.content))
+        # manualChoiceConfigs can contain multiple blocks of conditional set stanzas
+        for manualChoiceConfName in manualChoiceConfigs:
+
+            logging.debug("event_handle_manual_choice() processing manual-choice for: {}".format(manualChoiceConfName))
+
+            manualChoiceConfig = manualChoiceConfigs[manualChoiceConfName]
+
+            # build a transient template context
+            templateContext = self.create_event_handler_template_context('manualChoice',manualChoiceConfig,cicdContextData,tmplCtxVars)
+
+            # if we didn't get a value back, exit quick
+            if 'if' in manualChoiceConfig and not self.parse_template(manualChoiceConfig.get('if'),templateContext,blankOnError=True):
+                logging.debug("event_handle_manual_choice() {}.if did not yield anything, ".format(manualChoiceConfName) + \
+                    "nothing todo. manualChoiceConfig['if']={}".format(manualChoiceConfig.get('if')))
+                continue
+
+            templateContext['manualChoice']['title'] = self.parse_template(manualChoiceConfig['title'],templateContext)
+
+            # pre-process and generate any "choices" that come from "choice-generators"
+            if 'choice-generators' in templateContext['manualChoice']:
+                choiceGenerators = templateContext['manualChoice']['choice-generators']
+                for generatorName, generator in choiceGenerators.items():
+                    logging.debug("manualChoice: processing choice-generator: {}".format(generatorName))
+                    if 'foreach' not in generator or 'template' not in generator:
+                        logging.debug("manualChoice: invalid choice-generator: {}, expected 'foreach' and 'template' properties".format(generatorName))
+                    
+                    # parse foreach template, then "get" that resolved path which should return a dictionary
+                    foreachJsonPathExp = self.parse_template(generator['foreach'],templateContext)
+                    foreachDict = self.get_value(cicdContextData[STATE][CICD_CONTEXT_DATA_ID],foreachJsonPathExp,None)
+
+                    iteratorJsonPathExp = self.parse_template(generator['iterator'],templateContext)
+                    iteratorName = self.get_value(cicdContextData[STATE][CICD_CONTEXT_DATA_ID],iteratorJsonPathExp,None)
+                    if not iteratorName:
+                        iteratorName = generator['iterator']
+                    
+                    for itemName,item in foreachDict.items():
+                        templateContext[iteratorName] = item
+                        optionsYaml = self.parse_template(generator['template'],templateContext)
+
+                        # iterate and render into a choices yaml, turn into object
+                        # then dynamically append to ['manualChoice']['choices']
+                        generatedChoice = yaml.load(optionsYaml, Loader=yaml.FullLoader)
+                        choiceKeyName = list(generatedChoice.keys())[0] 
+                        choiceConfig = list(generatedChoice.values())[0]
+                        templateContext['manualChoice']['choices'][choiceKeyName] = choiceConfig
+
+
+            # now render out all choices...
+            for choiceName in templateContext['manualChoice']['choices']:
+                choiceConfig = templateContext['manualChoice']['choices'][choiceName]
+                choiceConfig['header'] = self.parse_template(choiceConfig['header'],templateContext)
+                for option in choiceConfig['options']:
+                    option['value'] = self.parse_template(option['value'],templateContext)
+                    option['text'] = self.parse_template(option['text'],templateContext)
+
+            manualChoiceTemplate = self.configData[CONFIG_DATA_KEY]['templates']['manual-choice']
+
+            notifyPayload = self.parse_template(manualChoiceTemplate,templateContext)
+
+            notifyUrl = self.configData[CONFIG_DATA_KEY]['slack']['url']
+            notifyToken = self.secretData[SECRET_DATA_KEY]['slack']['token']
+
+            headers = {
+                'Content-Type': "application/json; charset=UTF-8",
+                'Accept': "*/*",
+                'Authorization': "Bearer {}".format(notifyToken),
+                'Cache-Control': "no-cache",
+                'Connection': 'keep-alive'
+            }
+
+            logging.debug("event_handle_manual_choice(): POSTing manual choices to {} : {}".format(notifyUrl,notifyPayload))
+
+            response = requests.request("POST", notifyUrl, data=notifyPayload, headers=headers)
+            
+            if response.status_code >= 200 and response.status_code <= 299:
+                responseBodyObj = json.loads(response.content)
+                logging.debug("event_handle_manual_choice(): POST response OK {} ".format(json.dumps(responseBodyObj)))
+                self.capture_http_response_data(cicdContextData, responseBodyObj, 'manual-choice', manualChoiceConfig)
+                
+            else:
+                logging.error("event_handle_manual_choice() http response code: {} FAILED: {} ".format(response.status_code,response.content))
+
+
+    def event_handle_trigger_pipeline(self, triggerPipelineConfigs, cicdContextData, tmplCtxVars):
+
+        # support backwards compatibility, w/ no subkeys
+        if 'url' in triggerPipelineConfigs:
+            triggerPipelineConfigs = { "default" : triggerPipelineConfigs } 
+        
+        # triggerPipelineConfigs can contain multiple blocks of conditional set stanzas
+        for triggerPipelineConfName in triggerPipelineConfigs:
+
+            logging.debug("event_handle_trigger_pipeline() processing notify for: {}".format(triggerPipelineConfName))
+
+            triggerPipelineConfig = triggerPipelineConfigs[triggerPipelineConfName]
+
+            # build a transient template context
+            templateContext = self.create_event_handler_template_context('triggerPipeline',triggerPipelineConfig,cicdContextData,tmplCtxVars)
+
+            # if we didn't get a value back, exit quick
+            if 'if' in triggerPipelineConfig and not self.parse_template(triggerPipelineConfig.get('if'),templateContext,blankOnError=True):
+                logging.debug("event_handle_trigger_pipeline() {}.if did not yield anything, ".format(triggerPipelineConfName) + \
+                    "nothing todo. triggerPipelineConfig['if']={}".format(triggerPipelineConfig.get('if')))
+                continue
+
+            triggerUrl = self.configData[CONFIG_DATA_KEY]['trigger']['url']
+            cicdKey = self.secretData[SECRET_DATA_KEY]['trigger']['token']
+
+            payload = {}
+
+            # always apply global trigger auto args
+            if 'auto-args' in self.configData[CONFIG_DATA_KEY]['trigger']:
+                autoArgsConf = self.configData[CONFIG_DATA_KEY]['trigger']['auto-args']
+                for argName in autoArgsConf:
+                    payload[argName] = self.parse_template(str(autoArgsConf[argName]),templateContext)
+
+            # and also apply any pipeline specific args which can override the latter
+            if 'args' in triggerPipelineConfig:
+                for argName in triggerPipelineConfig['args']:
+                    argumentValue = triggerPipelineConfig['args'][argName]
+                    payload[argName] = self.parse_template(str(argumentValue),templateContext)
+                    
+            headers = {
+                'Content-Type': "application/json",
+                'Accept': "*/*",
+                'Cache-Control': "no-cache"
+            }
+
+            # add secret data
+            templateContext[SECRET_DATA] = self.secretData[SECRET_DATA_KEY]
+
+            for headerConfig in self.configData[CONFIG_DATA_KEY]['trigger']['headers']:
+                headerName = headerConfig['name']
+                headerValue = self.parse_template(str(headerConfig['value']),templateContext)
+                headers[headerName] = headerValue
+
+            logging.debug("event_handle_trigger_pipeline(): POSTing trigger pipeline to {} : {}".format(triggerUrl,json.dumps(payload)))
+
+            response = requests.request("POST", triggerUrl, data=json.dumps(payload), headers=headers)
+            
+            if response.status_code >= 200 and response.status_code <= 299:
+                logging.debug("event_handle_trigger_pipeline(): POST response OK {} ".format(json.loads(response.content)))
+            else:
+                logging.error("event_handle_trigger_pipeline() http response code: {} FAILED: {} ".format(response.status_code,response.content))
 
 
 

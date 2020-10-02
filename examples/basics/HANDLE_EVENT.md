@@ -84,6 +84,29 @@ notify:
 
 The `notify` event handler is intended to render a message that will be POSTed to an endpoint (like slack). The message is intended to be informative only and not interactive. If you need to render an interactive message, take a look at `manual-choice` instead.
 
+Each `notify` block can declare one or more arbitrarilly named configs or no subkeys and just a single entry:.
+
+For example this is valid:
+```
+notify:
+  whatever:
+    if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+    message:
+      ...
+  something:
+    if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+    message:
+      ...
+```
+
+as well as the following: (note in logs this will referenced as `default`)
+```
+notify:
+  if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+  message:
+    ...
+```
+
 See the [app.yaml](app.yaml) for the event this is referencing:
 
 ```
@@ -141,6 +164,29 @@ lastPostedHttpResponse: '{''args'': {}, ''data'': {''channel'': ''stage'', ''mes
 
 The `trigger-pipeline` event handler is logically intended to be a special action where you want to automatically trigger another thread of execution within the CICD engine. The `trigger-pipeline` event handler results in a custom HTTP POST being forumlated comprised of a set of custom headers + simple KV pair JSON body POSTED to an HTTP endpoint. This is intended to trigger additional things in a self referencing way such as invoking a [Tekton Triggers EventListener endpoint](https://github.com/tektoncd/triggers/blob/master/docs/eventlisteners.md)
 
+Each `trigger-pipeline` block can declare one or more arbitrarilly named configs or no subkeys and just a single entry:.
+
+For example this is valid:
+```
+trigger-pipeline:
+  whatever:
+    if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+    name:
+    args:
+  something:
+    if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+    name:
+    args:
+```
+
+as well as the following: (note in logs this will referenced as `default`)
+```
+trigger-pipeline:
+  if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+  name:
+  args:
+```
+
 See the [app.yaml](app.yaml) for the event this is referencing as well as the `trigger` section within [config.yaml](config.yaml)
 
 ```
@@ -174,6 +220,32 @@ The logs will show a POST as follows:
 # manual-choice
 
 The `manual-choice` event handler is logically intended to render a message that contains one or more manual sets of "choices", where each set of choices is made up of a `header` and an array of one or more "options" which yield `text` and `value`. How exactly these choice groups and their options are rendered into a message that gets POSTed to an endpoint is entirely up to you. You can define the template that these are rendered against within the `templates.manual-choice` template within [config.yaml](config.yaml)
+
+Each `manual-choice` block can declare one or more arbitrarilly named configs or no subkeys and just a single entry:.
+
+For example this is valid:
+```
+manual-choice:
+  whatever:
+    if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+    title:
+    choices:
+      ...
+  something:
+    if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+    title:
+    choices:
+      ...
+```
+
+as well as the following: (note in logs this will referenced as `default`)
+```
+manual-choice:
+  if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+  title:
+  choices:
+    ...
+```
 
 See the [app.yaml](app.yaml) for the event this is referencing as well as the `templates.manual-choice` section within [config.yaml](config.yaml)
 
@@ -255,7 +327,31 @@ In that [example](test/handle-event.manual-choice.sh) we load a small JSON struc
 
 The `set-values` event handler is logically intended to evaluate something with an `if` and then passing, consume values `from` some reference within a jinja2 context and if that reference yeilds a non-blank value, to set that value `to` another location in `cicdContextData`. 
 
-Each `set-values` block can declare one or more arbitrarilly named items, each of which containing an `if` jinja2 template where if the rendered value is not blank, will then proceed to `set` against the array of `from` and `to` directives
+Each `set-values` block can declare one or more arbitrarilly named items, each of which containing an `if` jinja2 template where if the rendered value is not blank, will then proceed to `set` against the array of `from` and `to` directives. 
+
+For example this is valid:
+```
+set-values:
+  whatever:
+    if:
+    set:
+      - from:
+        to:
+  something:
+    if:
+    set:
+      - from:
+        to:
+```
+
+as well as the following: (note in logs this will referenced as `default`)
+```
+set-values:
+  if:
+  set:
+    - from:
+      to:
+```
 
 See the [app.yaml](app.yaml) for an example `set-values` event config.
 
@@ -291,6 +387,32 @@ This is basicMacro! msg = build is successful
 The `respond` event handler is logically intended to be a quick way to define an event that sends a `message` to a custom `url` `if` some condition passes.
 
 Each `respond` block declares an `if` which if evaluated (jinja2) to a non-blank result will then proceed to evaluate the `url` as well as the `message`. The `message` will be applied against the `templates.responder` template within [config.yaml](config.yaml) and then an HTTP POST with the resulting data to the `url`.
+
+Each `respond` block can declare one or more arbitrarilly named configs or no subkeys and just a single entry:.
+
+For example this is valid:
+```
+respond:
+  whatever:
+    if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+    url:
+    message:
+      ...
+  something:
+    if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+    url:
+    message:
+      ...
+```
+
+as well as the following: (note in logs this will referenced as `default`)
+```
+respond:
+  if: [note 'if' (jinja2 tmpl str) is completely optional to use for gating]
+  url:
+  message:
+    ...
+```
 
 See the [app.yaml](app.yaml) for an example `respond` event config.
 
