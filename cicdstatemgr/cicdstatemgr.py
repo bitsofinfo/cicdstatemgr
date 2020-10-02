@@ -924,7 +924,7 @@ class CicdStateMgr():
     def event_handle_trigger_pipeline(self, triggerPipelineConfigs, cicdContextData, tmplCtxVars):
 
         # support backwards compatibility, w/ no subkeys
-        if 'url' in triggerPipelineConfigs:
+        if 'name' in triggerPipelineConfigs:
             triggerPipelineConfigs = { "default" : triggerPipelineConfigs } 
         
         # triggerPipelineConfigs can contain multiple blocks of conditional set stanzas

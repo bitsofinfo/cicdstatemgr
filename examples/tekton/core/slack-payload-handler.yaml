@@ -16,14 +16,12 @@ spec:
       serviceAccountName: default
       containers:
         - name: slack-payload-handler
-          image: bitsofinfo/slack-payload-handler:1.1.0
+          image: bitsofinfo/slack-payload-handler:1.5.1
           command: 
             - "slack-payload-handler"
           args:
-            - "--debug-request"
-            - "false"
-            - "--debug-response"
-            - "false"
+            - "--debug-request=true"
+            - "--debug-response=true"
             - "--listen-port"
             - "8080"
             

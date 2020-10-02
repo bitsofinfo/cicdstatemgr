@@ -1,3 +1,6 @@
+# 1.1.3
+* Fix bug w/ `trigger-pipeline` and no subkey configuration
+
 # 1.1.2
 * Support multiple handlers of type `notify` and `trigger-pipeline` per #1
 * Add `if` support for `notify` and `trigger-pipeline` blocks
