@@ -670,6 +670,14 @@ class CicdStateMgr():
                 "nothing todo. respondConfig['message']={}".format(respondConfig['message']))
             return
 
+        # auto parse all remaining fields in the respond config other than the known ones
+        # which are already handled manually (message, url, if)
+        tmpRespondHandlerConfigToParsed = copy.deepcopy(templateContext['respond'])
+        for propName,propValue in templateContext['respond'].items():
+            if propName not in ["message","url","if"]:
+                tmpRespondHandlerConfigToParsed[propName] = self.parse_template(propValue,templateContext)
+        templateContext['respond'] = tmpRespondHandlerConfigToParsed
+
         # get the overal config's template for this handler
         responderTemplate = self.configData[CONFIG_DATA_KEY]['templates']['respond']
 
@@ -702,7 +710,12 @@ class CicdStateMgr():
         response = requests.request("POST", respondToUrl, data=respondPayload, headers=headers)
         
         if response.status_code >= 200 and response.status_code <= 299:
-            responseBodyObj = json.loads(response.content)
+            try:
+                responseBodyObj = json.loads(response.content)
+            except:
+                logging.debug("event_handle_respond() {}, response content not JSON..".format(response.status_code))
+                responseBodyObj = response.content
+
             logging.debug("event_handle_respond(): POST response OK {} ".format(responseBodyObj))
 
         

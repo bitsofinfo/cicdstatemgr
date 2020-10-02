@@ -210,5 +210,6 @@ cicdstatemgr:
     # this will render the body to be POSTED to the notification endpoint
     respond: >
         {
-          "response_text": "{{respond.message}}"
+          "response_text": "{{respond.message}}",
+          "someArbitraryKey":"{{respond.someArbitraryKey}}"
         }

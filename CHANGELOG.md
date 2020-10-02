@@ -1,3 +1,7 @@
+# 1.1.1
+* Fix non-json http responses in `respond` handling
+* Support arbitrary variables in `respond` config blocks and jinja2 parse them
+
 # 1.1.0
 * Added support for `choice-generators` within `manual-choice` event handlers. Permits the dynamic generation of new choice sets via a `template` based on a pointer to a dictionary containing data that can be cross referened in an `iterator`. 
 * Added `*-capture-response-data` support for `manual-choice` POSTs

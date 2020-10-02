@@ -34,6 +34,8 @@ pipelines:
             to: state.lastPostedHttpResponse
       testRespondEvent:
         respond:
+          someArbitraryKey: lastPostedDataRandomId={{ state.lastPostedDataRandomId
+            }}
           if: '{{ state.lastPostedHttpResponse }}'
           url: '{{ (state.lastPostedHttpResponse|from_json).url }}'
           message: 'dummy responder message for {{ state.lastPostedDataRandomId }}
@@ -137,6 +139,8 @@ appPipelinesConfig:
                   to: state.lastPostedHttpResponse
             testRespondEvent:
               respond:
+                someArbitraryKey: lastPostedDataRandomId={{ state.lastPostedDataRandomId
+                  }}
                 if: '{{ state.lastPostedHttpResponse }}'
                 url: '{{ (state.lastPostedHttpResponse|from_json).url }}'
                 message: 'dummy responder message for {{ state.lastPostedDataRandomId
@@ -250,25 +254,25 @@ state:
   testHeader2Value: myvalueforheader2
   triggerAutoArg1: dummyVal
   postedData:
-    '16870':
+    '85188':
       body:
         message: This is basicMacro! msg = testEventFired!!! yes...
       headers:
         userAgent: python-requests/2.24.0
-    '12665':
+    '46441':
       body:
         message: This is basicMacro! msg = build is successful
       headers:
         userAgent: python-requests/2.24.0
-    '64048':
+    '76689':
       body:
         message: Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle"
           }
       headers:
         userAgent: python-requests/2.24.0
-  lastPostedDataRandomId: '64048'
+  lastPostedDataRandomId: '76689'
   lastPostedToNotifyChannel: stage
-  lastPostedHttpResponse: '{"args": {}, "data": {"channel": "stage", "randomId": "23100",
+  lastPostedHttpResponse: '{"args": {}, "data": {"channel": "stage", "randomId": "17522",
     "choices": [{"header": "Choice group one:", "options": [{"value": "c1", "text":
     "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header": "item-one", "options":
     [{"value": "item-one item1 desc", "text": "item-one"}, {"value": "item-one item1
@@ -277,11 +281,11 @@ state:
     {"header": "item-three", "options": [{"value": "item-three item3 desc", "text":
     "item-three"}, {"value": "item-three item3 desc", "text": "item-three"}]}]}, "files":
     {}, "form": {}, "headers": {"x-forwarded-proto": "https", "x-forwarded-port":
-    "443", "host": "postman-echo.com", "x-amzn-trace-id": "Root=1-5f4e5edb-3543ccd3948c723fc2e7f076",
+    "443", "host": "postman-echo.com", "x-amzn-trace-id": "Root=1-5f774ad1-3925773425d4f493354f72dc",
     "content-length": "1955", "user-agent": "python-requests/2.24.0", "accept-encoding":
     "gzip, deflate", "accept": "*/*", "content-type": "application/json; charset=UTF-8",
     "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache"}, "json": {"channel":
-    "stage", "randomId": "23100", "choices": [{"header": "Choice group one:", "options":
+    "stage", "randomId": "17522", "choices": [{"header": "Choice group one:", "options":
     [{"value": "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header":
     "item-one", "options": [{"value": "item-one item1 desc", "text": "item-one"},
     {"value": "item-one item1 desc", "text": "item-one"}]}, {"header": "item-two",
