@@ -16,7 +16,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: slack-payload-handler
-          image: bitsofinfo/slack-payload-handler:1.5.1
+          image: bitsofinfo/slack-payload-handler:1.5.2
           command: 
             - "slack-payload-handler"
           args:
