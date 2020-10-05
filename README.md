@@ -229,6 +229,10 @@ If you utilize these features and blindly pass the resulting data on to language
 
 The point of this section is simply that: a friendly reminder!
 
+## Related
+
+https://github.com/bitsofinfo/slack-payload-handler
+
 
 
 
