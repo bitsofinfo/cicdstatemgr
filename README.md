@@ -84,6 +84,11 @@ To see a more involved example on how `cicdstatemgr` can be used along with `Tek
 
 Init:
 ```
+python3 -m venv venv
+source venv/bin/activate
+pip install wheel
+pip install cicdstatemgr
+
 export CICDSTATEMGR_CONFIG_PATH=examples/simple/config.yaml
 export CICDSTATEMGR_SECRETS_PATH=examples/simple/secrets.yaml
 
