@@ -42,7 +42,9 @@ kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download
 kubectl apply -f $SCRIPTPATH/tekton-dashboard-mods.yaml
 
 # install git clone task and apply it
+# https://github.com/tektoncd/catalog/issues/531
 git clone https://github.com/tektoncd/catalog.git $SCRIPTPATH/catalog
+CDIR=`pwd`; cd $SCRIPTPATH/catalog/; git checkout 5250f30; cd $CDIR
 kubectl apply -f $SCRIPTPATH/catalog/task/git-clone/0.1/git-clone.yaml -n tekton-pipelines
 
 # RBAC perms for the tekton-triggers-admin service account
