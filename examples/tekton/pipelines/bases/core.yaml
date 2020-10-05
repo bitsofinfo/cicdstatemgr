@@ -19,12 +19,13 @@ jinja2-macros:
   #-------------------------------------------------------------
   responderMessage: |
     {%- macro responderMessage(requestBody) -%}
-      {%- for attachment in requestBody.message.attachments -%}
-        {%- set actionLabel = attachment.blocks[0].text.text -%}
-        {%- set actionLabel = (actionLabel|replace('+',' ')) -%}
-        {%- if attachment.blocks[1].block_id == requestBody.actions[0].block_id -%}
-            {%- for blockButton in attachment.blocks[1].elements -%}
-                {%- if blockButton.action_id == requestBody.actions[0].action_id -%}
+      {%- if 'actions' in requestBody -%}
+        {%- for attachment in requestBody.message.attachments -%}
+          {%- set actionLabel = attachment.blocks[0].text.text -%}
+          {%- set actionLabel = (actionLabel|replace('+',' ')) -%}
+          {%- if attachment.blocks[1].block_id == requestBody.actions[0].block_id -%}
+              {%- for blockButton in attachment.blocks[1].elements -%}
+                  {%- if blockButton.action_id == requestBody.actions[0].action_id -%}
                 
     :question: In response to action option:
 
@@ -33,11 +34,18 @@ jinja2-macros:
     <@{{requestBody.user.id}}> clicked on: *{{blockButton.text.text}}*
 
     {{ statusLink() }}
-                    {%- break -%}
-                {%- endif -%}
-            {%- endfor -%}
-        {%- endif -%}
-      {%- endfor -%}
+                      {%- break -%}
+                  {%- endif -%}
+              {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+    :computer: Slash command received from: <@{{requestBody.user_id}}>
+
+    ```
+    {{requestBody.command}} {{requestBody.text}}
+    ```
+      {%- endif -%}
     {%- endmacro -%}
 
   #-------------------------------------------------------------
@@ -195,7 +203,8 @@ jinja2-macros:
       APP: *{{state.gitAppName}}:{{state.appTag}}* 
       CICD Context: {{state.cicdContextName}}
       Invoked by: {{event.data.security.invokerUid}}
-      Triggered by: {{event.data.params.triggeredBySystem}}
+      Triggered by: `{{event.data.params.triggeredBySystem}}`
+      Info: `{{event.data.params.triggeredByDescription}}`
       {% if event.data.params.relatedCicdContextDataId != 'none' %}
       Related CICD context id: `{{event.data.params.relatedCicdContextDataId}}`
       Related PipelineRun: <{{configData.dashboard.pipelineRunUrl}}/{{event.data.params.relatedPipelineRunUid}}|{{event.data.params.relatedPipelineRunUid}}>

@@ -1,6 +1,6 @@
 # Tekton example
 
-This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages to provide user-interaction. Visually the workflow this example produces looks like this:
+This is a more involved example showing how `cicdstatemgr` can be used to enhance and orchestrate a Tekton CICD workflow by utilizing Slack interactive messages and Slack slash commands to provide user-interaction. Visually the workflow this example produces looks like this:
 
 ![Diagram of example](img/tekton.png "Diagram1")
 
@@ -56,6 +56,8 @@ You will need to create a new [slack app in your workspace](https://api.slack.co
 * Under *"Basic Information"* click on the *"Interactive Components"* feature box, then toggle *"Interactivity"* to **"on"**
 
 * For the *"Request Url"* just enter `https://postman-echo.com` for now and *"Save changes"* **(you will change this later)**
+
+* Again, under *"Basic Information"* and "Add Features & Functionality", click on the *"Slash Commands"* feature box, then click  *"Create new command"*. For *"Command"* enter `/start-app-deploy`, for *"Request Url"* just enter `https://postman-echo.com` for now **(you will change this later)**, for *"Short Description"* enter anything, and for *"Usage Hint"* enter `<cicdContextName> <gitProjectName> <gitCloneUrl> <gitTag>`. Finally click to *"Save changes"*
   
 * Click on the *"OAuth & Permission"* section, scroll down to *"Scopes"* and click on *"Add an OAuth Scope"*, then grant **app_mentions:read** and **chat:write**
 
@@ -95,6 +97,8 @@ Now that your local minikube cluster is up and running, we need to do two things
 Update the [slack app's interactive component](https://api.slack.com/apps) you created earlier to point to your `ngrok` URI.
 
 * Go your your slack apps' *"Basic Information"* section, click on *"Features and functionality"* then *"Interactive Components"*
+* Next update the *"Request Url"* field with the `ngrok` event listener URI emitted by the [install.sh](install.sh) script above. It should look something like `https://xxyyzz.ngrok.io`
+* ... and again: go your your slack apps' *"Basic Information"* section, click on *"Features and functionality"* then *"Slash Commands"*, click the edit icon for the command `/start-app-deploy`
 * Next update the *"Request Url"* field with the `ngrok` event listener URI emitted by the [install.sh](install.sh) script above. It should look something like `https://xxyyzz.ngrok.io`
 
 ### Create the slack channels
@@ -153,6 +157,24 @@ It should look something like this as `nginx-hello-world-[version]` deployments 
 | apps-prod        | nginx-hello-world-1-0-0    | http/80            | http://192.168.64.34:30425 |
 ....
 ```
+
+# Do an ad-hoc deploy via slack slash commands
+
+The example also supports doing a deployment via a Slack slash command. In either of your slack channels you can issue a command like the following to trigger a new CICD context that will permit you to deploy the previously built artifact on demand.
+
+**IMPORTANT:** for this demo to work, you must have triggered a prior build in order to use the slash command to deploy it. *See the prior section to trigger a build.*
+
+```
+/start-app-deploy [ dev | prod ] nginx-hello-world https://github.com/<YOUR_GITHUB_USER>/nginx-hello-world.git <TAG 
+```
+
+i.e. for example:
+```
+/start-app-deploy dev nginx-hello-world https://github.com/bitsofinfo/nginx-hello-world.git 0.0.9 
+```
+
+Would result in output as follows in slack:
+<img align="right" width="550" src="../../imgs/slashcmd.png">
 
 ## Next steps
 

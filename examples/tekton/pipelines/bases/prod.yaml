@@ -35,6 +35,7 @@ cicd-contexts:
 
             # we immediately respond, only if from Slack (via response URL) 
             respond:
+              isSlackSlashCommand: "{%- if 'command' in event.data.params.request.body -%}true{%- else -%}false{%- endif -%}"
               if: "{{ event.data.params.request.body.api_app_id }}"
               url: "{{ event.data.params.request.body.response_url }}"
               message: |
@@ -55,8 +56,8 @@ cicd-contexts:
                     to: "state.gitCloneUrl"
 
               # set state values from an Slack triggered (button press) posted start
-              slackValues:
-                if: "{{ event.data.params.request.body.api_app_id }}"
+              slackButtonValues:
+                if: "{{ event.data.params.request.body.actions }}"
                 set:
                   - from: "SANITIZED"
                     to: "state.start.{{event.data.params.pipelineRunUid}}.params.request.body.token"
@@ -82,6 +83,25 @@ cicd-contexts:
                   - from: "{{ configData.slack.orgUrl }}/archives/{{ event.data.params.request.body.container.channel_id }}/p{{ event.data.params.request.body.container.message_ts }}?{{ event.data.params.request.body.container.thread_ts }}&cid={{ event.data.params.request.body.container.channel_id }}"
                     to: "state.start.{{event.data.params.pipelineRunUid}}.slack.message_url"
 
+              # set state values from an Slack triggered (slash command) posted start
+              slackCmdValues:
+                if: "{{ event.data.params.request.body.command }}"
+                set:
+                  - from: "SANITIZED"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.params.request.body.token"
+
+                  - from: "{{ event.data.params.request.body.user_id }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.user.id"
+
+                  - from: "{{ event.data.params.request.body.user_name }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.user.name"
+                    
+                  - from: "{{ event.data.params.request.body.user_name }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.user.username"
+
+                  - from: "{{ event.data.params.request.body.channel_id }}"
+                    to: "state.start.{{event.data.params.pipelineRunUid}}.slack.channel_id"
+                    
           #~~~~~~~~~~~~~~~~~~~~~~~
           # START event -> success
           #~~~~~~~~~~~~~~~~~~~~~~~

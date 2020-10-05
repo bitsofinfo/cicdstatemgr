@@ -3,6 +3,9 @@
 cd core
 ./install.sh
 
+echo "Sleeping 30s for tekton core resources to come up....."
+sleep 30
+
 cd ../pipelines
 ./install.sh
 

@@ -190,3 +190,39 @@ spec:
 
     - name: uniqueString
       value: $(body.intercepted.commitId)
+
+
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: start-via-cmd-startdeploy
+spec:
+  params:
+
+    - name: cicdContextName
+      value: $(body.intercepted.targetCicdContextName)
+
+    - name: invokerUid 
+      value: "<@$(body.intercepted.slackUserId)>"
+
+    - name: gitAppName
+      value: $(body.intercepted.gitAppName)
+
+    - name: appTag
+      value: $(body.intercepted.appTag)
+
+    - name: gitCloneUrl
+      value: $(body.intercepted.gitCloneUrl)
+
+    - name: triggeredBySystem
+      value: "slack slash cmd"
+
+    - name: triggeredByDescription
+      value: "Slack slash command /start-app-deploy by <@$(body.intercepted.slackUserId)>"
+
+    - name: originalRequestBody
+      value: $(body)
+
+    - name: uniqueString
+      value: $(body.intercepted.uniqueString)

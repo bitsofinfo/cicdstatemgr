@@ -25,6 +25,7 @@ spec:
 
     - name: commitId
       type: string
+      default: none
 
     - name: relatedCicdContextDataId
       type: string

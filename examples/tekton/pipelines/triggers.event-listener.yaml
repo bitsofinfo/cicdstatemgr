@@ -554,3 +554,52 @@ spec:
           name: validate-via-slack
       template:
         name: validate
+
+    # --------------------------------------------------
+    # Handle SLASH COMMAND (/start-app-deploy)... interactions from slack
+    #   /start-app-deploy <cicdContextName> <gitCloneUrl> <gitTag>
+    # --------------------------------------------------
+    - name: slackcmd-startappdeploy-interceptor
+      interceptors:
+        - webhook:
+            objectRef:
+              kind: Service
+              name: slack-payload-handler
+              apiVersion: v1
+              namespace: tekton-pipelines
+
+        - cel:
+            filter: "has(body.api_app_id)"  
+
+        - cel:
+            filter: >-
+              body.token.compareSecret('slack-oauth-token','slack-oauth-token') && 
+              has(body.command) && 
+              has(body.text) && 
+              body.command.indexOf('start-app-deploy') != -1
+
+        - cel:
+            overlays:
+              - key: intercepted.targetCicdContextName
+                expression: "body.text.split(' ')[0]"  
+
+              - key: intercepted.gitAppName
+                expression: "body.text.split(' ')[1]"  
+
+              - key: intercepted.gitCloneUrl
+                expression: "body.text.split(' ')[2]"  
+
+              - key: intercepted.appTag
+                expression: "body.text.split(' ')[3]"
+
+              - key: intercepted.slackUserId
+                expression: "body.user_id"
+
+              - key: intercepted.uniqueString
+                expression: "body.trigger_id.split('.')[2]"
+
+      bindings:
+        - ref: start-via-cmd-startdeploy
+          name: start-via-cmd-startdeploy
+      template:
+        name: start

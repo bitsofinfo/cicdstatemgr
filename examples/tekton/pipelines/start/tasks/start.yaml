@@ -85,6 +85,7 @@ spec:
 
     - name: commitId
       type: string
+      default: none
       description:
         The application commitId 
 
