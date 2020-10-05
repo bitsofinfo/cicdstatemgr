@@ -69,7 +69,7 @@ jinja2-macros:
   #-------------------------------------------------------------
   changeContextButtonValue: |
     {%- macro changeContextButtonValue(targetCicdContextName) -%}
-      changeContext-{{state.cicdVersion}}-{{state.appName}}|{{ {'trigger':'changeContext','gitCloneUrl':state.gitCloneUrl,'commitId':state.commitId,'targetCicdContextName':targetCicdContextName,'gitAppName':state.gitAppName,'appName':state.appName,'appTag':state.appTag,'cicdVersion':state.cicdVersion,'relatedPipelineName':event.data.params.pipelineName,'relatedCicdContextDataId':event.data.params.cicdContextDataId,'relatedPipelineRunUid':event.data.params.pipelineRunUid}|tojson|to_base64 }}
+      changeContext-{{state.cicdVersion}}-{{state.appName}}|{{ {'trigger':'changeContext','gitCloneUrl':state.gitCloneUrl,'commitId':(state.commitId if state.commitId else 'none'),'targetCicdContextName':targetCicdContextName,'gitAppName':state.gitAppName,'appName':state.appName,'appTag':state.appTag,'cicdVersion':state.cicdVersion,'relatedPipelineName':event.data.params.pipelineName,'relatedCicdContextDataId':event.data.params.cicdContextDataId,'relatedPipelineRunUid':event.data.params.pipelineRunUid}|tojson|to_base64 }}
     {%- endmacro -%}
 
   #-------------------------------------------------------------

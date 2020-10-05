@@ -165,7 +165,7 @@ The example also supports doing a deployment via a Slack slash command. In eithe
 **IMPORTANT:** for this demo to work, you must have triggered a prior build in order to use the slash command to deploy it. *See the prior section to trigger a build.*
 
 ```
-/start-app-deploy [ dev | prod ] nginx-hello-world https://github.com/<YOUR_GITHUB_USER>/nginx-hello-world.git <TAG 
+/start-app-deploy [ dev | prod ] nginx-hello-world https://github.com/<YOUR_GITHUB_USER>/nginx-hello-world.git <TAG>
 ```
 
 i.e. for example:
