@@ -174,7 +174,7 @@ i.e. for example:
 ```
 
 Would result in output as follows in slack:
-<img align="right" width="550" src="../../imgs/slashcmd.png">
+<img width="550" src="../../imgs/slashcmd.png">
 
 ## Next steps
 
