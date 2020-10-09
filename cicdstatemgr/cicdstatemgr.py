@@ -102,6 +102,15 @@ class GetArgs():
         self.expression = expression
         self.tmplCtxVars = tmplCtxVars
 
+class GenerateArgs():
+
+    cicdContextDataId:str = None
+    generatorKeyPath:str = None
+
+    def __init__(self, cicdContextDataId, generatorKeyPath):
+        self.cicdContextDataId = cicdContextDataId
+        self.generatorKeyPath = generatorKeyPath
+
 class HandleEventArgs():
 
     cicdContextDataId:str = None
@@ -313,6 +322,50 @@ class CicdStateMgr():
             self.persist(cicdContextData,skipPrimary=True) # skip back to primary
 
         return cicdContextData
+
+    def generate(self, cicdContextDataId:str, generatorKeyPath:str):
+        cicdContextData = self.get_cicd_context_data(cicdContextDataId)
+        
+        logging.debug("generate() attempting to invoke generator at: {}".format(generatorKeyPath))
+
+        parsed = jsonpath_ng.parse(generatorKeyPath)
+
+        match = parsed.find(cicdContextData)
+
+        if match and (len(match) > 1 or len(match) == 0):
+            logging.error("generate() generatorKeyPath:{}, the generatorKeyPath yielded nothing OR more than one value... {}".format(generatorKeyPath,match) + \
+                " The generatorKeyPath should only return a single object in the cicdContextData, that contains a 'set[{key=?,value=?},...]' configuration and optional 'if' condition")
+            sys.exit(1)
+
+        generatorConfig = match[0].value
+        mustPersist = False
+
+        for generatorItemName, generatorItemConfig in generatorConfig.items():
+
+            logging.debug("generate() processing generator item: {}".format(generatorItemName))
+
+            templateContext = self.create_custom_template_context('generator',generatorItemConfig,cicdContextData,None)
+
+            # if we didn't get a value back, exit quick (note blankOnError=True)
+            if 'if' in generatorItemConfig and not self.parse_template(generatorItemConfig.get('if'),templateContext,blankOnError=True).strip():
+                logging.debug("generate() {}.if for {} did not yield anything, ".format(generatorItemName,generatorKeyPath) + \
+                    "nothing todo. generatorItemConfig['if']={}".format(generatorItemConfig.get('if')))
+                continue
+
+            # if the 'if" did return something, then we can proceed
+            for keyValueConf in generatorItemConfig['set']:
+                keyToSet = self.parse_template(keyValueConf['key'],templateContext)
+                if keyToSet and isinstance(keyToSet,str):
+                    valueToSet = keyValueConf['value']
+                    if valueToSet:
+                        valueToSet = self.parse_template(valueToSet,templateContext)
+                        self.set_value_in_dict_via_prop_path(cicdContextData, keyToSet.strip(), valueToSet)
+                        mustPersist = True
+
+        # persist everything
+        if mustPersist:
+            self.persist(cicdContextData,skipPrimary=False)
+
 
 
     def get_value(self, cicdContextDataId:str, propPath:str, tmplCtxVars:list):
@@ -603,7 +656,7 @@ class CicdStateMgr():
             for kvPair in tmplCtxVars:
                 parts = kvPair.split('=',1) # only split on first one
                 if len(parts) != 2:
-                    raise Exception("create_event_handler_template_context() tmplCtxVars item {} needs to be in format propPath=expression".format(kvPair))
+                    raise Exception("create_template_context() tmplCtxVars item {} needs to be in format propPath=expression".format(kvPair))
                 
                 propPath = parts[0]
                 valueExpression = parts[1]
@@ -618,9 +671,9 @@ class CicdStateMgr():
         return templateContext
 
 
-    def create_event_handler_template_context(self, handlerName:str, handlerConfig:dict, cicdContextData:dict, tmplCtxVars:list):
+    def create_custom_template_context(self, customConfigName:str, customConfig:dict, cicdContextData:dict, tmplCtxVars:list):
         templateContext = self.create_template_context(cicdContextData,tmplCtxVars)
-        templateContext[handlerName] = copy.deepcopy(handlerConfig)
+        templateContext[customConfigName] = copy.deepcopy(customConfig)
         return templateContext
 
     def event_handle_set_values(self, setValuesConfigs, cicdContextData, tmplCtxVars):
@@ -637,7 +690,7 @@ class CicdStateMgr():
             setValuesConfig = setValuesConfigs[setValueConfName]
 
             # build a transient template context
-            templateContext = self.create_event_handler_template_context('set-values',setValuesConfig,cicdContextData,tmplCtxVars)
+            templateContext = self.create_custom_template_context('set-values',setValuesConfig,cicdContextData,tmplCtxVars)
 
             cicdContextDataId = cicdContextData[STATE][CICD_CONTEXT_DATA_ID]
 
@@ -670,7 +723,7 @@ class CicdStateMgr():
             respondConfig = respondConfigs[respondConfName]
 
             # build a transient template context
-            templateContext = self.create_event_handler_template_context('respond',respondConfig,cicdContextData,tmplCtxVars)
+            templateContext = self.create_custom_template_context('respond',respondConfig,cicdContextData,tmplCtxVars)
 
             # if we didn't get a value back, exit quick
             if 'if' in respondConfig and not self.parse_template(respondConfig.get('if'),templateContext,blankOnError=True):
@@ -789,7 +842,7 @@ class CicdStateMgr():
             notifyConfig = notifyConfigs[notifyConfName]
 
             # build a transient template context
-            templateContext = self.create_event_handler_template_context('notify',notifyConfig,cicdContextData,tmplCtxVars)
+            templateContext = self.create_custom_template_context('notify',notifyConfig,cicdContextData,tmplCtxVars)
 
             # if we didn't get a value back, exit quick
             if 'if' in notifyConfig and not self.parse_template(notifyConfig.get('if'),templateContext,blankOnError=True):
@@ -846,7 +899,7 @@ class CicdStateMgr():
             manualChoiceConfig = manualChoiceConfigs[manualChoiceConfName]
 
             # build a transient template context
-            templateContext = self.create_event_handler_template_context('manualChoice',manualChoiceConfig,cicdContextData,tmplCtxVars)
+            templateContext = self.create_custom_template_context('manualChoice',manualChoiceConfig,cicdContextData,tmplCtxVars)
 
             # if we didn't get a value back, exit quick
             if 'if' in manualChoiceConfig and not self.parse_template(manualChoiceConfig.get('if'),templateContext,blankOnError=True):
@@ -935,7 +988,7 @@ class CicdStateMgr():
             triggerPipelineConfig = triggerPipelineConfigs[triggerPipelineConfName]
 
             # build a transient template context
-            templateContext = self.create_event_handler_template_context('triggerPipeline',triggerPipelineConfig,cicdContextData,tmplCtxVars)
+            templateContext = self.create_custom_template_context('triggerPipeline',triggerPipelineConfig,cicdContextData,tmplCtxVars)
 
             # if we didn't get a value back, exit quick
             if 'if' in triggerPipelineConfig and not self.parse_template(triggerPipelineConfig.get('if'),templateContext,blankOnError=True):

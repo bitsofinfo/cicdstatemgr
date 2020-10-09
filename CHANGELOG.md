@@ -1,8 +1,11 @@
+# 1.2.0
+* Support for new `generators` capability and `--generate` argument to the CLI. https://github.com/bitsofinfo/cicdstatemgr/issues/9
+
 # 1.1.3
 * Fix bug w/ `trigger-pipeline` and no subkey configuration
 
 # 1.1.2
-* Support multiple handlers of type `notify` and `trigger-pipeline` per #1
+* Support multiple handlers of type `notify` and `trigger-pipeline` per https://github.com/bitsofinfo/cicdstatemgr/issues/1
 * Add `if` support for `notify` and `trigger-pipeline` blocks
 
 # 1.1.1

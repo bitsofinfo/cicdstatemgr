@@ -10,7 +10,7 @@ import time
 import sys
 import os
 
-from .cicdstatemgr import CicdStateMgr, InitializeArgs, LoadArgs, SetArgs, HandleEventArgs, GetArgs
+from .cicdstatemgr import CicdStateMgr, InitializeArgs, LoadArgs, SetArgs, HandleEventArgs, GetArgs, GenerateArgs
 
 
 class CicdStateMgrCli():
@@ -70,6 +70,10 @@ class CicdStateMgrCli():
         parser.add_argument('--get', default=None, help="Get a value via a jsonpath expression: https://github.com/h2non/jsonpath-ng, " + \
             "outputs to STDOUT. Multiple values or non-primitives are returned as JSON")
 
+    def cli_add_generate_arguments(self, parser:argparse.ArgumentParser):
+        parser.add_argument('--generate', default=None, help="Executes the named generator found at path.to.generators.generator-name. " + \
+            " i.e. --generate state.whatever.generators.myGenerator")
+
     def cli_add_set_arguments(self, parser:argparse.ArgumentParser):
         parser.add_argument('--set', action='append', default=None, \
             help="The context data prop path to be set, i.e. x.y.z=<primitiveValue | /path/to/file.[json|yaml]>, can be using during --init-*")
@@ -92,6 +96,7 @@ class CicdStateMgrCli():
         self.cli_add_get_arguments(parser)
         self.cli_add_set_arguments(parser)
         self.cli_add_handle_event_arguments(parser)
+        self.cli_add_generate_arguments(parser)
 
 
     def cli_args_2_cicd_state_mgr(self,args) -> CicdStateMgr:
@@ -187,6 +192,15 @@ class CicdStateMgrCli():
             raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDSTATEMGR_CONTEXT_DATA_ID")
 
         return GetArgs(cicdContextDataId,args.get,args.tmpl_ctx_var)
+
+    def cli_consume_generate_args(self,args) -> GetArgs:
+        cicdContextDataId = args.id
+        if not cicdContextDataId:
+            cicdContextDataId = os.getenv("CICDSTATEMGR_CONTEXT_DATA_ID")
+        if not cicdContextDataId:
+            raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDSTATEMGR_CONTEXT_DATA_ID")
+
+        return GenerateArgs(cicdContextDataId,args.generate)
 
     def get_handle_event_arg_vals_to_set(self,args) -> dict:
 
@@ -302,6 +316,13 @@ class CicdStateMgrCli():
                 # ok, do a get operation
                 val = cicdStateMgr.get_value(getArgs.cicdContextDataId, getArgs.expression, getArgs.tmplCtxVars)
                 print(val)
+
+            # handle --generate
+            elif args.generate:
+                generateArgs:GenerateArgs = self.cli_consume_generate_args(args)
+
+                # ok, do generate operation
+                cicdStateMgr.generate(generateArgs.cicdContextDataId, generateArgs.generatorKeyPath)
 
             # handle --handle-event
             elif args.handle_event:

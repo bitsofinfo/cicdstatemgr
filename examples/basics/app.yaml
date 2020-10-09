@@ -18,6 +18,32 @@ cicd-contexts:
 
     pipelines:
       build:
+
+        generators:
+          dockerfile:
+            alpine:
+              if: "{%- if 'alpine' in state.gitTag -%}true{%- endif -%}"
+              set:
+                - key: "state.build.targetImageName"
+                  value: "{{state.gitAppName}}"
+                - key: "state.build.generateDockerfileCmd"
+                  value: |
+                    ./gendockerfile.sh \
+                        -f alpine:latest \
+                        -x {{state.gitTag}} 
+                        
+            centos:
+              if: "{%- if 'centos' in state.gitTag -%}true{%- endif -%}"
+              set:
+                - key: "state.build.targetImageName"
+                  value: "{{state.gitAppName}}"
+                - key: "state.build.generateDockerfileCmd"
+                  value: |
+                    ./gendockerfile.sh \
+                        -f centos:latest \
+                        -x {{state.gitTag}} 
+
+
         event-handlers:
 
           testEvent:
@@ -104,7 +130,7 @@ cicd-contexts:
         event-handlers:
           blah-event:
             manual-choice:
-              title: "test manual choice with generators"
+              title: "test manual choice with choice-generators"
 
               capture-response-data:
                 - from: "{{ body|json_dumps }}"

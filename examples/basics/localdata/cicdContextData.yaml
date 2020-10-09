@@ -16,6 +16,24 @@ pipelines:
             '
           enabled: false
   build:
+    generators:
+      dockerfile:
+        alpine:
+          if: '{%- if ''alpine'' in state.gitTag -%}true{%- endif -%}'
+          set:
+          - key: state.build.targetImageName
+            value: '{{state.gitAppName}}'
+          - key: state.build.generateDockerfileCmd
+            value: "./gendockerfile.sh \\\n    -f alpine:latest \\\n    -x {{state.gitTag}}\
+              \ \n    \n"
+        centos:
+          if: '{%- if ''centos'' in state.gitTag -%}true{%- endif -%}'
+          set:
+          - key: state.build.targetImageName
+            value: '{{state.gitAppName}}'
+          - key: state.build.generateDockerfileCmd
+            value: "./gendockerfile.sh \\\n    -f centos:latest \\\n    -x {{state.gitTag}}\
+              \ \n"
     event-handlers:
       testEvent:
         notify:
@@ -86,7 +104,7 @@ pipelines:
     event-handlers:
       blah-event:
         manual-choice:
-          title: test manual choice with generators
+          title: test manual choice with choice-generators
           capture-response-data:
           - from: '{{ body|json_dumps }}'
             to: state.lastPostedHttpResponseFromManualChoice
@@ -121,6 +139,24 @@ appPipelinesConfig:
       channel: stage
       pipelines:
         build:
+          generators:
+            dockerfile:
+              alpine:
+                if: '{%- if ''alpine'' in state.gitTag -%}true{%- endif -%}'
+                set:
+                - key: state.build.targetImageName
+                  value: '{{state.gitAppName}}'
+                - key: state.build.generateDockerfileCmd
+                  value: "./gendockerfile.sh \\\n    -f alpine:latest \\\n    -x {{state.gitTag}}\
+                    \ \n    \n"
+              centos:
+                if: '{%- if ''centos'' in state.gitTag -%}true{%- endif -%}'
+                set:
+                - key: state.build.targetImageName
+                  value: '{{state.gitAppName}}'
+                - key: state.build.generateDockerfileCmd
+                  value: "./gendockerfile.sh \\\n    -f centos:latest \\\n    -x {{state.gitTag}}\
+                    \ \n"
           event-handlers:
             testEvent:
               notify:
@@ -198,7 +234,7 @@ appPipelinesConfig:
           event-handlers:
             blah-event:
               manual-choice:
-                title: test manual choice with generators
+                title: test manual choice with choice-generators
                 capture-response-data:
                 - from: '{{ body|json_dumps }}'
                   to: state.lastPostedHttpResponseFromManualChoice
@@ -236,83 +272,13 @@ jinja2Macros:
 state:
   cicdContextDataId: context-data-id-1
   cicdContextName: stage
-  key1: valuechanged
-  templateTest: '{{tmplctx.prop1}}'
-  key2: value2
-  fileBody:
-    dog: beagle
-    bark:
-      quality: high
-      volume: loud
-  testList:
-  - a
-  testSet:
-  - a
-  - b
-  - c
-  - d
-  testHeader2Value: myvalueforheader2
-  triggerAutoArg1: dummyVal
-  postedData:
-    '49253':
-      body:
-        message: This is basicMacro! msg = testEventFired!!! yes...
-      headers:
-        userAgent: python-requests/2.24.0
-    '51967':
-      body:
-        message: This is basicMacro! msg = build is successful
-      headers:
-        userAgent: python-requests/2.24.0
-    '91910':
-      body:
-        message: Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle"
-          }
-      headers:
-        userAgent: python-requests/2.24.0
-  lastPostedDataRandomId: '91910'
-  lastPostedToNotifyChannel: stage
-  lastPostedHttpResponse: '{"args": {}, "data": {"channel": "stage", "message": "This
-    is basicMacro! msg = build is successful", "randomId": "51967"}, "files": {},
-    "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization":
-    "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type":
-    "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0",
-    "x-amzn-trace-id": "Root=1-5f778667-2decc4055205c57d089d89d3", "x-forwarded-port":
-    "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message":
-    "This is basicMacro! msg = build is successful", "randomId": "51967"}, "url":
-    "https://postman-echo.com/post"}'
-  choiceGeneratorItems:
-    item1:
-      name: item-one
-      description: item1 desc
-    item2:
-      name: item-two
-      description: item2 desc
-    item3:
-      name: item-three
-      description: item3 desc
-  lastPostedHttpResponseFromManualChoice: '{"args": {}, "data": {"channel": "stage",
-    "randomId": "14044", "choices": [{"header": "Choice group one:", "options": [{"value":
-    "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header": "item-one",
-    "options": [{"value": "item-one item1 desc", "text": "item-one"}, {"value": "item-one
-    item1 desc", "text": "item-one"}]}, {"header": "item-two", "options": [{"value":
-    "item-two item2 desc", "text": "item-two"}, {"value": "item-two item2 desc", "text":
-    "item-two"}]}, {"header": "item-three", "options": [{"value": "item-three item3
-    desc", "text": "item-three"}, {"value": "item-three item3 desc", "text": "item-three"}]}]},
-    "files": {}, "form": {}, "headers": {"x-forwarded-proto": "https", "x-forwarded-port":
-    "443", "host": "postman-echo.com", "x-amzn-trace-id": "Root=1-5f77866b-524f4cc1201f0c4d56a165c3",
-    "content-length": "1955", "user-agent": "python-requests/2.24.0", "accept-encoding":
-    "gzip, deflate", "accept": "*/*", "content-type": "application/json; charset=UTF-8",
-    "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache"}, "json": {"channel":
-    "stage", "randomId": "14044", "choices": [{"header": "Choice group one:", "options":
-    [{"value": "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header":
-    "item-one", "options": [{"value": "item-one item1 desc", "text": "item-one"},
-    {"value": "item-one item1 desc", "text": "item-one"}]}, {"header": "item-two",
-    "options": [{"value": "item-two item2 desc", "text": "item-two"}, {"value": "item-two
-    item2 desc", "text": "item-two"}]}, {"header": "item-three", "options": [{"value":
-    "item-three item3 desc", "text": "item-three"}, {"value": "item-three item3 desc",
-    "text": "item-three"}]}]}, "url": "https://postman-echo.com/post"}'
-  lastPostedNotifyMessage: This is basicMacro! msg = build is successful
+  key1: value1
+  gitTag: myapp-alpine-1.5.9
+  gitAppName: my-application
+  build:
+    targetImageName: my-application
+    generateDockerfileCmd: "./gendockerfile.sh \\\n    -f alpine:latest \\\n    -x\
+      \ myapp-alpine-1.5.9"
 variables:
   baseVar1: baseVarVal1
   myVar1: test
