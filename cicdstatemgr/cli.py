@@ -315,7 +315,8 @@ class CicdStateMgrCli():
 
                 # ok, do a get operation
                 val = cicdStateMgr.get_value(getArgs.cicdContextDataId, getArgs.expression, getArgs.tmplCtxVars)
-                print(val)
+                if val:
+                    print(val)
 
             # handle --generate
             elif args.generate:

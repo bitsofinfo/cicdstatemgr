@@ -1,3 +1,6 @@
+# 1.2.2
+* Do not emit `None` on `--get` if value returned is `None` (null, not found etc)
+  
 # 1.2.1
 * Ensure `--tmpl-ctx-var` can be used in combination w/ `--generate`
   
