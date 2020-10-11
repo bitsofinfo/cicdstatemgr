@@ -200,7 +200,7 @@ class CicdStateMgrCli():
         if not cicdContextDataId:
             raise Exception("USAGE: --id <cicdContextDataId> required or set env var CICDSTATEMGR_CONTEXT_DATA_ID")
 
-        return GenerateArgs(cicdContextDataId,args.generate)
+        return GenerateArgs(cicdContextDataId,args.generate,args.tmpl_ctx_var)
 
     def get_handle_event_arg_vals_to_set(self,args) -> dict:
 
@@ -322,7 +322,7 @@ class CicdStateMgrCli():
                 generateArgs:GenerateArgs = self.cli_consume_generate_args(args)
 
                 # ok, do generate operation
-                cicdStateMgr.generate(generateArgs.cicdContextDataId, generateArgs.generatorKeyPath)
+                cicdStateMgr.generate(generateArgs.cicdContextDataId, generateArgs.generatorKeyPath, generateArgs.tmplCtxVars)
 
             # handle --handle-event
             elif args.handle_event:

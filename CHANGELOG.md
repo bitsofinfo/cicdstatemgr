@@ -1,3 +1,6 @@
+# 1.2.1
+* Ensure `--tmpl-ctx-var` can be used in combination w/ `--generate`
+  
 # 1.2.0
 * Support for new `generators` capability and `--generate` argument to the CLI. https://github.com/bitsofinfo/cicdstatemgr/issues/9
 

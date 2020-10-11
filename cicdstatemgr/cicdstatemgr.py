@@ -106,10 +106,12 @@ class GenerateArgs():
 
     cicdContextDataId:str = None
     generatorKeyPath:str = None
+    tmplCtxVars:list = None
 
-    def __init__(self, cicdContextDataId, generatorKeyPath):
+    def __init__(self, cicdContextDataId, generatorKeyPath, tmplCtxVars):
         self.cicdContextDataId = cicdContextDataId
         self.generatorKeyPath = generatorKeyPath
+        self.tmplCtxVars = tmplCtxVars
 
 class HandleEventArgs():
 
@@ -323,7 +325,7 @@ class CicdStateMgr():
 
         return cicdContextData
 
-    def generate(self, cicdContextDataId:str, generatorKeyPath:str):
+    def generate(self, cicdContextDataId:str, generatorKeyPath:str, tmplCtxVars:list):
         cicdContextData = self.get_cicd_context_data(cicdContextDataId)
         
         logging.debug("generate() attempting to invoke generator at: {}".format(generatorKeyPath))
@@ -344,7 +346,7 @@ class CicdStateMgr():
 
             logging.debug("generate() processing generator item: {}".format(generatorItemName))
 
-            templateContext = self.create_custom_template_context('generator',generatorItemConfig,cicdContextData,None)
+            templateContext = self.create_custom_template_context('generator',generatorItemConfig,cicdContextData,tmplCtxVars)
 
             # if we didn't get a value back, exit quick (note blankOnError=True)
             if 'if' in generatorItemConfig and not self.parse_template(generatorItemConfig.get('if'),templateContext,blankOnError=True).strip():

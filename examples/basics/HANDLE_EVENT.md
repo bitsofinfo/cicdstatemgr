@@ -55,6 +55,8 @@ notify: <contents of the notify config stanza>
 
 This context object is then evaluated against the `jinja2` template located in the `--config` file at the `templates.notify` location
 
+The left hand side of the value in `--tmpl-ctx-var` is just an arbitrary KV pair that will be added to the `jinja2` context used in the parsing of templates used by `--handle-event`, and the right hand side of the `--tmpl-ctx-var` can either be a literal value or a `jsonpath` expression referencing any other variable in the `cicdContextData`
+
 The result of that evaluation is then sent as a JSON body over an HTTP(s) `POST` to the `--config` file's configured `slack.url`
 
 The HTTP response from the `POST` (if JSON) is then passed to another `jinja2` evaluation against the rules defined in the `--config` file's `notify.auto-capture-response-data` section as well as the optional `notify.capture-response-data`. This creates a `jinja2` context which is the `cicdContextData` object PLUS the following keys:

@@ -32,6 +32,8 @@ Whenever you call `--generate <pathToNamedGenerator>` the named generator will b
 
 The `generators` feature can be used to pre-define possible values to be set into the `cicdContextData` at some point in the future, based on the current state in the `cicdContextData` when the `--generate <path>` command is invoked.
 
+The `--tmpl-ctx-var` argument can be used w/ `--generate` as well. The left hand side of the value in `--tmpl-ctx-var` is just an arbitrary KV pair that will be added to the `jinja2` context used in the parsing of templates used by `--generate`, and the right hand side of the `--tmpl-ctx-var` can either be a literal value or a `jsonpath` expression referencing any other variable in the `cicdContextData`
+
 This assumes you've already run [INIT_NEW](INIT_NEW.md)
 
 This example is using the `generators` defined in the example [app.yaml](app.yaml)
@@ -52,6 +54,8 @@ cicdstatemgr \
     --config config.yaml  \
     --secrets secrets.yaml \
     --id "context-data-id-1" \
+    --tmpl-ctx-var "ctx.var1=v1val" \
+    --tmpl-ctx-var "ctx.var2=v2val" \
     --generate pipelines.build.generators.dockerfile
 ```
 
@@ -63,7 +67,7 @@ cicdstatemgr \
     --id "context-data-id-1" \
     --get state.build.dockerfileInfo.generateDockerfileCmd
 
-./gendockerfile.sh -f alpine:latest -x myapp-alpine-1.5.9
+./gendockerfile.sh -f alpine:latest -x myapp-alpine-1.5.9 -z v1val -q v2val
 ```
 
 Let's change some variables via `--set`:
@@ -82,6 +86,8 @@ cicdstatemgr \
     --config config.yaml  \
     --secrets secrets.yaml \
     --id "context-data-id-1" \
+    --tmpl-ctx-var "ctx.var1=v1val" \
+    --tmpl-ctx-var "ctx.var2=v2val" \
     --generate pipelines.build.generators.dockerfile
 ```
 
@@ -93,5 +99,5 @@ cicdstatemgr \
     --id "context-data-id-1" \
     --get state.build.dockerfileInfo.generateDockerfileCmd
 
-./gendockerfile.sh -f centos:latest -x myapp-centos-1.5.9
+./gendockerfile.sh -f centos:latest -x myapp-centos-1.5.9 -z v1val -q v2val
 ```

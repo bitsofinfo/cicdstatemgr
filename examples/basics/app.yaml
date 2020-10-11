@@ -39,7 +39,7 @@ cicd-contexts:
                   value: "{{state.gitAppName}}"
                 - key: "state.build.dockerfileInfo.generateDockerfileCmd"
                   value: |
-                    ./gendockerfile.sh -f alpine:latest -x {{state.gitTag}} 
+                    ./gendockerfile.sh -f alpine:latest -x {{state.gitTag}} -z {{ctx.var1}} -q {{ctx.var2}}
 
             # here is one generatorConfig named "centos"        
             centos:
@@ -53,7 +53,7 @@ cicd-contexts:
                   value: "{{state.gitAppName}}"
                 - key: "state.build.dockerfileInfo.generateDockerfileCmd"
                   value: |
-                    ./gendockerfile.sh -f centos:latest -x {{state.gitTag}} 
+                    ./gendockerfile.sh -f centos:latest -x {{state.gitTag}} -z {{ctx.var1}} -q {{ctx.var2}}
 
 
         event-handlers:
