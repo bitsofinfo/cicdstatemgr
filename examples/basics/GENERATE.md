@@ -2,13 +2,39 @@
 
 *NOTE: see the functioning [scripts in the test/ directory](test/) for commands that match what is described in this doc*
 
-This demonstrates the usage of `--generate` which provides a way to fetch any value from the `cicdContextData`. The key feature of `--get` is that the raw value will be evaluated as a `jinja2` template. This permits you to define templates in your `cicdContextData` that refer to any variables, including short lived variables that you can define via the `--tmpl-ctx-data` attribute that will be made available in the `jinja2` context when the `--get` rendering occurs.
+This demonstrates the usage of `--generate` which provides a way pre-define data to be generated into the `cicdContextData` on demand at some point in the future. A `generator` is simply a key within an app pipeline config file (like [app.yaml](app.yaml)) that contains one or more `generator configs` defined as:
 
-Its important to note that the you can still `--get` any literal value, the values can optionally contain `jinja2` syntax.
+```
+...
+generators: 
+    # an arbitrarily named "generator" which
+    # contains one or more generator configs
+    <generatorName>: 
+
+        # a generator config, this can be
+        # named anything you want
+        <generatorConfigName>:  
+
+            # an optional 'if' condition (jinja2 tmpl) 
+            # which if yields a non blank result lets
+            # the `set:` items to be set into the cicdContextData
+            if: "<jinja2 tmpl>"
+
+            # the key paths and values that will be evaluated
+            # and set into the cicdContextData if the condition
+            # above passes (or is not specified aat all)
+            set:
+            - key: "path.to.targetkey (will be jinja2 evaluated)"
+              value: "value to be set @key, (will be jinja2 evaluated)"
+```
+
+Whenever you call `--generate <pathToNamedGenerator>` the named generator will be looked up at the given `<pathToNamedGenerator>`; for each sub-key within it (i.e. named generatorConfigs), each one will have it's optional `if` evaluated (if it exists); and then each `set` stanza will have its `key/value` evaluated and the resulting `value` will be written into the `cicdContextData`
+
+The `generators` feature can be used to pre-define possible values to be set into the `cicdContextData` at some point in the future, based on the current state in the `cicdContextData` when the `--generate <path>` command is invoked.
 
 This assumes you've already run [INIT_NEW](INIT_NEW.md)
 
-Whenever you call `--get` the `cicdContextData` that is loaded will be fetched from any non-primary stores first (i.e. disk files) and then only fetched from a primary store as a last resort if data does not exist in non-primary stores already. See [config.yaml](config.yaml)
+This example is using the `generators` defined in the example [app.yaml](app.yaml)
 
 Let's ensure the following value exists via `--set`:
 ```
@@ -27,95 +53,45 @@ cicdstatemgr \
     --secrets secrets.yaml \
     --id "context-data-id-1" \
     --generate pipelines.build.generators.dockerfile
-
-value1
 ```
 
-Lets create a little template in our `state` called `templateTest`
+Now lets `--get` the value the generator writes to:
 ```
 cicdstatemgr \
     --config config.yaml  \
     --secrets secrets.yaml \
     --id "context-data-id-1" \
-    --set 'state.templateTest={{tmplctx.prop1}}'
+    --get state.build.dockerfileInfo.generateDockerfileCmd
+
+./gendockerfile.sh -f alpine:latest -x myapp-alpine-1.5.9
 ```
 
-Lets use `--get`'s functionality to render a template on a `--get` call by passing one or more `--tmpl-ctx-var` that the template references. The left hand side of the value in `--tmpl-ctx-var` is just an arbitrary KV pair that will be added to the `jinja2` context used in the parsing of the value retrieved by `--get`, and the right hand side of the `--tmpl-ctx-var` can either be a literal value or a `jsonpath` expression referencing any other variable in the `cicdContextData`:
-```
-cicdstatemgr \
-    --config config.yaml  \
-    --secrets secrets.yaml \
-    --id "context-data-id-1" \
-    --get "state.templateTest" \
-    --tmpl-ctx-var tmplctx.prop1=state.key1
-
-value1
-```
-
-Ok, lets change the value referenced in the `state.templateTest` value:
+Let's change some variables via `--set`:
 ```
 cicdstatemgr \
     --config config.yaml  \
     --secrets secrets.yaml \
     --id "context-data-id-1" \
-    --set "state.key1=yet a new value"
+    --set "state.gitTag=myapp-centos-1.5.9" \
+    --set "state.gitAppName=my-application"
 ```
 
-Lets `--get` the template again:
-```
-cicdstatemgr \
-    --config config.yaml  \
-    --secrets secrets.yaml \
-    --id "context-data-id-1" \
-    --get "state.templateTest" \
-    --tmpl-ctx-var tmplctx.prop1=state.key1
-
-yet a new value
-```
-
-We can also just use `--get` in combination with `--tmpl-ctx-var` where the right hand side of `--tmpl-ctx-var` is just a string literal:
+re-run the generator that consumes these values:
 ```
 cicdstatemgr \
     --config config.yaml  \
     --secrets secrets.yaml \
     --id "context-data-id-1" \
-    --get "state.templateTest" \
-    --tmpl-ctx-var tmplctx.prop1=just-a-literal-value
-
-just-a-literal-value
+    --generate pipelines.build.generators.dockerfile
 ```
 
-If we `--get` the templated value, but without the `--tmpl-ctx-data`, we will get a normal `jinja2` error
+Now lets `--get` the value the generator writes to again, note its different:
 ```
 cicdstatemgr \
     --config config.yaml  \
     --secrets secrets.yaml \
     --id "context-data-id-1" \
-    --get "state.templateTest" 
+    --get state.build.dockerfileInfo.generateDockerfileCmd
 
-...
-2020-08-02 20:23:16,083 - root - DEBUG - get_value() attempting to get: state.templateTest
-2020-08-02 20:23:16,104 - root - ERROR - parse_template() template = {{tmplctx.prop1}} error: (<class 'jinja2.exceptions.UndefinedError'>, UndefinedError("'tmplctx' is undefined"))
-<jinja2 parse error>
-```
-
-
-And as always, you can just use `--get` to just get a value where the raw value is not a jinja2 template:
-```
-cicdstatemgr \
-    --config config.yaml  \
-    --secrets secrets.yaml \
-    --id "context-data-id-1" \
-    --get "state.key1"
-
-yet a new value
-```
-
-You can also just assign it to a variable:
-```
-FETCHED_VALUE=$(cicdstatemgr --config config.yaml  --secrets secrets.yaml --id "context-data-id-1" --get "state.key1")
-
-echo $FETCHED_VALUE
-
-yet a new value
+./gendockerfile.sh -f centos:latest -x myapp-centos-1.5.9
 ```

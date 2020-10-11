@@ -77,6 +77,10 @@ Next lets `--set` some values into the context data by using the [--set argument
 
 Next lets `--load` the context data for usage via [--load argument](LOAD.md)
 
+## --generate
+
+Next lets `--generate`  pre-defined content into the `cicdContextData` based on evaluating current state via the [--generate argument](GENERATE.md)
+
 ## --handle-event
 
 Finally lets play with the `--handle-event` option to fire off HTTP POSTs to endpoints and automatically set values etc via the [--handle-event argument](HANDLE_EVENT.md)

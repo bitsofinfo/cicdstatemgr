@@ -19,29 +19,41 @@ cicd-contexts:
     pipelines:
       build:
 
+        #
+        # Example of "generators" for --generate
+        #
         generators:
+
+          # here is a "generator" named "dockerfile"
           dockerfile:
+
+            # here is one generatorConfig named "alpine"
             alpine:
+
+              # our optional condition that if yields non-blank
+              # will cause all K/Vs in 'set' to be written into
+              # cicdContextData
               if: "{%- if 'alpine' in state.gitTag -%}true{%- endif -%}"
               set:
-                - key: "state.build.targetImageName"
+                - key: "state.build.dockerfileInfo.targetImageName"
                   value: "{{state.gitAppName}}"
-                - key: "state.build.generateDockerfileCmd"
+                - key: "state.build.dockerfileInfo.generateDockerfileCmd"
                   value: |
-                    ./gendockerfile.sh \
-                        -f alpine:latest \
-                        -x {{state.gitTag}} 
-                        
+                    ./gendockerfile.sh -f alpine:latest -x {{state.gitTag}} 
+
+            # here is one generatorConfig named "centos"        
             centos:
+
+              # our optional condition that if yields non-blank
+              # will cause all K/Vs in 'set' to be written into
+              # cicdContextData
               if: "{%- if 'centos' in state.gitTag -%}true{%- endif -%}"
               set:
-                - key: "state.build.targetImageName"
+                - key: "state.build.dockerfileInfo.targetImageName"
                   value: "{{state.gitAppName}}"
-                - key: "state.build.generateDockerfileCmd"
+                - key: "state.build.dockerfileInfo.generateDockerfileCmd"
                   value: |
-                    ./gendockerfile.sh \
-                        -f centos:latest \
-                        -x {{state.gitTag}} 
+                    ./gendockerfile.sh -f centos:latest -x {{state.gitTag}} 
 
 
         event-handlers:

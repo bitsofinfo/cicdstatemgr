@@ -4,21 +4,16 @@ CICD_pipelines__start__event_handlers__some_event__notify__message="{{ basicMacr
 CICD_pipelines__test__event_handlers__another_event__notify__message="{{ basicMacro('another-event fired in the test pipeline') }}
 "
 CICD_pipelines__build__generators__dockerfile__alpine__if="{%- if 'alpine' in state.gitTag -%}true{%- endif -%}"
-CICD_pipelines__build__generators__dockerfile__alpine__set__0__key="state.build.targetImageName"
+CICD_pipelines__build__generators__dockerfile__alpine__set__0__key="state.build.dockerfileInfo.targetImageName"
 CICD_pipelines__build__generators__dockerfile__alpine__set__0__value="{{state.gitAppName}}"
-CICD_pipelines__build__generators__dockerfile__alpine__set__1__key="state.build.generateDockerfileCmd"
-CICD_pipelines__build__generators__dockerfile__alpine__set__1__value="./gendockerfile.sh \
-    -f alpine:latest \
-    -x {{state.gitTag}} 
-    
+CICD_pipelines__build__generators__dockerfile__alpine__set__1__key="state.build.dockerfileInfo.generateDockerfileCmd"
+CICD_pipelines__build__generators__dockerfile__alpine__set__1__value="./gendockerfile.sh -f alpine:latest -x {{state.gitTag}} 
 "
 CICD_pipelines__build__generators__dockerfile__centos__if="{%- if 'centos' in state.gitTag -%}true{%- endif -%}"
-CICD_pipelines__build__generators__dockerfile__centos__set__0__key="state.build.targetImageName"
+CICD_pipelines__build__generators__dockerfile__centos__set__0__key="state.build.dockerfileInfo.targetImageName"
 CICD_pipelines__build__generators__dockerfile__centos__set__0__value="{{state.gitAppName}}"
-CICD_pipelines__build__generators__dockerfile__centos__set__1__key="state.build.generateDockerfileCmd"
-CICD_pipelines__build__generators__dockerfile__centos__set__1__value="./gendockerfile.sh \
-    -f centos:latest \
-    -x {{state.gitTag}} 
+CICD_pipelines__build__generators__dockerfile__centos__set__1__key="state.build.dockerfileInfo.generateDockerfileCmd"
+CICD_pipelines__build__generators__dockerfile__centos__set__1__value="./gendockerfile.sh -f centos:latest -x {{state.gitTag}} 
 "
 CICD_pipelines__build__event_handlers__testEvent__notify__message="{{ basicMacro('testEventFired!!! yes...') }}
 "
@@ -71,21 +66,16 @@ CICD_appPipelinesConfig__jinja2_macros__helloWorld="{%- macro helloWorld(msg) -%
 CICD_appPipelinesConfig__variables__myVar1="test"
 CICD_appPipelinesConfig__cicd_contexts__stage__channel="stage"
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__alpine__if="{%- if 'alpine' in state.gitTag -%}true{%- endif -%}"
-CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__alpine__set__0__key="state.build.targetImageName"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__alpine__set__0__key="state.build.dockerfileInfo.targetImageName"
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__alpine__set__0__value="{{state.gitAppName}}"
-CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__alpine__set__1__key="state.build.generateDockerfileCmd"
-CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__alpine__set__1__value="./gendockerfile.sh \
-    -f alpine:latest \
-    -x {{state.gitTag}} 
-    
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__alpine__set__1__key="state.build.dockerfileInfo.generateDockerfileCmd"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__alpine__set__1__value="./gendockerfile.sh -f alpine:latest -x {{state.gitTag}} 
 "
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__centos__if="{%- if 'centos' in state.gitTag -%}true{%- endif -%}"
-CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__centos__set__0__key="state.build.targetImageName"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__centos__set__0__key="state.build.dockerfileInfo.targetImageName"
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__centos__set__0__value="{{state.gitAppName}}"
-CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__centos__set__1__key="state.build.generateDockerfileCmd"
-CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__centos__set__1__value="./gendockerfile.sh \
-    -f centos:latest \
-    -x {{state.gitTag}} 
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__centos__set__1__key="state.build.dockerfileInfo.generateDockerfileCmd"
+CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__generators__dockerfile__centos__set__1__value="./gendockerfile.sh -f centos:latest -x {{state.gitTag}} 
 "
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__build__event_handlers__testEvent__notify__message="{{ basicMacro('testEventFired!!! yes...') }}
 "
@@ -132,12 +122,39 @@ CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers_
 CICD_appPipelinesConfig__cicd_contexts__stage__pipelines__test2__event_handlers__blah_event__manual_choice__choices__choiceGroup1__options__1__value="c2"
 CICD_state__cicdContextDataId="context-data-id-1"
 CICD_state__cicdContextName="stage"
-CICD_state__key1="value1"
-CICD_state__gitTag="myapp-alpine-1.5.9"
+CICD_state__key1="valuechanged"
+CICD_state__templateTest="{{tmplctx.prop1}}"
+CICD_state__key2="value2"
+CICD_state__fileBody__dog="beagle"
+CICD_state__fileBody__bark__quality="high"
+CICD_state__fileBody__bark__volume="loud"
+CICD_state__testList__0="a"
+CICD_state__testSet__0="a"
+CICD_state__testSet__1="b"
+CICD_state__testSet__2="c"
+CICD_state__testSet__3="d"
+CICD_state__testHeader2Value="myvalueforheader2"
+CICD_state__triggerAutoArg1="dummyVal"
+CICD_state__postedData__18141__body__message="This is basicMacro! msg = testEventFired!!! yes..."
+CICD_state__postedData__18141__headers__userAgent="python-requests/2.24.0"
+CICD_state__postedData__24619__body__message="This is basicMacro! msg = build is successful"
+CICD_state__postedData__24619__headers__userAgent="python-requests/2.24.0"
+CICD_state__postedData__12006__body__message="Here is some JSON from c:\windowspath\test and "quotes" { "dog":"beagle" }"
+CICD_state__postedData__12006__headers__userAgent="python-requests/2.24.0"
+CICD_state__lastPostedDataRandomId="12006"
+CICD_state__lastPostedToNotifyChannel="stage"
+CICD_state__lastPostedHttpResponse="{"args": {}, "data": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "24619"}, "files": {}, "form": {}, "headers": {"accept": "*/*", "accept-encoding": "gzip, deflate", "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache", "content-length": "103", "content-type": "application/json; charset=UTF-8", "host": "postman-echo.com", "user-agent": "python-requests/2.24.0", "x-amzn-trace-id": "Root=1-5f834d60-4d1fd864558dec550793d2d6", "x-forwarded-port": "443", "x-forwarded-proto": "https"}, "json": {"channel": "stage", "message": "This is basicMacro! msg = build is successful", "randomId": "24619"}, "url": "https://postman-echo.com/post"}"
+CICD_state__choiceGeneratorItems__item1__name="item-one"
+CICD_state__choiceGeneratorItems__item1__description="item1 desc"
+CICD_state__choiceGeneratorItems__item2__name="item-two"
+CICD_state__choiceGeneratorItems__item2__description="item2 desc"
+CICD_state__choiceGeneratorItems__item3__name="item-three"
+CICD_state__choiceGeneratorItems__item3__description="item3 desc"
+CICD_state__lastPostedHttpResponseFromManualChoice="{"args": {}, "data": {"channel": "stage", "randomId": "42431", "choices": [{"header": "Choice group one:", "options": [{"value": "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header": "item-one", "options": [{"value": "item-one item1 desc", "text": "item-one"}, {"value": "item-one item1 desc", "text": "item-one"}]}, {"header": "item-two", "options": [{"value": "item-two item2 desc", "text": "item-two"}, {"value": "item-two item2 desc", "text": "item-two"}]}, {"header": "item-three", "options": [{"value": "item-three item3 desc", "text": "item-three"}, {"value": "item-three item3 desc", "text": "item-three"}]}]}, "files": {}, "form": {}, "headers": {"x-forwarded-proto": "https", "x-forwarded-port": "443", "host": "postman-echo.com", "x-amzn-trace-id": "Root=1-5f834d63-62eb0d5f32eec81252428d09", "content-length": "1955", "user-agent": "python-requests/2.24.0", "accept-encoding": "gzip, deflate", "accept": "*/*", "content-type": "application/json; charset=UTF-8", "authorization": "Bearer FAKE_TOKEN", "cache-control": "no-cache"}, "json": {"channel": "stage", "randomId": "42431", "choices": [{"header": "Choice group one:", "options": [{"value": "c1", "text": "Choice 1"}, {"value": "c2", "text": "Choice 2"}]}, {"header": "item-one", "options": [{"value": "item-one item1 desc", "text": "item-one"}, {"value": "item-one item1 desc", "text": "item-one"}]}, {"header": "item-two", "options": [{"value": "item-two item2 desc", "text": "item-two"}, {"value": "item-two item2 desc", "text": "item-two"}]}, {"header": "item-three", "options": [{"value": "item-three item3 desc", "text": "item-three"}, {"value": "item-three item3 desc", "text": "item-three"}]}]}, "url": "https://postman-echo.com/post"}"
+CICD_state__lastPostedNotifyMessage="This is basicMacro! msg = build is successful"
+CICD_state__gitTag="myapp-centos-1.5.9"
 CICD_state__gitAppName="my-application"
-CICD_state__build__targetImageName="my-application"
-CICD_state__build__generateDockerfileCmd="./gendockerfile.sh \
-    -f alpine:latest \
-    -x myapp-alpine-1.5.9"
+CICD_state__build__dockerfileInfo__targetImageName="my-application"
+CICD_state__build__dockerfileInfo__generateDockerfileCmd="./gendockerfile.sh -f centos:latest -x myapp-centos-1.5.9"
 CICD_variables__baseVar1="baseVarVal1"
 CICD_variables__myVar1="test"

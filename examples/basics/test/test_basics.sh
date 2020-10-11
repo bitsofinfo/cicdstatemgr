@@ -74,3 +74,6 @@ if [ "$?" != "0" ]; then exit 1; fi
 
 $SCRIPTPATH/handle-event.disable.sh
 if [ "$?" != "0" ]; then exit 1; fi
+
+$SCRIPTPATH/generate.sh
+if [ "$?" != "0" ]; then exit 1; fi
