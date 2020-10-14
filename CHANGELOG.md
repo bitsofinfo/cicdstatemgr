@@ -1,3 +1,6 @@
+# 1.2.4
+* fix `generate` json patch match comparison
+
 # 1.2.3
 * bump `FROM bitsofinfo/cicd-toolbox:3.0.5`
   

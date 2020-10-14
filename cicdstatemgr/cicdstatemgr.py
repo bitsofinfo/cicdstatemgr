@@ -334,7 +334,7 @@ class CicdStateMgr():
 
         match = parsed.find(cicdContextData)
 
-        if match and (len(match) > 1 or len(match) == 0):
+        if not match or len(match) > 1 or len(match) == 0:
             logging.error("generate() generatorKeyPath:{}, the generatorKeyPath yielded nothing OR more than one value... {}".format(generatorKeyPath,match) + \
                 " The generatorKeyPath should only return a single object in the cicdContextData, that contains a 'set[{key=?,value=?},...]' configuration and optional 'if' condition")
             sys.exit(1)
