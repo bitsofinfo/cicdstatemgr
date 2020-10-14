@@ -9,7 +9,7 @@ spec:
     command:
     - bash
     - -c
-    image: bitsofinfo/cicd-toolbox:3.0.4
+    image: bitsofinfo/cicd-toolbox:3.0.5
   params:
   - name: exit-code
 
@@ -26,7 +26,7 @@ spec:
     command:
     - bash
     - -c
-    image: bitsofinfo/cicd-toolbox:3.0.4
+    image: bitsofinfo/cicd-toolbox:3.0.5
   params:
   - name: exit-code
   
@@ -43,7 +43,7 @@ spec:
     - name: operator
     - name: rhs
   check:
-    image: bitsofinfo/cicd-toolbox:3.0.4
+    image: bitsofinfo/cicd-toolbox:3.0.5
     command:
       - /bin/bash
     args:
@@ -66,7 +66,7 @@ spec:
     - name: rhs2
 
   check:
-    image: bitsofinfo/cicd-toolbox:3.0.4
+    image: bitsofinfo/cicd-toolbox:3.0.5
     command:
       - /bin/bash
     args:
@@ -90,7 +90,7 @@ spec:
     - name: rhs2
 
   check:
-    image: bitsofinfo/cicd-toolbox:3.0.4
+    image: bitsofinfo/cicd-toolbox:3.0.5
     command:
       - /bin/bash
     args:
@@ -109,7 +109,7 @@ spec:
   params:
     - name: code
   check:
-    image: bitsofinfo/cicd-toolbox:3.0.4
+    image: bitsofinfo/cicd-toolbox:3.0.5
     command:
     - /usr/local/bin/python
     args:

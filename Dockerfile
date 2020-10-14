@@ -1,4 +1,4 @@
-FROM bitsofinfo/cicd-toolbox:3.0.4
+FROM bitsofinfo/cicd-toolbox:3.0.5
 
 ARG GIT_TAG=master
 

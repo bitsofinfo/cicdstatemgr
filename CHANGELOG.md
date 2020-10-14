@@ -1,3 +1,6 @@
+# 1.2.3
+* bump `FROM bitsofinfo/cicd-toolbox:3.0.5`
+  
 # 1.2.2
 * Do not emit `None` on `--get` if value returned is `None` (null, not found etc)
   

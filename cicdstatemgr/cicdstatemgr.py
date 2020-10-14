@@ -271,7 +271,7 @@ class CicdStateMgr():
         if 'variables' in cicdConfig:
             for v in cicdConfig['variables']:
                 if 'variables' not in cicdContextData:
-                    cicdContextData['variables'] = {}
+                    cicdContextData['variables'] = {}          
                 cicdContextData['variables'][v] = self.parse_template(cicdConfig['variables'][v],cicdContextData)
 
         # handle --handle-event args if passed  (do not persist)
