@@ -83,7 +83,7 @@ spec:
     # STEP kaniko build and push
     #----------------------------------
     - name: build-and-push
-      image: gcr.io/kaniko-project/executor:debug-v0.24.0
+      image: gcr.io/kaniko-project/executor:debug-v1.3.0
       command:
         - /busybox/sh
       args:

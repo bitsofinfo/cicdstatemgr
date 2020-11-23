@@ -1,3 +1,6 @@
+# TBD
+* update `examples/tekton` w/ latest components
+
 # 1.2.4
 * fix `generate` json patch match comparison
 

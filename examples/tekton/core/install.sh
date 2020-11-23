@@ -3,7 +3,7 @@
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 # start (k8s 1.16.x due to minikube dynamic PVC issues)
-minikube start --kubernetes-version v1.16.12 --insecure-registry "10.0.0.0/8" --driver=hyperkit
+minikube start --kubernetes-version v1.18.12 --insecure-registry "10.0.0.0/8" --driver=hyperkit
 minikube addons enable registry
 
 # https://github.com/kameshsampath/minikube-helpers/tree/master/registry
@@ -25,7 +25,7 @@ kubectl create namespace tekton-pipelines
 kubectl config set-context --current --namespace=tekton-pipelines
 
 # install pipelines
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.17.0/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.18.1/release.yaml
 
 # install pipelines customizations (configmaps)
 # - feature-flags 
@@ -33,10 +33,10 @@ kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previou
 kubectl apply -f $SCRIPTPATH/tekton-pipelines-mods.yaml
 
 # install triggers
-kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/previous/v0.8.1/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/previous/v0.9.1/release.yaml
 
 # install dashboard
-kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.10.0/tekton-dashboard-release.yaml
+kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.11.1/tekton-dashboard-release.yaml
 
 # NodePort change
 kubectl apply -f $SCRIPTPATH/tekton-dashboard-mods.yaml
