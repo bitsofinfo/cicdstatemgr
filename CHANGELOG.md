@@ -1,5 +1,6 @@
 # TBD
 * update `examples/tekton` w/ latest components
+* update `examples/tekton` w/ `WhenExpressions` and comment out `Conditions`
 
 # 1.2.4
 * fix `generate` json patch match comparison

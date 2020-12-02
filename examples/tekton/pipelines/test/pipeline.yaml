@@ -118,11 +118,16 @@ spec:
         - name: cicdstatemgr-secrets
           workspace: cicdstatemgr-secrets
 
-      conditions:
-        - conditionRef: exit-code-is-success
-          params:
-            - name: exit-code
-              value: $(tasks.test-invoke.results.last-exit-code)
+      when:
+        - input: "$(tasks.test-invoke.results.last-exit-code)"
+          operator: in
+          values: ["0"]
+
+      #conditions:
+      #  - conditionRef: exit-code-is-success
+      #    params:
+      #      - name: exit-code
+      #        value: $(tasks.test-invoke.results.last-exit-code)
 
       params:
         - name: pipelineRunUid
@@ -151,12 +156,17 @@ spec:
           workspace: cicdstatemgr-configs
         - name: cicdstatemgr-secrets
           workspace: cicdstatemgr-secrets
-          
-      conditions:
-        - conditionRef: exit-code-is-failure
-          params:
-            - name: exit-code
-              value: $(tasks.test-invoke.results.last-exit-code)
+
+      when:
+        - input: "$(tasks.test-invoke.results.last-exit-code)"
+          operator: notin
+          values: ["0"]
+
+      #conditions:
+      #  - conditionRef: exit-code-is-failure
+      #    params:
+      #      - name: exit-code
+      #        value: $(tasks.test-invoke.results.last-exit-code)
 
       params:
         - name: pipelineRunUid
