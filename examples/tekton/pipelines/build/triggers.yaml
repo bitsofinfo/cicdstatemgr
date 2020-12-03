@@ -5,6 +5,10 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: build
+  annotations:
+    # https://tektoncd.slack.com/archives/CKUSJ2A5D/p1606222895139800
+    # https://github.com/tektoncd/triggers/pull/842
+    triggers.tekton.dev/old-escape-quotes: "true"
 spec:
   params:
     - name: cicdContextName
@@ -102,13 +106,13 @@ metadata:
 spec:
   params:
     - name: cicdContextName
-      value: $(body.intercepted.cicdContextName)
+      value: $(extensions.cicdContextName)
     - name: cicdContextDataId
-      value: $(body.intercepted.cicdContextDataId)
+      value: $(extensions.cicdContextDataId)
     - name: gitAppName
-      value: $(body.intercepted.gitAppName)
+      value: $(extensions.gitAppName)
     - name: appTag
-      value: $(body.intercepted.appTag)
+      value: $(extensions.appTag)
     - name: originalRequestBody
       value: $(body)
     - name: gitCloneUrl
@@ -116,14 +120,14 @@ spec:
 
     # for security checks
     - name: invokerUid
-      value: $(body.intercepted.invokerUid)
+      value: $(extensions.invokerUid)
     - name: relatedCicdContextDataId
-      value: $(body.intercepted.relatedCicdContextDataId)
+      value: $(extensions.relatedCicdContextDataId)
     - name: relatedPipelineRunUid
-      value: $(body.intercepted.relatedPipelineRunUid)
+      value: $(extensions.relatedPipelineRunUid)
     - name: relatedPipelineName
-      value: $(body.intercepted.relatedPipelineName)
+      value: $(extensions.relatedPipelineName)
     - name: triggeredBySystem
-      value: $(body.intercepted.triggeredBySystem)
+      value: $(extensions.triggeredBySystem)
     - name: triggeredByDescription
-      value: $(body.intercepted.triggeredByDescription)
+      value: $(extensions.triggeredByDescription)

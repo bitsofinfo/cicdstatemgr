@@ -5,6 +5,10 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: start
+  annotations:
+    # https://tektoncd.slack.com/archives/CKUSJ2A5D/p1606222895139800
+    # https://github.com/tektoncd/triggers/pull/842
+    triggers.tekton.dev/old-escape-quotes: "true"
 spec:
   params:
     - name: cicdContextName
@@ -116,28 +120,28 @@ spec:
       value: dev
 
     - name: invokerUid # the invoking user uid!
-      value: $(body.intercepted.invokedByPrincipalId)
+      value: $(extensions.invokedByPrincipalId)
 
     - name: gitAppName
-      value: $(body.intercepted.gitAppName)
+      value: $(extensions.gitAppName)
 
     - name: appTag
-      value: $(body.intercepted.appTag)
+      value: $(extensions.appTag)
 
     - name: commitId
-      value: $(body.intercepted.commitId)
+      value: $(extensions.commitId)
 
     - name: triggeredBySystem
       value: "github"
 
     - name: triggeredByDescription
-      value: "Github push of git tag $(body.intercepted.gitAppName):$(body.intercepted.appTag)"
+      value: "Github push of git tag $(extensions.gitAppName):$(extensions.appTag)"
 
     - name: originalRequestBody
       value: $(body)
 
     - name: uniqueString
-      value: $(body.intercepted.commitId)
+      value: $(extensions.commitId)
 
     - name: gitCloneUrl
       value: $(body.repository.clone_url)
@@ -153,43 +157,43 @@ spec:
   params:
 
     - name: cicdContextName
-      value: $(body.intercepted.targetCicdContextName)
+      value: $(extensions.targetCicdContextName)
 
     - name: invokerUid 
-      value: "<@$(body.intercepted.slackUserId)>"
+      value: "<@$(extensions.slackUserId)>"
 
     - name: gitAppName
-      value: $(body.intercepted.gitAppName)
+      value: $(extensions.gitAppName)
 
     - name: appTag
-      value: $(body.intercepted.appTag)
+      value: $(extensions.appTag)
 
     - name: commitId
-      value: $(body.intercepted.commitId)
+      value: $(extensions.commitId)
 
     - name: gitCloneUrl
-      value: $(body.intercepted.gitCloneUrl)
+      value: $(extensions.gitCloneUrl)
 
     - name: triggeredBySystem
       value: "slack"
 
     - name: triggeredByDescription
-      value: "Slack button press by <@$(body.intercepted.slackUserId)>"
+      value: "Slack button press by <@$(extensions.slackUserId)>"
 
     - name: relatedCicdContextDataId
-      value: $(body.intercepted.relatedCicdContextDataId)
+      value: $(extensions.relatedCicdContextDataId)
 
     - name: relatedPipelineRunUid
-      value: $(body.intercepted.relatedPipelineRunUid)
+      value: $(extensions.relatedPipelineRunUid)
 
     - name: relatedPipelineName
-      value: $(body.intercepted.relatedPipelineName)
+      value: $(extensions.relatedPipelineName)
 
     - name: originalRequestBody
       value: $(body)
 
     - name: uniqueString
-      value: $(body.intercepted.commitId)
+      value: $(extensions.commitId)
 
 
 ---
@@ -201,28 +205,28 @@ spec:
   params:
 
     - name: cicdContextName
-      value: $(body.intercepted.targetCicdContextName)
+      value: $(extensions.targetCicdContextName)
 
     - name: invokerUid 
-      value: "<@$(body.intercepted.slackUserId)>"
+      value: "<@$(extensions.slackUserId)>"
 
     - name: gitAppName
-      value: $(body.intercepted.gitAppName)
+      value: $(extensions.gitAppName)
 
     - name: appTag
-      value: $(body.intercepted.appTag)
+      value: $(extensions.appTag)
 
     - name: gitCloneUrl
-      value: $(body.intercepted.gitCloneUrl)
+      value: $(extensions.gitCloneUrl)
 
     - name: triggeredBySystem
       value: "slack slash cmd"
 
     - name: triggeredByDescription
-      value: "Slack slash command /start-app-deploy by <@$(body.intercepted.slackUserId)>"
+      value: "Slack slash command /start-app-deploy by <@$(extensions.slackUserId)>"
 
     - name: originalRequestBody
       value: $(body)
 
     - name: uniqueString
-      value: $(body.intercepted.uniqueString)
+      value: $(extensions.uniqueString)

@@ -5,6 +5,10 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: deploy
+  annotations:
+    # https://tektoncd.slack.com/archives/CKUSJ2A5D/p1606222895139800
+    # https://github.com/tektoncd/triggers/pull/842
+    triggers.tekton.dev/old-escape-quotes: "true"
 spec:
   params:
     - name: cicdContextName
@@ -108,16 +112,16 @@ spec:
   params:
 
     - name: cicdContextName
-      value: $(body.intercepted.cicdContextName)
+      value: $(extensions.cicdContextName)
 
     - name: cicdContextDataId
-      value: $(body.intercepted.cicdContextDataId)
+      value: $(extensions.cicdContextDataId)
 
     - name: targetAppName
-      value: $(body.intercepted.targetAppName)
+      value: $(extensions.targetAppName)
 
     - name: targetAppTag
-      value: $(body.intercepted.targetAppTag)
+      value: $(extensions.targetAppTag)
 
     - name: originalRequestBody
       value: $(body)
@@ -127,17 +131,17 @@ spec:
 
     # for security checks
     - name: invokerUid
-      value: $(body.intercepted.invokerUid)
+      value: $(extensions.invokerUid)
     - name: relatedCicdContextDataId
-      value: $(body.intercepted.relatedCicdContextDataId)
+      value: $(extensions.relatedCicdContextDataId)
     - name: relatedPipelineRunUid
-      value: $(body.intercepted.relatedPipelineRunUid)
+      value: $(extensions.relatedPipelineRunUid)
     - name: relatedPipelineName
-      value: $(body.intercepted.relatedPipelineName)
+      value: $(extensions.relatedPipelineName)
     - name: triggeredBySystem
-      value: $(body.intercepted.triggeredBySystem)
+      value: $(extensions.triggeredBySystem)
     - name: triggeredByDescription
-      value: $(body.intercepted.triggeredByDescription)
+      value: $(extensions.triggeredByDescription)
 
 ---
 
@@ -151,35 +155,35 @@ spec:
   params:
 
     - name: cicdContextName
-      value: $(body.intercepted.cicdContextName)
+      value: $(extensions.cicdContextName)
 
     - name: cicdContextDataId
-      value: $(body.intercepted.cicdContextDataId)
+      value: $(extensions.cicdContextDataId)
 
     - name: targetAppName
-      value: $(body.intercepted.targetAppName)
+      value: $(extensions.targetAppName)
 
     - name: targetAppTag
-      value: $(body.intercepted.targetAppTag)
+      value: $(extensions.targetAppTag)
 
     - name: originalRequestBody
       value: $(body)
 
     - name: gitCloneUrl
-      value: $(body.intercepted.gitCloneUrl)
+      value: $(extensions.gitCloneUrl)
 
     # for security checks
     - name: invokerUid
-      value: $(body.intercepted.slackUsername)
+      value: $(extensions.slackUsername)
     - name: relatedCicdContextDataId
-      value: $(body.intercepted.relatedCicdContextDataId)
+      value: $(extensions.relatedCicdContextDataId)
     - name: relatedPipelineRunUid
-      value: $(body.intercepted.relatedPipelineRunUid)
+      value: $(extensions.relatedPipelineRunUid)
     - name: relatedPipelineName
-      value: $(body.intercepted.relatedPipelineName)
+      value: $(extensions.relatedPipelineName)
     - name: triggeredBySystem
       value: 'slack'
     - name: triggeredByDescription
-      value: 'slack button press by <@$(body.intercepted.slackUserId)>'
+      value: 'slack button press by <@$(extensions.slackUserId)>'
 
 ---

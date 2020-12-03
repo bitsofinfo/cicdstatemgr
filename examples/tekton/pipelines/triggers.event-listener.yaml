@@ -28,28 +28,27 @@ spec:
         - cel:
             overlays:
 
-              - key: intercepted.invokedByPrincipalId
+              - key: invokedByPrincipalId
                 expression: "body.pusher.email"
                 
-              - key: intercepted.gitAppName
+              - key: gitAppName
                 expression: "body.repository.name"
 
-              - key: intercepted.appTag
+              - key: appTag
                 expression: "body.ref.split('/')[2]" # refs/tags/9.9.9-1--1-3 | develop etc
 
-              - key: intercepted.commitMsg
+              - key: commitMsg
                 expression: "body.head_commit.message" 
 
-              - key: intercepted.commitId
+              - key: commitId
                 expression: "body.head_commit.id"
 
-              - key: intercepted.cloneUrl
+              - key: cloneUrl
                 expression: "body.repository.clone_url"
 
 
       bindings:
         - ref: start-via-git
-          name: start-via-git
       template:
         name: start
 
@@ -67,34 +66,33 @@ spec:
         - cel:
             overlays:
                 # @see cicdops.yaml trigger.auto-args
-              - key: intercepted.cicdContextDataId
+              - key: cicdContextDataId
                 expression: "body.cicdContextDataId"  
-              - key: intercepted.appName
+              - key: appName
                 expression: "body.appName"  
-              - key: intercepted.appTag
+              - key: appTag
                 expression: "body.appTag" 
-              - key: intercepted.gitAppName
+              - key: gitAppName
                 expression: "body.gitAppName" 
-              - key: intercepted.cicdContextName
+              - key: cicdContextName
                 expression: "body.cicdContextName" 
 
               # for security checks
-              - key: intercepted.invokerUid
+              - key: invokerUid
                 expression: body.invokerUid
-              - key: intercepted.relatedCicdContextDataId
+              - key: relatedCicdContextDataId
                 expression: body.relatedCicdContextDataId
-              - key: intercepted.relatedPipelineRunUid
+              - key: relatedPipelineRunUid
                 expression: body.relatedPipelineRunUid
-              - key: intercepted.relatedPipelineName
+              - key: relatedPipelineName
                 expression: body.relatedPipelineName
-              - key: intercepted.triggeredBySystem
+              - key: triggeredBySystem
                 expression: body.triggeredBySystem
-              - key: intercepted.triggeredByDescription
+              - key: triggeredByDescription
                 expression: body.triggeredByDescription
 
       bindings:
         - ref: build
-          name: build
       template:
         name: build
 
@@ -112,42 +110,41 @@ spec:
             overlays:
 
                 # @see cicdops.yaml trigger.auto-args
-              - key: intercepted.cicdContextDataId
+              - key: cicdContextDataId
                 expression: "body.cicdContextDataId"  
-              - key: intercepted.appName
+              - key: appName
                 expression: "body.appName"  
-              - key: intercepted.appTag
+              - key: appTag
                 expression: "body.appTag" 
-              - key: intercepted.gitAppName
+              - key: gitAppName
                 expression: "body.gitAppName" 
-              - key: intercepted.cicdContextName
+              - key: cicdContextName
                 expression: "body.cicdContextName" 
 
 
                 # see actual obtgpipeline.yaml's
-              - key: intercepted.targetAppName
+              - key: targetAppName
                 expression: "body.targetAppName"
 
-              - key: intercepted.targetAppTag
+              - key: targetAppTag
                 expression: "body.targetAppTag"
 
               # for security checks
-              - key: intercepted.invokerUid
+              - key: invokerUid
                 expression: body.invokerUid
-              - key: intercepted.relatedCicdContextDataId
+              - key: relatedCicdContextDataId
                 expression: body.relatedCicdContextDataId
-              - key: intercepted.relatedPipelineRunUid
+              - key: relatedPipelineRunUid
                 expression: body.relatedPipelineRunUid
-              - key: intercepted.relatedPipelineName
+              - key: relatedPipelineName
                 expression: body.relatedPipelineName
-              - key: intercepted.triggeredBySystem
+              - key: triggeredBySystem
                 expression: body.triggeredBySystem
-              - key: intercepted.triggeredByDescription
+              - key: triggeredByDescription
                 expression: body.triggeredByDescription
 
       bindings:
         - ref: deploy-via-trigger
-          name: deploy-via-trigger
       template:
         name: deploy
 
@@ -165,34 +162,33 @@ spec:
         - cel:
             overlays:
                 # @see cicdops.yaml trigger.auto-args
-              - key: intercepted.cicdContextDataId
+              - key: cicdContextDataId
                 expression: "body.cicdContextDataId"  
-              - key: intercepted.appName
+              - key: appName
                 expression: "body.appName"  
-              - key: intercepted.appTag
+              - key: appTag
                 expression: "body.appTag" 
-              - key: intercepted.gitAppName
+              - key: gitAppName
                 expression: "body.gitAppName" 
-              - key: intercepted.cicdContextName
+              - key: cicdContextName
                 expression: "body.cicdContextName" 
 
               # for security checks
-              - key: intercepted.invokerUid
+              - key: invokerUid
                 expression: body.invokerUid
-              - key: intercepted.relatedCicdContextDataId
+              - key: relatedCicdContextDataId
                 expression: body.relatedCicdContextDataId
-              - key: intercepted.relatedPipelineRunUid
+              - key: relatedPipelineRunUid
                 expression: body.relatedPipelineRunUid
-              - key: intercepted.relatedPipelineName
+              - key: relatedPipelineName
                 expression: body.relatedPipelineName
-              - key: intercepted.triggeredBySystem
+              - key: triggeredBySystem
                 expression: body.triggeredBySystem
-              - key: intercepted.triggeredByDescription
+              - key: triggeredByDescription
                 expression: body.triggeredByDescription
 
       bindings:
         - ref: validate
-          name: validate
       template:
         name: validate
 
@@ -211,34 +207,33 @@ spec:
             overlays:
             
                 # @see cicdops.yaml trigger.auto-args
-              - key: intercepted.cicdContextDataId
+              - key: cicdContextDataId
                 expression: "body.cicdContextDataId"  
-              - key: intercepted.appName
+              - key: appName
                 expression: "body.appName"  
-              - key: intercepted.appTag
+              - key: appTag
                 expression: "body.appTag" 
-              - key: intercepted.gitAppName
+              - key: gitAppName
                 expression: "body.gitAppName" 
-              - key: intercepted.cicdContextName
+              - key: cicdContextName
                 expression: "body.cicdContextName" 
 
               # for security checks
-              - key: intercepted.invokerUid
+              - key: invokerUid
                 expression: body.invokerUid
-              - key: intercepted.relatedCicdContextDataId
+              - key: relatedCicdContextDataId
                 expression: body.relatedCicdContextDataId
-              - key: intercepted.relatedPipelineRunUid
+              - key: relatedPipelineRunUid
                 expression: body.relatedPipelineRunUid
-              - key: intercepted.relatedPipelineName
+              - key: relatedPipelineName
                 expression: body.relatedPipelineName
-              - key: intercepted.triggeredBySystem
+              - key: triggeredBySystem
                 expression: body.triggeredBySystem
-              - key: intercepted.triggeredByDescription
+              - key: triggeredByDescription
                 expression: body.triggeredByDescription
 
       bindings:
         - ref: test
-          name: test
       template:
         name: test
 
@@ -269,57 +264,56 @@ spec:
                # action_values[item] are in format:
                # changeContext-[version]-[appName]|[b64 encoded JSON payload]
            
-              - key: intercepted.targetCicdContextName
+              - key: targetCicdContextName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetCicdContextName"  
 
-              - key: intercepted.gitAppName
+              - key: gitAppName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitAppName"  
 
-              - key: intercepted.relatedCicdContextDataId
+              - key: relatedCicdContextDataId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"  
               
-              - key: intercepted.relatedPipelineRunUid
+              - key: relatedPipelineRunUid
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineRunUid"
 
-              - key: intercepted.relatedPipelineName
+              - key: relatedPipelineName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineName"
 
-              - key: intercepted.appName
+              - key: appName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().appName"
 
-              - key: intercepted.appTag
+              - key: appTag
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().appTag"
 
-              - key: intercepted.cicdVersion
+              - key: cicdVersion
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdVersion"
 
-              - key: intercepted.commitId
+              - key: commitId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().commitId"
           
-              - key: intercepted.gitCloneUrl
+              - key: gitCloneUrl
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitCloneUrl"
 
-              - key: intercepted.slackUserFullName
+              - key: slackUserFullName
                 expression: "body.user.name"
 
-              - key: intercepted.slackUsername
+              - key: slackUsername
                 expression: "body.user.username"
 
-              - key: intercepted.slackUserId
+              - key: slackUserId
                 expression: "body.user.id"
 
-              - key: intercepted.slackChannelId
+              - key: slackChannelId
                 expression: "body.channel.id"
 
-              - key: intercepted.slackMessageTs
+              - key: slackMessageTs
                 expression: "body.message.ts"
 
-              - key: intercepted.slackThreadTs
+              - key: slackThreadTs
                 expression: "body.container.thread_ts"
 
       bindings:
         - ref: start-via-change-context
-          name: start-via-change-context
       template:
         name: start
 
@@ -353,51 +347,50 @@ spec:
                # action_values[item] are in format:
                # deploy-[version]-[appName]|[b64 encoded JSON payload]
 
-              - key: intercepted.cicdContextName
+              - key: cicdContextName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"  
               
-              - key: intercepted.cicdContextDataId
+              - key: cicdContextDataId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"  
               
-              - key: intercepted.targetAppName
+              - key: targetAppName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppName"
 
-              - key: intercepted.targetAppTag
+              - key: targetAppTag
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppTag"
 
-              - key: intercepted.gitCloneUrl
+              - key: gitCloneUrl
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitCloneUrl"
 
-              - key: intercepted.relatedCicdContextDataId
+              - key: relatedCicdContextDataId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"  
               
-              - key: intercepted.relatedPipelineRunUid
+              - key: relatedPipelineRunUid
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineRunUid"
 
-              - key: intercepted.relatedPipelineName
+              - key: relatedPipelineName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineName"
 
-              - key: intercepted.slackUserFullName
+              - key: slackUserFullName
                 expression: "body.user.name"
 
-              - key: intercepted.slackUsername
+              - key: slackUsername
                 expression: "body.user.username"
 
-              - key: intercepted.slackUserId
+              - key: slackUserId
                 expression: "body.user.id"
 
-              - key: intercepted.slackChannelId
+              - key: slackChannelId
                 expression: "body.channel.id"
 
-              - key: intercepted.slackMessageTs
+              - key: slackMessageTs
                 expression: "body.message.ts"
 
-              - key: intercepted.slackThreadTs
+              - key: slackThreadTs
                 expression: "body.container.thread_ts"
                 
       bindings:
         - ref: deploy-via-slack
-          name: deploy-via-slack
       template:
         name: deploy
 
@@ -430,51 +423,50 @@ spec:
                # action_values[item] are in format:
                # deploy-[version]-[appName]|[b64 encoded JSON payload]
 
-              - key: intercepted.cicdContextName
+              - key: cicdContextName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"  
               
-              - key: intercepted.cicdContextDataId
+              - key: cicdContextDataId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"  
               
-              - key: intercepted.targetAppName
+              - key: targetAppName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppName"
 
-              - key: intercepted.targetAppTag
+              - key: targetAppTag
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppTag"
 
-              - key: intercepted.gitCloneUrl
+              - key: gitCloneUrl
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitCloneUrl"
 
-              - key: intercepted.relatedCicdContextDataId
+              - key: relatedCicdContextDataId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"  
               
-              - key: intercepted.relatedPipelineRunUid
+              - key: relatedPipelineRunUid
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineRunUid"
 
-              - key: intercepted.relatedPipelineName
+              - key: relatedPipelineName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineName"
 
-              - key: intercepted.slackUserFullName
+              - key: slackUserFullName
                 expression: "body.user.name"
 
-              - key: intercepted.slackUsername
+              - key: slackUsername
                 expression: "body.user.username"
 
-              - key: intercepted.slackUserId
+              - key: slackUserId
                 expression: "body.user.id"
 
-              - key: intercepted.slackChannelId
+              - key: slackChannelId
                 expression: "body.channel.id"
 
-              - key: intercepted.slackMessageTs
+              - key: slackMessageTs
                 expression: "body.message.ts"
 
-              - key: intercepted.slackThreadTs
+              - key: slackThreadTs
                 expression: "body.container.thread_ts"
                 
       bindings:
         - ref: test-via-slack
-          name: test-via-slack
       template:
         name: test
 
@@ -507,51 +499,50 @@ spec:
                # action_values[item] are in format:
                # deploy-[version]-[appName]|[b64 encoded JSON payload]
 
-              - key: intercepted.cicdContextName
+              - key: cicdContextName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"  
               
-              - key: intercepted.cicdContextDataId
+              - key: cicdContextDataId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"  
               
-              - key: intercepted.targetAppName
+              - key: targetAppName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppName"
 
-              - key: intercepted.targetAppTag
+              - key: targetAppTag
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppTag"
 
-              - key: intercepted.gitCloneUrl
+              - key: gitCloneUrl
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitCloneUrl"
 
-              - key: intercepted.relatedCicdContextDataId
+              - key: relatedCicdContextDataId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"  
               
-              - key: intercepted.relatedPipelineRunUid
+              - key: relatedPipelineRunUid
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineRunUid"
 
-              - key: intercepted.relatedPipelineName
+              - key: relatedPipelineName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineName"
 
-              - key: intercepted.slackUserFullName
+              - key: slackUserFullName
                 expression: "body.user.name"
 
-              - key: intercepted.slackUsername
+              - key: slackUsername
                 expression: "body.user.username"
 
-              - key: intercepted.slackUserId
+              - key: slackUserId
                 expression: "body.user.id"
 
-              - key: intercepted.slackChannelId
+              - key: slackChannelId
                 expression: "body.channel.id"
 
-              - key: intercepted.slackMessageTs
+              - key: slackMessageTs
                 expression: "body.message.ts"
 
-              - key: intercepted.slackThreadTs
+              - key: slackThreadTs
                 expression: "body.container.thread_ts"
                 
       bindings:
         - ref: validate-via-slack
-          name: validate-via-slack
       template:
         name: validate
 
@@ -580,26 +571,25 @@ spec:
 
         - cel:
             overlays:
-              - key: intercepted.targetCicdContextName
+              - key: targetCicdContextName
                 expression: "body.text.split(' ')[0]"  
 
-              - key: intercepted.gitAppName
+              - key: gitAppName
                 expression: "body.text.split(' ')[1]"  
 
-              - key: intercepted.gitCloneUrl
+              - key: gitCloneUrl
                 expression: "body.text.split(' ')[2]"  
 
-              - key: intercepted.appTag
+              - key: appTag
                 expression: "body.text.split(' ')[3]"
 
-              - key: intercepted.slackUserId
+              - key: slackUserId
                 expression: "body.user_id"
 
-              - key: intercepted.uniqueString
+              - key: uniqueString
                 expression: "body.trigger_id.split('.')[2]"
 
       bindings:
         - ref: start-via-cmd-startdeploy
-          name: start-via-cmd-startdeploy
       template:
         name: start
