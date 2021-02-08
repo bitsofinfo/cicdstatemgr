@@ -65,7 +65,7 @@ spec:
         echo
         
     - name: trivy-scan
-      image: docker.io/aquasec/trivy:0.13.0
+      image: docker.io/aquasec/trivy:0.16.0
       command:
         - /bin/ash
       args:
