@@ -18,10 +18,7 @@ env:
   DOCKERHUB_TOKEN:
     secure: p7yQ6sWvT9Ui7ltNDmuEOmw6clJaWCL0QuPMLO5RUwpXllOIogoxAK/2sA6mcv4B+OdLfsHugrPfxPPSfCP2o41Tp1tKqwJniQCWu4KfMZtK47hEAg4f0fKVfv/TRRidfSjpeLpUFXEK+yk7ESz5rBNkwxGNeYCu02sFK/ZP5v1Qi1sXLvcXi7N6YRaJF1ST0LzSHjceDqnkgUkqf6aPctVA7/RKu1sfvG2TpH+T7i1i75C/rnKDst1QwL98H58HeDVIb+28HR7+1LatDDt2fV0z0ybNdmHXu+KN7rUZkEIPCwKJImYhQfltMl6CJb5uJejd9i+K8YrguRaEKje48bxUUSs+7SNnjV0Fe66FKM3ueelz2pxC35uQ1+TkOfXZf8NMcJcfAOPtkxJYXSbs0V+V2MUsmflJlyhnOppiP4VI+4JZAUkPNE4EXql/R5qA6paL/JTEkGw/j0ERF5ElsDe8Zs3BvYK6XJlWlQyOaeNwYKoFIgIi4/KbIA/DFoRg/dhow9kSfkKDw8olvuN0HaCqgmgsrRvIlcV68/QZHypYj3GzJv+q2hB5JMvUyCEcCv5yZyb3osiJqkHWUOJ0Bxd06N8V9J+pq5RF5Zl20bo/0CbILOE0qG884rWvchIq0PPcsNVDA9nU4sxZmtRXrr2krw2EjqdTAn6wEghyxFQ=
 
-# force yq v3
 install:
-  - sudo snap remove yq
-  - snap install yq --channel=v3/stable
   - pip3 install -r requirements.txt
   - pip3 install .
 
