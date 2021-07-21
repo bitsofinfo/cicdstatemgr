@@ -25,10 +25,10 @@ kubectl create namespace tekton-pipelines
 kubectl config set-context --current --namespace=tekton-pipelines
 
 # install pipelines
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.20.1/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.26.0/release.yaml
 
 # install pipelines customizations (configmaps)
-# - feature-flags 
+# - feature-flags
 # - config-artifact-pvc (disk size)
 kubectl apply -f $SCRIPTPATH/tekton-pipelines-mods.yaml
 
@@ -36,7 +36,7 @@ kubectl apply -f $SCRIPTPATH/tekton-pipelines-mods.yaml
 kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/previous/v0.11.2/release.yaml
 
 # install dashboard
-kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.13.0/tekton-dashboard-release.yaml
+kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.18.1/tekton-dashboard-release.yaml
 
 # NodePort change
 kubectl apply -f $SCRIPTPATH/tekton-dashboard-mods.yaml
@@ -51,19 +51,19 @@ kubectl apply -f $SCRIPTPATH/catalog/task/git-clone/0.1/git-clone.yaml -n tekton
 kubectl apply -f $SCRIPTPATH/tekton-triggers-rbac.yaml
 
 # Custom Tekton trigger interceptor that converts Slack's payload=[urlencodeddata]
-# into plain JSON before handing off to our EventListener 
+# into plain JSON before handing off to our EventListener
 # https://github.com/bitsofinfo/slack-payload-handler
 kubectl apply -f $SCRIPTPATH/slack-payload-handler.yaml
 
 # These are the k8s serviceaccounts that the various PipelineRuns execute as
-# when triggered by triggers 
+# when triggered by triggers
 kubectl apply -f $SCRIPTPATH/tekton-service-accounts.yaml
 
 # The redis instance that is used as the primary datastore for cicdstatemgr
 # https://github.com/bitsofinfo/cicdstatemgr
 kubectl apply -f $SCRIPTPATH/redis.yaml
 
-# a Docker registry instance that resides in the cluster that Kaniko uses 
+# a Docker registry instance that resides in the cluster that Kaniko uses
 # for its cache. https://github.com/GoogleContainerTools/kaniko
 kubectl apply -f $SCRIPTPATH/image-registry-cache.yaml
 \
@@ -72,7 +72,7 @@ kubectl apply -f $SCRIPTPATH/trivy-server.yaml
 
 # Create secrets for slack oauth token (i.e to verify inbound slack actions)
 cat secrets/slack-oauth-token | tr -d '\n' > secrets/slack-oauth-token.tmp; mv secrets/slack-oauth-token.tmp secrets/slack-oauth-token
-kubectl create secret generic slack-oauth-token --from-file=slack-oauth-token=secrets/slack-oauth-token 
+kubectl create secret generic slack-oauth-token --from-file=slack-oauth-token=secrets/slack-oauth-token
 
 # setup our namespaces for where the apps will be deployed
 # separate ones for dev/prod
