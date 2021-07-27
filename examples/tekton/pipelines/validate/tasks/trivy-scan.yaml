@@ -30,7 +30,7 @@ spec:
   results:
     - name: last-exit-code
       description: The last exit code of this task
-            
+
   steps:
 
     #----------------------------------
@@ -53,19 +53,19 @@ spec:
               --config /workspace/cicdstatemgr-configs/cicdstatemgr-config.yaml  \
               --secrets /workspace/cicdstatemgr-secrets/cicdstatemgr-secrets.yaml \
               --id $(inputs.params.cicdContextDataId) \
-              --load 
+              --load
         echo
 
         cat /tekton/results/cicdContextDataId
-        echo 
+        echo
         echo
 
         cat /tekton/results/cicdContextDataJson
-        echo 
         echo
-        
+        echo
+
     - name: trivy-scan
-      image: docker.io/aquasec/trivy:0.16.0
+      image: docker.io/aquasec/trivy:0.19.2
       command:
         - /bin/ash
       args:
@@ -99,7 +99,7 @@ spec:
           cat /tekton/results/trivy-scan.results
 
    #----------------------------------
-    # STEP update CICD context data 
+    # STEP update CICD context data
     # w/ scan results
     #----------------------------------
     - name: update-cicd-context-data
@@ -127,13 +127,13 @@ spec:
                 --set state.validate.$(inputs.params.pipelineRunUid).trivy.scanResults=file:///tekton/results/trivy-scan.results.top
 
             cat /tekton/results/cicdContextDataId
-            echo 
+            echo
             echo
 
             cat /tekton/results/cicdContextDataJson
-            echo 
             echo
-          
+            echo
+
         else
           echo "TRIVY_EXIT_CODE was $TRIVY_EXIT_CODE, skipping update-cicd-context-data"
         fi
