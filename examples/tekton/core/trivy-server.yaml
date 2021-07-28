@@ -8,7 +8,7 @@ metadata:
     app: cicd-trivy-server
 spec:
   containers:
-    - image: docker.io/aquasec/trivy:0.16.0
+    - image: docker.io/aquasec/trivy:0.19.2
       name: cicd-trivy-server
       command:
         - /bin/ash
@@ -16,7 +16,7 @@ spec:
         - -c
         - |
           /usr/local/bin/trivy \
-          server --listen 0.0.0.0:8080 
+          server --listen 0.0.0.0:8080
 
 ---
 
