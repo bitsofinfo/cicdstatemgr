@@ -4,9 +4,13 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: event-listener
+  annotations:
+    tekton.dev/payload-validation: "false"
 spec:
   serviceAccountName: tekton-triggers-admin
-  serviceType: NodePort
+  resources:
+    kubernetesResource:
+      serviceType: NodePort
   triggers:
 
     # --------------------------------------------------
@@ -30,7 +34,7 @@ spec:
 
               - key: invokedByPrincipalId
                 expression: "body.pusher.email"
-                
+
               - key: gitAppName
                 expression: "body.repository.name"
 
@@ -38,7 +42,7 @@ spec:
                 expression: "body.ref.split('/')[2]" # refs/tags/9.9.9-1--1-3 | develop etc
 
               - key: commitMsg
-                expression: "body.head_commit.message" 
+                expression: "body.head_commit.message"
 
               - key: commitId
                 expression: "body.head_commit.id"
@@ -50,7 +54,7 @@ spec:
       bindings:
         - ref: start-via-git
       template:
-        name: start
+        ref: start
 
 
     # --------------------------------------------------
@@ -60,22 +64,22 @@ spec:
       interceptors:
         - cel:
             filter: >-
-              header.match('x-cicdstatemgr-autotrigger-key','3ecret1!') && 
+              header.match('x-cicdstatemgr-autotrigger-key','3ecret1!') &&
               header.match('x-cicdstatemgr-pipeline-name', 'build')
 
         - cel:
             overlays:
                 # @see cicdops.yaml trigger.auto-args
               - key: cicdContextDataId
-                expression: "body.cicdContextDataId"  
+                expression: "body.cicdContextDataId"
               - key: appName
-                expression: "body.appName"  
+                expression: "body.appName"
               - key: appTag
-                expression: "body.appTag" 
+                expression: "body.appTag"
               - key: gitAppName
-                expression: "body.gitAppName" 
+                expression: "body.gitAppName"
               - key: cicdContextName
-                expression: "body.cicdContextName" 
+                expression: "body.cicdContextName"
 
               # for security checks
               - key: invokerUid
@@ -94,7 +98,7 @@ spec:
       bindings:
         - ref: build
       template:
-        name: build
+        ref: build
 
     # --------------------------------------------------
     # Handle DEPLOY via trigger call (not from slack)
@@ -103,7 +107,7 @@ spec:
       interceptors:
         - cel:
             filter: >-
-              header.match('x-cicdstatemgr-autotrigger-key','3ecret1!') && 
+              header.match('x-cicdstatemgr-autotrigger-key','3ecret1!') &&
               header.match('x-cicdstatemgr-pipeline-name', 'deploy')
 
         - cel:
@@ -111,15 +115,15 @@ spec:
 
                 # @see cicdops.yaml trigger.auto-args
               - key: cicdContextDataId
-                expression: "body.cicdContextDataId"  
+                expression: "body.cicdContextDataId"
               - key: appName
-                expression: "body.appName"  
+                expression: "body.appName"
               - key: appTag
-                expression: "body.appTag" 
+                expression: "body.appTag"
               - key: gitAppName
-                expression: "body.gitAppName" 
+                expression: "body.gitAppName"
               - key: cicdContextName
-                expression: "body.cicdContextName" 
+                expression: "body.cicdContextName"
 
 
                 # see actual obtgpipeline.yaml's
@@ -146,7 +150,7 @@ spec:
       bindings:
         - ref: deploy-via-trigger
       template:
-        name: deploy
+        ref: deploy
 
     # --------------------------------------------------
     # Handle VALIDATION... validation triggers via simple curl
@@ -156,22 +160,22 @@ spec:
       interceptors:
         - cel:
             filter: >-
-              header.match('x-cicdstatemgr-autotrigger-key','3ecret1!') && 
+              header.match('x-cicdstatemgr-autotrigger-key','3ecret1!') &&
               header.match('x-cicdstatemgr-pipeline-name', 'validate')
 
         - cel:
             overlays:
                 # @see cicdops.yaml trigger.auto-args
               - key: cicdContextDataId
-                expression: "body.cicdContextDataId"  
+                expression: "body.cicdContextDataId"
               - key: appName
-                expression: "body.appName"  
+                expression: "body.appName"
               - key: appTag
-                expression: "body.appTag" 
+                expression: "body.appTag"
               - key: gitAppName
-                expression: "body.gitAppName" 
+                expression: "body.gitAppName"
               - key: cicdContextName
-                expression: "body.cicdContextName" 
+                expression: "body.cicdContextName"
 
               # for security checks
               - key: invokerUid
@@ -190,7 +194,7 @@ spec:
       bindings:
         - ref: validate
       template:
-        name: validate
+        ref: validate
 
 
     # --------------------------------------------------
@@ -200,23 +204,23 @@ spec:
       interceptors:
         - cel:
             filter: >-
-              header.match('x-cicdstatemgr-autotrigger-key','3ecret1!') && 
+              header.match('x-cicdstatemgr-autotrigger-key','3ecret1!') &&
               header.match('x-cicdstatemgr-pipeline-name', 'test')
 
         - cel:
             overlays:
-            
+
                 # @see cicdops.yaml trigger.auto-args
               - key: cicdContextDataId
-                expression: "body.cicdContextDataId"  
+                expression: "body.cicdContextDataId"
               - key: appName
-                expression: "body.appName"  
+                expression: "body.appName"
               - key: appTag
-                expression: "body.appTag" 
+                expression: "body.appTag"
               - key: gitAppName
-                expression: "body.gitAppName" 
+                expression: "body.gitAppName"
               - key: cicdContextName
-                expression: "body.cicdContextName" 
+                expression: "body.cicdContextName"
 
               # for security checks
               - key: invokerUid
@@ -235,7 +239,7 @@ spec:
       bindings:
         - ref: test
       template:
-        name: test
+        ref: test
 
     # --------------------------------------------------
     # Handle CHANGE CONTEXT... interactions from slack
@@ -251,28 +255,28 @@ spec:
               namespace: tekton-pipelines
 
         - cel:
-            filter: "has(body.api_app_id)"  
+            filter: "has(body.api_app_id)"
 
         - cel:
             filter: >-
-              body.token.compareSecret('slack-oauth-token','slack-oauth-token') &&   
-              has(body.actions) && 
+              body.token.compareSecret('slack-oauth-token','slack-oauth-token') &&
+              has(body.actions) &&
               body.actions[0].value.indexOf('changeContext') != -1
 
         - cel:
             overlays:
                # action_values[item] are in format:
                # changeContext-[version]-[appName]|[b64 encoded JSON payload]
-           
+
               - key: targetCicdContextName
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetCicdContextName"  
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetCicdContextName"
 
               - key: gitAppName
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitAppName"  
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitAppName"
 
               - key: relatedCicdContextDataId
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"
+
               - key: relatedPipelineRunUid
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineRunUid"
 
@@ -290,7 +294,7 @@ spec:
 
               - key: commitId
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().commitId"
-          
+
               - key: gitCloneUrl
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitCloneUrl"
 
@@ -315,16 +319,16 @@ spec:
       bindings:
         - ref: start-via-change-context
       template:
-        name: start
+        ref: start
 
-  
+
 
     # --------------------------------------------------
     # Handle DEPLOYs... deploy interactions from slack
     # --------------------------------------------------
     - name: slack-deploy-interceptor
       interceptors:
-        
+
         # we need this because slack does a POST w/ body payload=[urlencodedjson]... stupid
         - webhook:
             objectRef:
@@ -334,12 +338,12 @@ spec:
               namespace: tekton-pipelines
 
         - cel:
-            filter: "has(body.api_app_id)"  
+            filter: "has(body.api_app_id)"
 
         - cel:
             filter: >-
-              body.token.compareSecret('slack-oauth-token','slack-oauth-token') && 
-              has(body.actions) && 
+              body.token.compareSecret('slack-oauth-token','slack-oauth-token') &&
+              has(body.actions) &&
               body.actions[0].value.indexOf('deploy') != -1
 
         - cel:
@@ -348,11 +352,11 @@ spec:
                # deploy-[version]-[appName]|[b64 encoded JSON payload]
 
               - key: cicdContextName
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"
+
               - key: cicdContextDataId
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"
+
               - key: targetAppName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppName"
 
@@ -363,8 +367,8 @@ spec:
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitCloneUrl"
 
               - key: relatedCicdContextDataId
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"
+
               - key: relatedPipelineRunUid
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineRunUid"
 
@@ -388,11 +392,11 @@ spec:
 
               - key: slackThreadTs
                 expression: "body.container.thread_ts"
-                
+
       bindings:
         - ref: deploy-via-slack
       template:
-        name: deploy
+        ref: deploy
 
 
     # --------------------------------------------------
@@ -400,7 +404,7 @@ spec:
     # --------------------------------------------------
     - name: slack-test-interceptor
       interceptors:
-        
+
         # we need this because slack does a POST w/ body payload=[urlencodedjson]... stupid
         - webhook:
             objectRef:
@@ -410,12 +414,12 @@ spec:
               namespace: tekton-pipelines
 
         - cel:
-            filter: "has(body.api_app_id)"  
+            filter: "has(body.api_app_id)"
 
         - cel:
             filter: >-
-              body.token.compareSecret('slack-oauth-token','slack-oauth-token') && 
-              has(body.actions) && 
+              body.token.compareSecret('slack-oauth-token','slack-oauth-token') &&
+              has(body.actions) &&
               body.actions[0].value.indexOf('test') != -1
 
         - cel:
@@ -424,11 +428,11 @@ spec:
                # deploy-[version]-[appName]|[b64 encoded JSON payload]
 
               - key: cicdContextName
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"
+
               - key: cicdContextDataId
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"
+
               - key: targetAppName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppName"
 
@@ -439,8 +443,8 @@ spec:
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitCloneUrl"
 
               - key: relatedCicdContextDataId
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"
+
               - key: relatedPipelineRunUid
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineRunUid"
 
@@ -464,11 +468,11 @@ spec:
 
               - key: slackThreadTs
                 expression: "body.container.thread_ts"
-                
+
       bindings:
         - ref: test-via-slack
       template:
-        name: test
+        ref: test
 
 
     # --------------------------------------------------
@@ -476,7 +480,7 @@ spec:
     # --------------------------------------------------
     - name: slack-validate-interceptor
       interceptors:
-        
+
         # we need this because slack does a POST w/ body payload=[urlencodedjson]... stupid
         - webhook:
             objectRef:
@@ -486,12 +490,12 @@ spec:
               namespace: tekton-pipelines
 
         - cel:
-            filter: "has(body.api_app_id)"  
+            filter: "has(body.api_app_id)"
 
         - cel:
             filter: >-
-              body.token.compareSecret('slack-oauth-token','slack-oauth-token') && 
-              has(body.actions) && 
+              body.token.compareSecret('slack-oauth-token','slack-oauth-token') &&
+              has(body.actions) &&
               body.actions[0].value.indexOf('validate') != -1
 
         - cel:
@@ -500,11 +504,11 @@ spec:
                # deploy-[version]-[appName]|[b64 encoded JSON payload]
 
               - key: cicdContextName
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextName"
+
               - key: cicdContextDataId
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().cicdContextDataId"
+
               - key: targetAppName
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().targetAppName"
 
@@ -515,8 +519,8 @@ spec:
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().gitCloneUrl"
 
               - key: relatedCicdContextDataId
-                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"  
-              
+                expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedCicdContextDataId"
+
               - key: relatedPipelineRunUid
                 expression: "string(body.actions[0].value.split('|')[1].decodeb64()).parseJSON().relatedPipelineRunUid"
 
@@ -540,11 +544,11 @@ spec:
 
               - key: slackThreadTs
                 expression: "body.container.thread_ts"
-                
+
       bindings:
         - ref: validate-via-slack
       template:
-        name: validate
+        ref: validate
 
     # --------------------------------------------------
     # Handle SLASH COMMAND (/start-app-deploy)... interactions from slack
@@ -560,25 +564,25 @@ spec:
               namespace: tekton-pipelines
 
         - cel:
-            filter: "has(body.api_app_id)"  
+            filter: "has(body.api_app_id)"
 
         - cel:
             filter: >-
-              body.token.compareSecret('slack-oauth-token','slack-oauth-token') && 
-              has(body.command) && 
-              has(body.text) && 
+              body.token.compareSecret('slack-oauth-token','slack-oauth-token') &&
+              has(body.command) &&
+              has(body.text) &&
               body.command.indexOf('start-app-deploy') != -1
 
         - cel:
             overlays:
               - key: targetCicdContextName
-                expression: "body.text.split(' ')[0]"  
+                expression: "body.text.split(' ')[0]"
 
               - key: gitAppName
-                expression: "body.text.split(' ')[1]"  
+                expression: "body.text.split(' ')[1]"
 
               - key: gitCloneUrl
-                expression: "body.text.split(' ')[2]"  
+                expression: "body.text.split(' ')[2]"
 
               - key: appTag
                 expression: "body.text.split(' ')[3]"
@@ -592,4 +596,4 @@ spec:
       bindings:
         - ref: start-via-cmd-startdeploy
       template:
-        name: start
+        ref: start

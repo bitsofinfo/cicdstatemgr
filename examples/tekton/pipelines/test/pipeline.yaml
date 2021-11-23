@@ -7,12 +7,10 @@ metadata:
 
 spec:
   params:
-    - name: pipelineRunUid
-      type: string
     - name: cicdContextDataId
       type: string
     - name: originalRequestBody
-      type: string 
+      type: string
 
     # for security checks
     - name: cicdContextName
@@ -29,7 +27,7 @@ spec:
       type: string
     - name: triggeredByDescription
       type: string
-      
+
   workspaces:
     - name: cicdstatemgr-secrets
       description: cicdstatemgr secrets workspace
@@ -51,7 +49,7 @@ spec:
           workspace: cicdstatemgr-secrets
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineName
@@ -84,7 +82,7 @@ spec:
       taskRef:
         name: test-invoke
 
-      runAfter: 
+      runAfter:
         - init
 
       workspaces:
@@ -95,7 +93,7 @@ spec:
 
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
 
@@ -109,7 +107,7 @@ spec:
       taskRef:
         name: handle-event
 
-      runAfter: 
+      runAfter:
         - test-invoke
 
       workspaces:
@@ -131,7 +129,7 @@ spec:
 
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineName
@@ -170,7 +168,7 @@ spec:
 
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineName
@@ -179,7 +177,3 @@ spec:
           value: failure
         - name: exitWithExitCode
           value: "1"
-       
-       
-
-

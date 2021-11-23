@@ -8,8 +8,6 @@ metadata:
 
 spec:
   params:
-    - name: pipelineRunUid
-      type: string
     - name: cicdContextDataId
       type: string
     - name: gitAppName
@@ -71,7 +69,7 @@ spec:
       # init
       #---------------------
     - name: init
-      runAfter: 
+      runAfter:
         - git-clone-app-source
       taskRef:
         name: init
@@ -84,7 +82,7 @@ spec:
 
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineName
@@ -116,7 +114,7 @@ spec:
       taskRef:
         name: build
 
-      runAfter: 
+      runAfter:
         - init
 
       workspaces:
@@ -131,7 +129,7 @@ spec:
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
 
       #---------------------------
       # Finish success
@@ -140,7 +138,7 @@ spec:
       taskRef:
         name: handle-event
 
-      runAfter: 
+      runAfter:
         - build
 
       workspaces:
@@ -164,7 +162,7 @@ spec:
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: pipelineName
           value: build
         - name: eventName
@@ -180,7 +178,7 @@ spec:
       taskRef:
         name: handle-event
 
-      runAfter: 
+      runAfter:
         - build
 
       workspaces:
@@ -204,11 +202,10 @@ spec:
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: pipelineName
           value: build
         - name: eventName
           value: failure
         - name: exitWithExitCode
           value: "1"
-          

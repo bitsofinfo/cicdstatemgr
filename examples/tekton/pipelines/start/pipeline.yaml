@@ -11,9 +11,6 @@ spec:
     - name: cicdContextName
       type: string
 
-    - name: pipelineRunUid
-      type: string
-
     - name: invokerUid
       type: string
 
@@ -83,7 +80,7 @@ spec:
         - name: cicdContextName
           value: $(params.cicdContextName)
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: invokerUid
           value: $(params.invokerUid)
         - name: gitAppName
@@ -105,12 +102,12 @@ spec:
           value: $(params.triggeredByDescription)
 
         - name: originalRequestBody
-          value: $(params.originalRequestBody) 
+          value: $(params.originalRequestBody)
 
         - name: uniqueString
-          value: $(params.uniqueString) 
+          value: $(params.uniqueString)
         - name: gitCloneUrl
-          value: $(params.gitCloneUrl) 
+          value: $(params.gitCloneUrl)
 
       #---------------------------
       # Finish success
@@ -119,7 +116,7 @@ spec:
       taskRef:
         name: handle-event
 
-      runAfter: 
+      runAfter:
         - start
 
       workspaces:
@@ -141,9 +138,9 @@ spec:
 
       params:
         - name: cicdContextDataId
-          value: $(tasks.start.results.cicdContextDataId) 
+          value: $(tasks.start.results.cicdContextDataId)
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: pipelineName
           value: start
         - name: eventName
@@ -159,7 +156,7 @@ spec:
       taskRef:
         name: handle-event
 
-      runAfter: 
+      runAfter:
         - start
 
       workspaces:
@@ -181,13 +178,12 @@ spec:
 
       params:
         - name: cicdContextDataId
-          value: $(tasks.start.results.cicdContextDataId) 
+          value: $(tasks.start.results.cicdContextDataId)
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: pipelineName
           value: start
         - name: eventName
           value: failure
         - name: exitWithExitCode
           value: "1"
-          

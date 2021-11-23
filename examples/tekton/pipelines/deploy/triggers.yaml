@@ -35,7 +35,7 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: deploy-$(tt.params.cicdContextName)-$(tt.params.targetAppName)-$(uid) # uid here is the tekton unique RUN id
+        generateName: deploy-$(tt.params.cicdContextName)-$(tt.params.targetAppName)-
       spec:
         serviceAccountName: cicd-tekton
 
@@ -43,17 +43,14 @@ spec:
           name: deploy
 
         params:
-          - name: pipelineRunUid
-            value: deploy-$(tt.params.cicdContextName)-$(tt.params.targetAppName)-$(uid) # uid here is the tekton unique RUN id
-
-          - name: cicdContextDataId 
-            value: $(tt.params.cicdContextDataId) 
+          - name: cicdContextDataId
+            value: $(tt.params.cicdContextDataId)
 
           - name: targetAppName
-            value: $(tt.params.targetAppName) 
+            value: $(tt.params.targetAppName)
 
           - name: targetAppTag
-            value: $(tt.params.targetAppTag) 
+            value: $(tt.params.targetAppTag)
 
           - name: originalRequestBody
             value: $(tt.params.originalRequestBody)
