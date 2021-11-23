@@ -26,12 +26,12 @@ spec:
     - name: relatedPipelineName
     - name: triggeredBySystem
     - name: triggeredByDescription
-   
+
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: build-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
+        generateName: build-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-
       spec:
         serviceAccountName: cicd-tekton
 
@@ -39,9 +39,6 @@ spec:
           name: build
 
         params:
-          - name: pipelineRunUid
-            value: build-$(tt.params.cicdContextName)-$(tt.params.gitAppName)-$(uid) # uid here is the tekton unique RUN id
-          
           - name: cicdContextDataId
             value: $(tt.params.cicdContextDataId)
 

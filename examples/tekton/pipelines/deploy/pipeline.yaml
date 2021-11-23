@@ -5,8 +5,6 @@ metadata:
   name: deploy
 spec:
   params:
-    - name: pipelineRunUid
-      type: string
     - name: cicdContextDataId
       type: string
     - name: targetAppName
@@ -14,10 +12,10 @@ spec:
     - name: targetAppTag
       type: string
     - name: originalRequestBody
-      type: string 
+      type: string
     - name: gitCloneUrl
-      type: string 
-      
+      type: string
+
     # for security checks
     - name: cicdContextName
       type: string
@@ -33,7 +31,7 @@ spec:
       type: string
     - name: triggeredByDescription
       type: string
-      
+
   workspaces:
     - name: cicdstatemgr-secrets
       description: cicdstatemgr secrets workspace
@@ -64,7 +62,7 @@ spec:
       # init
       #---------------------
     - name: init
-      runAfter: 
+      runAfter:
         - git-clone-app-source
       taskRef:
         name: init
@@ -77,7 +75,7 @@ spec:
 
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineName
@@ -103,9 +101,9 @@ spec:
 
         - name: setContextDataValues
           value: >-
-            state.deploy.$(params.pipelineRunUid).params.targetAppName=$(params.targetAppName)|
-            state.deploy.$(params.pipelineRunUid).params.cicdContextDataId=$(params.cicdContextDataId)|
-            state.deploy.$(params.pipelineRunUid).params.targetAppTag=$(params.targetAppTag)
+            state.deploy.$(context.pipelineRun.name).params.targetAppName=$(params.targetAppName)|
+            state.deploy.$(context.pipelineRun.name).params.cicdContextDataId=$(params.cicdContextDataId)|
+            state.deploy.$(context.pipelineRun.name).params.targetAppTag=$(params.targetAppTag)
 
 
       #---------------------
@@ -115,7 +113,7 @@ spec:
       taskRef:
         name: deploy
 
-      runAfter: 
+      runAfter:
         - init
 
       workspaces:
@@ -128,7 +126,7 @@ spec:
 
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: targetAppTag
@@ -141,7 +139,7 @@ spec:
       taskRef:
         name: handle-event
 
-      runAfter: 
+      runAfter:
         - deploy
 
       workspaces:
@@ -164,7 +162,7 @@ spec:
 
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineName
@@ -181,7 +179,7 @@ spec:
       taskRef:
         name: handle-event
 
-      runAfter: 
+      runAfter:
         - deploy
 
       workspaces:
@@ -203,7 +201,7 @@ spec:
 
       params:
         - name: pipelineRunUid
-          value: $(params.pipelineRunUid)
+          value: $(context.pipelineRun.name)
         - name: cicdContextDataId
           value: $(params.cicdContextDataId)
         - name: pipelineName
@@ -212,7 +210,3 @@ spec:
           value: failure
         - name: exitWithExitCode
           value: "1"
-
-
-
-
